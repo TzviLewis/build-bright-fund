@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, Award, Trash2, Plus, Edit } from 'lucide-react';
+import { ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, Award, Trash2, Plus, Edit, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 
@@ -56,6 +56,7 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
+      setError(null);
       const { items: campaignItems } = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
       const { items: donationItems } = await BaseCrudService.getAll<Donations>('donations');
       const { items: matcherItems } = await BaseCrudService.getAll<Matchers>('matchers');
@@ -76,8 +77,9 @@ export default function AdminDashboard() {
       setMatchers(matcherItems);
       setTeams(teamItems);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to load data. Please try again.';
       console.error('Error loading data:', error);
-      setError('Failed to load data');
+      setError(`Failed to load campaign data: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -124,7 +126,7 @@ export default function AdminDashboard() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving campaign';
       console.error('Error saving campaign:', error);
-      setError(errorMsg);
+      setError(`Failed to save campaign: ${errorMsg}`);
     } finally {
       setSaving(false);
     }
@@ -167,7 +169,7 @@ export default function AdminDashboard() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving matcher';
       console.error('Error saving matcher:', error);
-      setError(errorMsg);
+      setError(`Failed to save matcher: ${errorMsg}`);
     } finally {
       setSaving(false);
     }
@@ -177,6 +179,7 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this matcher?')) return;
     
     try {
+      setError(null);
       await BaseCrudService.delete('matchers', matcherId);
       setSuccessMessage('Matcher deleted successfully!');
       await loadData();
@@ -184,7 +187,7 @@ export default function AdminDashboard() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error deleting matcher';
       console.error('Error deleting matcher:', error);
-      setError(errorMsg);
+      setError(`Failed to delete matcher: ${errorMsg}`);
     }
   };
 
@@ -248,7 +251,7 @@ export default function AdminDashboard() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving team';
       console.error('Error saving team:', error);
-      setError(errorMsg);
+      setError(`Failed to save team: ${errorMsg}`);
     } finally {
       setSaving(false);
     }
@@ -258,6 +261,7 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this team?')) return;
     
     try {
+      setError(null);
       await BaseCrudService.delete('teams', teamId);
       setSuccessMessage('Team deleted successfully!');
       await loadData();
@@ -265,7 +269,7 @@ export default function AdminDashboard() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error deleting team';
       console.error('Error deleting team:', error);
-      setError(errorMsg);
+      setError(`Failed to delete team: ${errorMsg}`);
     }
   };
 
@@ -419,11 +423,46 @@ export default function AdminDashboard() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg"
+            exit={{ opacity: 0 }}
+            className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
           >
-            <p className="font-paragraph text-base text-secondary font-semibold">
-              ✓ {successMessage}
-            </p>
+            <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-paragraph font-semibold text-secondary">
+                {successMessage}
+              </p>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="text-secondary hover:text-secondary/70 flex-shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </motion.div>
+        )}
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+          >
+            <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-paragraph font-semibold text-destructive">
+                Error
+              </p>
+              <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                {error}
+              </p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-destructive hover:text-destructive/70 flex-shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </motion.div>
         )}
 
