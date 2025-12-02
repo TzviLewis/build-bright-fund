@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap } from 'lucide-react';
+import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -24,6 +24,7 @@ export default function HomePage() {
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -44,6 +45,7 @@ export default function HomePage() {
       setTeams(teamItems);
     } catch (error) {
       console.error('Error loading data:', error);
+      setSubmitError('Failed to load campaign data. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -53,8 +55,26 @@ export default function HomePage() {
     e.preventDefault();
     setSubmitting(true);
     setSubmitSuccess(false);
+    setSubmitError(null);
 
     try {
+      // Validation
+      if (!donorEmail) {
+        setSubmitError('Email address is required');
+        setSubmitting(false);
+        return;
+      }
+      if (!amount || parseFloat(amount) <= 0) {
+        setSubmitError('Please enter a valid donation amount greater than $0');
+        setSubmitting(false);
+        return;
+      }
+      if (!isAnonymous && !donorName) {
+        setSubmitError('Please enter your name or choose to donate anonymously');
+        setSubmitting(false);
+        return;
+      }
+
       await BaseCrudService.create('donations', {
         _id: crypto.randomUUID(),
         donorName: isAnonymous ? 'Anonymous' : donorName,
@@ -79,7 +99,9 @@ export default function HomePage() {
       
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to process donation. Please try again.';
       console.error('Error submitting donation:', error);
+      setSubmitError(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +123,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-background border-b border-primary/10">
+      <header className="bg-background border-b border-primary/10 shadow-sm">
         <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
           <div className="font-heading text-2xl font-bold text-primary tracking-wider">
             SCHOOL CAMPAIGN
@@ -336,11 +358,53 @@ export default function HomePage() {
 
             <div className="bg-background rounded-lg p-10 shadow-2xl">
               {submitSuccess && (
-                <div className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg">
-                  <p className="font-paragraph text-lg text-secondary font-semibold text-center">
-                    Thank you for your generous donation! Your support makes a difference.
-                  </p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+                >
+                  <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-paragraph font-semibold text-secondary">
+                      Donation Received Successfully!
+                    </p>
+                    <p className="font-paragraph text-sm text-secondary/80 mt-1">
+                      Thank you for your generous donation. Your support makes a real difference in our community.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSubmitSuccess(false)}
+                    className="text-secondary hover:text-secondary/70 flex-shrink-0"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              )}
+
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                >
+                  <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-paragraph font-semibold text-destructive">
+                      Unable to Process Donation
+                    </p>
+                    <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                      {submitError}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSubmitError(null)}
+                    className="text-destructive hover:text-destructive/70 flex-shrink-0"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
               )}
 
               <form onSubmit={handleSubmitDonation} className="space-y-6">
@@ -438,9 +502,16 @@ export default function HomePage() {
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full py-6 text-xl font-bold"
+                  className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full py-6 text-xl font-bold transition-all disabled:opacity-70"
                 >
-                  {submitting ? 'Processing...' : 'SUBMIT DONATION'}
+                  {submitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-secondary-foreground border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </span>
+                  ) : (
+                    'SUBMIT DONATION'
+                  )}
                 </Button>
               </form>
             </div>
@@ -656,19 +727,19 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12">
+      <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
         <div className="max-w-[120rem] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
               <h3 className="font-heading text-2xl font-bold">SCHOOL CAMPAIGN</h3>
-              <p className="font-paragraph text-base text-primary-foreground/80">
-                Building the future of education, one contribution at a time.
+              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
+                Building the future of education, one contribution at a time. Your support creates lasting impact.
               </p>
             </div>
 
             <div className="space-y-4">
               <h4 className="font-heading text-xl font-bold">Quick Links</h4>
-              <nav className="flex flex-col gap-2">
+              <nav className="flex flex-col gap-3">
                 <a href="#campaign" className="font-paragraph text-base text-primary-foreground/80 hover:text-secondary transition-colors">
                   Campaign Details
                 </a>
@@ -682,16 +753,16 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-heading text-xl font-bold">Contact</h4>
-              <p className="font-paragraph text-base text-primary-foreground/80">
-                For questions about the campaign, please reach out to our development office.
+              <h4 className="font-heading text-xl font-bold">Support</h4>
+              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
+                For questions about the campaign or to discuss partnership opportunities, please contact our development office.
               </p>
             </div>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center">
+          <div className="pt-8 border-t border-primary-foreground/20 text-center">
             <p className="font-paragraph text-sm text-primary-foreground/70">
-              © {new Date().getFullYear()} School Fundraising Campaign. All rights reserved.
+              © {new Date().getFullYear()} School Fundraising Campaign. All rights reserved. | Secure & Trusted Donations
             </p>
           </div>
         </div>
