@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, Award, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, Award, Trash2, Plus, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 
@@ -21,6 +21,10 @@ export default function AdminDashboard() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showNewMatcher, setShowNewMatcher] = useState(false);
   const [showNewTeam, setShowNewTeam] = useState(false);
+  const [editingMatcherId, setEditingMatcherId] = useState<string | null>(null);
+  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Campaign form fields
   const [campaignTitle, setCampaignTitle] = useState('');
@@ -73,6 +77,7 @@ export default function AdminDashboard() {
       setTeams(teamItems);
     } catch (error) {
       console.error('Error loading data:', error);
+      setError('Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -82,8 +87,15 @@ export default function AdminDashboard() {
     e.preventDefault();
     setSaving(true);
     setSaveSuccess(false);
+    setError(null);
 
     try {
+      if (!campaignTitle || !fundraisingGoal) {
+        setError('Campaign title and fundraising goal are required');
+        setSaving(false);
+        return;
+      }
+
       const campaignData: CampaignDetails = {
         _id: campaign?._id || crypto.randomUUID(),
         campaignTitle,
@@ -102,11 +114,17 @@ export default function AdminDashboard() {
       }
 
       setSaveSuccess(true);
+      setSuccessMessage('Campaign details saved successfully!');
       await loadData();
       
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        setSuccessMessage(null);
+      }, 3000);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error saving campaign';
       console.error('Error saving campaign:', error);
+      setError(errorMsg);
     } finally {
       setSaving(false);
     }
@@ -115,79 +133,162 @@ export default function AdminDashboard() {
   const handleAddMatcher = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError(null);
 
     try {
-      await BaseCrudService.create('matchers', {
-        _id: crypto.randomUUID(),
+      if (!matcherName || !matchingAmount || !matchingPercentage || !contactEmail) {
+        setError('Matcher name, amount, percentage, and email are required');
+        setSaving(false);
+        return;
+      }
+
+      const matcherData: Matchers = {
+        _id: editingMatcherId || crypto.randomUUID(),
         matcherName,
         matchingAmount: parseFloat(matchingAmount),
         matchingPercentage: parseFloat(matchingPercentage),
         status: matcherStatus,
         contactEmail,
         matchingLimit: matchingLimit ? parseFloat(matchingLimit) : undefined
-      });
+      };
 
-      setShowNewMatcher(false);
-      setMatcherName('');
-      setMatchingAmount('');
-      setMatchingPercentage('');
-      setMatcherStatus('active');
-      setContactEmail('');
-      setMatchingLimit('');
-      
+      if (editingMatcherId) {
+        await BaseCrudService.update('matchers', matcherData);
+        setSuccessMessage('Matcher updated successfully!');
+      } else {
+        await BaseCrudService.create('matchers', matcherData);
+        setSuccessMessage('Matcher added successfully!');
+      }
+
+      handleCancelMatcher();
       await loadData();
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
-      console.error('Error adding matcher:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Error saving matcher';
+      console.error('Error saving matcher:', error);
+      setError(errorMsg);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteMatcher = async (matcherId: string) => {
+    if (!confirm('Are you sure you want to delete this matcher?')) return;
+    
     try {
       await BaseCrudService.delete('matchers', matcherId);
+      setSuccessMessage('Matcher deleted successfully!');
       await loadData();
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error deleting matcher';
       console.error('Error deleting matcher:', error);
+      setError(errorMsg);
     }
+  };
+
+  const handleEditMatcher = (matcher: Matchers) => {
+    setEditingMatcherId(matcher._id);
+    setMatcherName(matcher.matcherName || '');
+    setMatchingAmount(matcher.matchingAmount?.toString() || '');
+    setMatchingPercentage(matcher.matchingPercentage?.toString() || '');
+    setMatcherStatus(matcher.status || 'active');
+    setContactEmail(matcher.contactEmail || '');
+    setMatchingLimit(matcher.matchingLimit?.toString() || '');
+    setShowNewMatcher(true);
+    setError(null);
+  };
+
+  const handleCancelMatcher = () => {
+    setShowNewMatcher(false);
+    setEditingMatcherId(null);
+    setMatcherName('');
+    setMatchingAmount('');
+    setMatchingPercentage('');
+    setMatcherStatus('active');
+    setContactEmail('');
+    setMatchingLimit('');
+    setError(null);
   };
 
   const handleAddTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError(null);
 
     try {
-      await BaseCrudService.create('teams', {
-        _id: crypto.randomUUID(),
+      if (!teamName || !teamGoal || !teamDescription || !memberCount) {
+        setError('Team name, goal, description, and member count are required');
+        setSaving(false);
+        return;
+      }
+
+      const teamData: Teams = {
+        _id: editingTeamId || crypto.randomUUID(),
         teamName,
         fundraisingGoal: parseFloat(teamGoal),
         teamDescription,
         memberCount: parseInt(memberCount),
         teamLogo
-      });
+      };
 
-      setShowNewTeam(false);
-      setTeamName('');
-      setTeamGoal('');
-      setTeamDescription('');
-      setMemberCount('');
-      setTeamLogo('');
-      
+      if (editingTeamId) {
+        await BaseCrudService.update('teams', teamData);
+        setSuccessMessage('Team updated successfully!');
+      } else {
+        await BaseCrudService.create('teams', teamData);
+        setSuccessMessage('Team added successfully!');
+      }
+
+      handleCancelTeam();
       await loadData();
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
-      console.error('Error adding team:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Error saving team';
+      console.error('Error saving team:', error);
+      setError(errorMsg);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteTeam = async (teamId: string) => {
+    if (!confirm('Are you sure you want to delete this team?')) return;
+    
     try {
       await BaseCrudService.delete('teams', teamId);
+      setSuccessMessage('Team deleted successfully!');
       await loadData();
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error deleting team';
       console.error('Error deleting team:', error);
+      setError(errorMsg);
     }
+  };
+
+  const handleEditTeam = (team: Teams) => {
+    setEditingTeamId(team._id);
+    setTeamName(team.teamName || '');
+    setTeamGoal(team.fundraisingGoal?.toString() || '');
+    setTeamDescription(team.teamDescription || '');
+    setMemberCount(team.memberCount?.toString() || '');
+    setTeamLogo(team.teamLogo || '');
+    setShowNewTeam(true);
+    setError(null);
+  };
+
+  const handleCancelTeam = () => {
+    setShowNewTeam(false);
+    setEditingTeamId(null);
+    setTeamName('');
+    setTeamGoal('');
+    setTeamDescription('');
+    setMemberCount('');
+    setTeamLogo('');
+    setError(null);
   };
 
   const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
@@ -313,6 +414,19 @@ export default function AdminDashboard() {
           </motion.div>
         </div>
 
+        {/* Global Success/Error Messages */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg"
+          >
+            <p className="font-paragraph text-base text-secondary font-semibold">
+              ✓ {successMessage}
+            </p>
+          </motion.div>
+        )}
+
         {/* Main Content */}
         <Tabs defaultValue="campaign" className="space-y-8">
           <TabsList className="bg-primary/10">
@@ -342,7 +456,15 @@ export default function AdminDashboard() {
                 {saveSuccess && (
                   <div className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg">
                     <p className="font-paragraph text-base text-secondary font-semibold">
-                      Campaign details saved successfully!
+                      ✓ Campaign details saved successfully!
+                    </p>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
+                    <p className="font-paragraph text-base text-destructive font-semibold">
+                      ✗ {error}
                     </p>
                   </div>
                 )}
@@ -465,7 +587,10 @@ export default function AdminDashboard() {
                     Manage Matchers
                   </CardTitle>
                   <Button
-                    onClick={() => setShowNewMatcher(!showNewMatcher)}
+                    onClick={() => {
+                      setShowNewMatcher(!showNewMatcher);
+                      if (showNewMatcher) handleCancelMatcher();
+                    }}
                     className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -474,9 +599,19 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
+                {error && (
+                  <div className="p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
+                    <p className="font-paragraph text-base text-destructive font-semibold">
+                      ✗ {error}
+                    </p>
+                  </div>
+                )}
+
                 {showNewMatcher && (
                   <form onSubmit={handleAddMatcher} className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20">
-                    <h3 className="font-heading text-xl font-bold text-primary">New Matcher</h3>
+                    <h3 className="font-heading text-xl font-bold text-primary">
+                      {editingMatcherId ? 'Edit Matcher' : 'New Matcher'}
+                    </h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -577,11 +712,11 @@ export default function AdminDashboard() {
                         disabled={saving}
                         className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8"
                       >
-                        {saving ? 'Adding...' : 'Add Matcher'}
+                        {saving ? 'Saving...' : editingMatcherId ? 'Update Matcher' : 'Add Matcher'}
                       </Button>
                       <Button
                         type="button"
-                        onClick={() => setShowNewMatcher(false)}
+                        onClick={handleCancelMatcher}
                         variant="outline"
                         className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-8"
                       >
@@ -599,7 +734,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4">
                     {matchers.map((matcher) => (
                       <div key={matcher._id} className="bg-primary/5 rounded-lg p-6 border-2 border-primary/10 flex justify-between items-start">
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex-1">
                           <h4 className="font-heading text-xl font-bold text-primary">
                             {matcher.matcherName}
                           </h4>
@@ -627,13 +762,22 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-                        <Button
-                          onClick={() => handleDeleteMatcher(matcher._id)}
-                          variant="outline"
-                          className="border-destructive text-destructive hover:bg-destructive hover:text-destructiveforeground rounded-full"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            onClick={() => handleEditMatcher(matcher)}
+                            variant="outline"
+                            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteMatcher(matcher._id)}
+                            variant="outline"
+                            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -651,7 +795,10 @@ export default function AdminDashboard() {
                     Manage Teams
                   </CardTitle>
                   <Button
-                    onClick={() => setShowNewTeam(!showNewTeam)}
+                    onClick={() => {
+                      setShowNewTeam(!showNewTeam);
+                      if (showNewTeam) handleCancelTeam();
+                    }}
                     className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -660,9 +807,19 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
+                {error && (
+                  <div className="p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
+                    <p className="font-paragraph text-base text-destructive font-semibold">
+                      ✗ {error}
+                    </p>
+                  </div>
+                )}
+
                 {showNewTeam && (
                   <form onSubmit={handleAddTeam} className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20">
-                    <h3 className="font-heading text-xl font-bold text-primary">New Team</h3>
+                    <h3 className="font-heading text-xl font-bold text-primary">
+                      {editingTeamId ? 'Edit Team' : 'New Team'}
+                    </h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -743,11 +900,11 @@ export default function AdminDashboard() {
                         disabled={saving}
                         className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8"
                       >
-                        {saving ? 'Adding...' : 'Add Team'}
+                        {saving ? 'Saving...' : editingTeamId ? 'Update Team' : 'Add Team'}
                       </Button>
                       <Button
                         type="button"
-                        onClick={() => setShowNewTeam(false)}
+                        onClick={handleCancelTeam}
                         variant="outline"
                         className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-8"
                       >
@@ -771,7 +928,7 @@ export default function AdminDashboard() {
                         <div key={team._id} className="bg-primary/5 rounded-lg p-6 border-2 border-primary/10 space-y-4">
                           {team.teamLogo && (
                             <div className="w-full h-32 rounded-lg overflow-hidden bg-background">
-                              <Image src={team.teamLogo} alt={team.teamName || 'Team logo'} className="w-full h-full object-cover" />
+                              <Image src={team.teamLogo} alt={team.teamName || 'Team logo'} className="w-full h-full object-cover" width={400} />
                             </div>
                           )}
                           <div>
@@ -796,14 +953,24 @@ export default function AdminDashboard() {
                               <p className="font-heading font-bold text-secondary">${(teamTotal / 1000).toFixed(1)}k</p>
                             </div>
                           </div>
-                          <Button
-                            onClick={() => handleDeleteTeam(team._id)}
-                            variant="outline"
-                            className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructiveforeground rounded-full"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete Team
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleEditTeam(team)}
+                              variant="outline"
+                              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full"
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteTeam(team._id)}
+                              variant="outline"
+                              className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       );
                     })}
@@ -812,6 +979,8 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Donations Tab */}
           <TabsContent value="donations">
             <Card className="border-primary/20">
               <CardHeader>

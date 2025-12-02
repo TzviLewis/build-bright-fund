@@ -37,6 +37,8 @@ export interface Donations {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
+  teamId?: string;
+  /** @wixFieldType text */
   donorName?: string;
   /** @wixFieldType text */
   donorEmail?: string;
@@ -50,8 +52,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType text */
-  teamId?: string;
 }
 
 
