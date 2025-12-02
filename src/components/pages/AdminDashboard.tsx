@@ -7,304 +7,479 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, Award, Trash2, Plus, Edit, AlertCircle, CheckCircle, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 
+interface FormState {
+  campaignTitle: string;
+  fundraisingGoal: string;
+  projectDescription: string;
+  promotionalText: string;
+  mainCampaignImage: string;
+  campaignStartDate: string;
+  campaignEndDate: string;
+}
+
+interface MatcherFormState {
+  matcherName: string;
+  matchingAmount: string;
+  matchingPercentage: string;
+  matcherStatus: string;
+  contactEmail: string;
+  matchingLimit: string;
+}
+
+interface TeamFormState {
+  teamName: string;
+  teamGoal: string;
+  teamDescription: string;
+  memberCount: string;
+  teamLogo: string;
+}
+
+interface UIState {
+  loading: boolean;
+  saving: boolean;
+  error: string | null;
+  successMessage: string | null;
+  showNewMatcher: boolean;
+  showNewTeam: boolean;
+  editingMatcherId: string | null;
+  editingTeamId: string | null;
+}
+
+interface DataState {
+  campaign: CampaignDetails | null;
+  donations: Donations[];
+  matchers: Matchers[];
+  teams: Teams[];
+}
+
 export default function AdminDashboard() {
-  const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
-  const [donations, setDonations] = useState<Donations[]>([]);
-  const [matchers, setMatchers] = useState<Matchers[]>([]);
-  const [teams, setTeams] = useState<Teams[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [showNewMatcher, setShowNewMatcher] = useState(false);
-  const [showNewTeam, setShowNewTeam] = useState(false);
-  const [editingMatcherId, setEditingMatcherId] = useState<string | null>(null);
-  const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // UI State
+  const [ui, setUI] = useState<UIState>({
+    loading: true,
+    saving: false,
+    error: null,
+    successMessage: null,
+    showNewMatcher: false,
+    showNewTeam: false,
+    editingMatcherId: null,
+    editingTeamId: null,
+  });
 
-  // Campaign form fields
-  const [campaignTitle, setCampaignTitle] = useState('');
-  const [fundraisingGoal, setFundraisingGoal] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [promotionalText, setPromotionalText] = useState('');
-  const [mainCampaignImage, setMainCampaignImage] = useState('');
-  const [campaignStartDate, setCampaignStartDate] = useState('');
-  const [campaignEndDate, setCampaignEndDate] = useState('');
+  // Data State
+  const [data, setData] = useState<DataState>({
+    campaign: null,
+    donations: [],
+    matchers: [],
+    teams: [],
+  });
 
-  // Matcher form fields
-  const [matcherName, setMatcherName] = useState('');
-  const [matchingAmount, setMatchingAmount] = useState('');
-  const [matchingPercentage, setMatchingPercentage] = useState('');
-  const [matcherStatus, setMatcherStatus] = useState('active');
-  const [contactEmail, setContactEmail] = useState('');
-  const [matchingLimit, setMatchingLimit] = useState('');
+  // Campaign Form State
+  const [campaignForm, setCampaignForm] = useState<FormState>({
+    campaignTitle: '',
+    fundraisingGoal: '',
+    projectDescription: '',
+    promotionalText: '',
+    mainCampaignImage: '',
+    campaignStartDate: '',
+    campaignEndDate: '',
+  });
 
-  // Team form fields
-  const [teamName, setTeamName] = useState('');
-  const [teamGoal, setTeamGoal] = useState('');
-  const [teamDescription, setTeamDescription] = useState('');
-  const [memberCount, setMemberCount] = useState('');
-  const [teamLogo, setTeamLogo] = useState('');
+  // Matcher Form State
+  const [matcherForm, setMatcherForm] = useState<MatcherFormState>({
+    matcherName: '',
+    matchingAmount: '',
+    matchingPercentage: '',
+    matcherStatus: 'active',
+    contactEmail: '',
+    matchingLimit: '',
+  });
 
+  // Team Form State
+  const [teamForm, setTeamForm] = useState<TeamFormState>({
+    teamName: '',
+    teamGoal: '',
+    teamDescription: '',
+    memberCount: '',
+    teamLogo: '',
+  });
+
+  // Load data on mount
   useEffect(() => {
-    loadData();
+    loadAllData();
   }, []);
 
-  const loadData = async () => {
+  // Load all data from database
+  const loadAllData = async () => {
     try {
-      setError(null);
-      const { items: campaignItems } = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
-      const { items: donationItems } = await BaseCrudService.getAll<Donations>('donations');
-      const { items: matcherItems } = await BaseCrudService.getAll<Matchers>('matchers');
-      const { items: teamItems } = await BaseCrudService.getAll<Teams>('teams');
+      setUI(prev => ({ ...prev, loading: true, error: null }));
       
-      if (campaignItems.length > 0) {
-        const camp = campaignItems[0];
-        setCampaign(camp);
-        setCampaignTitle(camp.campaignTitle || '');
-        setFundraisingGoal(camp.fundraisingGoal?.toString() || '');
-        setProjectDescription(camp.projectDescription || '');
-        setPromotionalText(camp.promotionalText || '');
-        setMainCampaignImage(camp.mainCampaignImage || '');
-        setCampaignStartDate(camp.campaignStartDate ? new Date(camp.campaignStartDate).toISOString().split('T')[0] : '');
-        setCampaignEndDate(camp.campaignEndDate ? new Date(camp.campaignEndDate).toISOString().split('T')[0] : '');
+      const [campaignRes, donationsRes, matchersRes, teamsRes] = await Promise.all([
+        BaseCrudService.getAll<CampaignDetails>('campaigndetails'),
+        BaseCrudService.getAll<Donations>('donations'),
+        BaseCrudService.getAll<Matchers>('matchers'),
+        BaseCrudService.getAll<Teams>('teams'),
+      ]);
+
+      const campaign = campaignRes.items?.[0] || null;
+      
+      setData({
+        campaign,
+        donations: donationsRes.items || [],
+        matchers: matchersRes.items || [],
+        teams: teamsRes.items || [],
+      });
+
+      // Load campaign form if exists
+      if (campaign) {
+        setCampaignForm({
+          campaignTitle: campaign.campaignTitle || '',
+          fundraisingGoal: campaign.fundraisingGoal?.toString() || '',
+          projectDescription: campaign.projectDescription || '',
+          promotionalText: campaign.promotionalText || '',
+          mainCampaignImage: campaign.mainCampaignImage || '',
+          campaignStartDate: campaign.campaignStartDate 
+            ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
+            : '',
+          campaignEndDate: campaign.campaignEndDate 
+            ? new Date(campaign.campaignEndDate).toISOString().split('T')[0] 
+            : '',
+        });
       }
-      setDonations(donationItems);
-      setMatchers(matcherItems);
-      setTeams(teamItems);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to load data. Please try again.';
+      const errorMsg = error instanceof Error ? error.message : 'Failed to load data';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to load campaign data: ${errorMsg}` 
+      }));
       console.error('Error loading data:', error);
-      setError(`Failed to load campaign data: ${errorMsg}`);
     } finally {
-      setLoading(false);
+      setUI(prev => ({ ...prev, loading: false }));
     }
   };
 
+  // Save campaign
   const handleSaveCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    setSaveSuccess(false);
-    setError(null);
+    
+    if (!campaignForm.campaignTitle || !campaignForm.fundraisingGoal) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'Campaign title and fundraising goal are required' 
+      }));
+      return;
+    }
 
     try {
-      if (!campaignTitle || !fundraisingGoal) {
-        setError('Campaign title and fundraising goal are required');
-        setSaving(false);
-        return;
-      }
+      setUI(prev => ({ ...prev, saving: true, error: null }));
 
       const campaignData: CampaignDetails = {
-        _id: campaign?._id || crypto.randomUUID(),
-        campaignTitle,
-        fundraisingGoal: parseFloat(fundraisingGoal),
-        projectDescription,
-        promotionalText,
-        mainCampaignImage,
-        campaignStartDate: campaignStartDate ? new Date(campaignStartDate).toISOString() : undefined,
-        campaignEndDate: campaignEndDate ? new Date(campaignEndDate).toISOString() : undefined,
+        _id: data.campaign?._id || crypto.randomUUID(),
+        campaignTitle: campaignForm.campaignTitle,
+        fundraisingGoal: parseFloat(campaignForm.fundraisingGoal),
+        projectDescription: campaignForm.projectDescription,
+        promotionalText: campaignForm.promotionalText,
+        mainCampaignImage: campaignForm.mainCampaignImage,
+        campaignStartDate: campaignForm.campaignStartDate 
+          ? new Date(campaignForm.campaignStartDate).toISOString() 
+          : undefined,
+        campaignEndDate: campaignForm.campaignEndDate 
+          ? new Date(campaignForm.campaignEndDate).toISOString() 
+          : undefined,
       };
 
-      if (campaign?._id) {
+      if (data.campaign?._id) {
         await BaseCrudService.update('campaigndetails', campaignData);
       } else {
         await BaseCrudService.create('campaigndetails', campaignData);
       }
 
-      setSaveSuccess(true);
-      setSuccessMessage('Campaign details saved successfully!');
-      await loadData();
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: 'Campaign saved successfully!' 
+      }));
       
       setTimeout(() => {
-        setSaveSuccess(false);
-        setSuccessMessage(null);
+        setUI(prev => ({ ...prev, successMessage: null }));
       }, 3000);
+
+      await loadAllData();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving campaign';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to save campaign: ${errorMsg}` 
+      }));
       console.error('Error saving campaign:', error);
-      setError(`Failed to save campaign: ${errorMsg}`);
     } finally {
-      setSaving(false);
+      setUI(prev => ({ ...prev, saving: false }));
     }
   };
 
-  const handleAddMatcher = async (e: React.FormEvent) => {
+  // Add/Update matcher
+  const handleSaveMatcher = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    setError(null);
+    
+    if (!matcherForm.matcherName || !matcherForm.matchingAmount || 
+        !matcherForm.matchingPercentage || !matcherForm.contactEmail) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'All matcher fields are required' 
+      }));
+      return;
+    }
 
     try {
-      if (!matcherName || !matchingAmount || !matchingPercentage || !contactEmail) {
-        setError('Matcher name, amount, percentage, and email are required');
-        setSaving(false);
-        return;
-      }
+      setUI(prev => ({ ...prev, saving: true, error: null }));
 
       const matcherData: Matchers = {
-        _id: editingMatcherId || crypto.randomUUID(),
-        matcherName,
-        matchingAmount: parseFloat(matchingAmount),
-        matchingPercentage: parseFloat(matchingPercentage),
-        status: matcherStatus,
-        contactEmail,
-        matchingLimit: matchingLimit ? parseFloat(matchingLimit) : undefined
+        _id: ui.editingMatcherId || crypto.randomUUID(),
+        matcherName: matcherForm.matcherName,
+        matchingAmount: parseFloat(matcherForm.matchingAmount),
+        matchingPercentage: parseFloat(matcherForm.matchingPercentage),
+        status: matcherForm.matcherStatus,
+        contactEmail: matcherForm.contactEmail,
+        matchingLimit: matcherForm.matchingLimit 
+          ? parseFloat(matcherForm.matchingLimit) 
+          : undefined,
       };
 
-      if (editingMatcherId) {
+      if (ui.editingMatcherId) {
         await BaseCrudService.update('matchers', matcherData);
-        setSuccessMessage('Matcher updated successfully!');
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Matcher updated successfully!' 
+        }));
       } else {
         await BaseCrudService.create('matchers', matcherData);
-        setSuccessMessage('Matcher added successfully!');
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Matcher added successfully!' 
+        }));
       }
 
-      handleCancelMatcher();
-      await loadData();
+      resetMatcherForm();
       
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving matcher';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to save matcher: ${errorMsg}` 
+      }));
       console.error('Error saving matcher:', error);
-      setError(`Failed to save matcher: ${errorMsg}`);
     } finally {
-      setSaving(false);
+      setUI(prev => ({ ...prev, saving: false }));
     }
   };
 
+  // Delete matcher
   const handleDeleteMatcher = async (matcherId: string) => {
     if (!confirm('Are you sure you want to delete this matcher?')) return;
-    
+
     try {
-      setError(null);
+      setUI(prev => ({ ...prev, error: null }));
       await BaseCrudService.delete('matchers', matcherId);
-      setSuccessMessage('Matcher deleted successfully!');
-      await loadData();
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: 'Matcher deleted successfully!' 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error deleting matcher';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to delete matcher: ${errorMsg}` 
+      }));
       console.error('Error deleting matcher:', error);
-      setError(`Failed to delete matcher: ${errorMsg}`);
     }
   };
 
+  // Edit matcher
   const handleEditMatcher = (matcher: Matchers) => {
-    setEditingMatcherId(matcher._id);
-    setMatcherName(matcher.matcherName || '');
-    setMatchingAmount(matcher.matchingAmount?.toString() || '');
-    setMatchingPercentage(matcher.matchingPercentage?.toString() || '');
-    setMatcherStatus(matcher.status || 'active');
-    setContactEmail(matcher.contactEmail || '');
-    setMatchingLimit(matcher.matchingLimit?.toString() || '');
-    setShowNewMatcher(true);
-    setError(null);
+    setMatcherForm({
+      matcherName: matcher.matcherName || '',
+      matchingAmount: matcher.matchingAmount?.toString() || '',
+      matchingPercentage: matcher.matchingPercentage?.toString() || '',
+      matcherStatus: matcher.status || 'active',
+      contactEmail: matcher.contactEmail || '',
+      matchingLimit: matcher.matchingLimit?.toString() || '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewMatcher: true, 
+      editingMatcherId: matcher._id,
+      error: null 
+    }));
   };
 
-  const handleCancelMatcher = () => {
-    setShowNewMatcher(false);
-    setEditingMatcherId(null);
-    setMatcherName('');
-    setMatchingAmount('');
-    setMatchingPercentage('');
-    setMatcherStatus('active');
-    setContactEmail('');
-    setMatchingLimit('');
-    setError(null);
+  // Reset matcher form
+  const resetMatcherForm = () => {
+    setMatcherForm({
+      matcherName: '',
+      matchingAmount: '',
+      matchingPercentage: '',
+      matcherStatus: 'active',
+      contactEmail: '',
+      matchingLimit: '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewMatcher: false, 
+      editingMatcherId: null,
+      error: null 
+    }));
   };
 
-  const handleAddTeam = async (e: React.FormEvent) => {
+  // Add/Update team
+  const handleSaveTeam = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    setError(null);
+    
+    if (!teamForm.teamName || !teamForm.teamGoal || 
+        !teamForm.teamDescription || !teamForm.memberCount) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'All team fields are required' 
+      }));
+      return;
+    }
 
     try {
-      if (!teamName || !teamGoal || !teamDescription || !memberCount) {
-        setError('Team name, goal, description, and member count are required');
-        setSaving(false);
-        return;
-      }
+      setUI(prev => ({ ...prev, saving: true, error: null }));
 
       const teamData: Teams = {
-        _id: editingTeamId || crypto.randomUUID(),
-        teamName,
-        fundraisingGoal: parseFloat(teamGoal),
-        teamDescription,
-        memberCount: parseInt(memberCount),
-        teamLogo
+        _id: ui.editingTeamId || crypto.randomUUID(),
+        teamName: teamForm.teamName,
+        fundraisingGoal: parseFloat(teamForm.teamGoal),
+        teamDescription: teamForm.teamDescription,
+        memberCount: parseInt(teamForm.memberCount),
+        teamLogo: teamForm.teamLogo,
       };
 
-      if (editingTeamId) {
+      if (ui.editingTeamId) {
         await BaseCrudService.update('teams', teamData);
-        setSuccessMessage('Team updated successfully!');
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Team updated successfully!' 
+        }));
       } else {
         await BaseCrudService.create('teams', teamData);
-        setSuccessMessage('Team added successfully!');
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Team added successfully!' 
+        }));
       }
 
-      handleCancelTeam();
-      await loadData();
+      resetTeamForm();
       
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error saving team';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to save team: ${errorMsg}` 
+      }));
       console.error('Error saving team:', error);
-      setError(`Failed to save team: ${errorMsg}`);
     } finally {
-      setSaving(false);
+      setUI(prev => ({ ...prev, saving: false }));
     }
   };
 
+  // Delete team
   const handleDeleteTeam = async (teamId: string) => {
     if (!confirm('Are you sure you want to delete this team?')) return;
-    
+
     try {
-      setError(null);
+      setUI(prev => ({ ...prev, error: null }));
       await BaseCrudService.delete('teams', teamId);
-      setSuccessMessage('Team deleted successfully!');
-      await loadData();
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: 'Team deleted successfully!' 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error deleting team';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to delete team: ${errorMsg}` 
+      }));
       console.error('Error deleting team:', error);
-      setError(`Failed to delete team: ${errorMsg}`);
     }
   };
 
+  // Edit team
   const handleEditTeam = (team: Teams) => {
-    setEditingTeamId(team._id);
-    setTeamName(team.teamName || '');
-    setTeamGoal(team.fundraisingGoal?.toString() || '');
-    setTeamDescription(team.teamDescription || '');
-    setMemberCount(team.memberCount?.toString() || '');
-    setTeamLogo(team.teamLogo || '');
-    setShowNewTeam(true);
-    setError(null);
+    setTeamForm({
+      teamName: team.teamName || '',
+      teamGoal: team.fundraisingGoal?.toString() || '',
+      teamDescription: team.teamDescription || '',
+      memberCount: team.memberCount?.toString() || '',
+      teamLogo: team.teamLogo || '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewTeam: true, 
+      editingTeamId: team._id,
+      error: null 
+    }));
   };
 
-  const handleCancelTeam = () => {
-    setShowNewTeam(false);
-    setEditingTeamId(null);
-    setTeamName('');
-    setTeamGoal('');
-    setTeamDescription('');
-    setMemberCount('');
-    setTeamLogo('');
-    setError(null);
+  // Reset team form
+  const resetTeamForm = () => {
+    setTeamForm({
+      teamName: '',
+      teamGoal: '',
+      teamDescription: '',
+      memberCount: '',
+      teamLogo: '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewTeam: false, 
+      editingTeamId: null,
+      error: null 
+    }));
   };
 
-  const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
-  const completedDonations = donations.filter(d => d.status === 'completed');
-  const progressPercentage = campaign?.fundraisingGoal 
-    ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
+  // Calculate stats
+  const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const completedDonations = data.donations.filter(d => d.status === 'completed');
+  const progressPercentage = data.campaign?.fundraisingGoal 
+    ? Math.min((totalRaised / data.campaign.fundraisingGoal) * 100, 100)
     : 0;
 
-  if (loading) {
+  // Loading state
+  if (ui.loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary font-heading text-2xl">Loading...</div>
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="font-heading text-lg text-primary">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -312,19 +487,19 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground shadow-lg">
-        <div className="max-w-[120rem] mx-auto px-8 py-6">
+      <header className="bg-primary text-primary-foreground border-b-4 border-secondary">
+        <div className="max-w-[120rem] mx-auto px-8 py-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="font-heading text-3xl font-bold">Admin Dashboard</h1>
-              <p className="font-paragraph text-base text-primary-foreground/80 mt-1">
-                Manage your fundraising campaign
+              <h1 className="font-heading text-4xl font-bold">Campaign Admin</h1>
+              <p className="font-paragraph text-base text-primary-foreground/80 mt-2">
+                Manage your fundraising campaign, teams, and donors
               </p>
             </div>
             <Link to="/">
               <Button 
                 variant="outline" 
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary rounded-full"
+                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary rounded-lg px-6 py-2"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Campaign
@@ -335,6 +510,56 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-12">
+        {/* Global Alerts */}
+        <AnimatePresence>
+          {ui.successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+            >
+              <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-paragraph font-semibold text-secondary">
+                  {ui.successMessage}
+                </p>
+              </div>
+              <button
+                onClick={() => setUI(prev => ({ ...prev, successMessage: null }))}
+                className="text-secondary hover:text-secondary/70 flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </motion.div>
+          )}
+
+          {ui.error && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+            >
+              <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-paragraph font-semibold text-destructive">
+                  Error
+                </p>
+                <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                  {ui.error}
+                </p>
+              </div>
+              <button
+                onClick={() => setUI(prev => ({ ...prev, error: null }))}
+                className="text-destructive hover:text-destructive/70 flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <motion.div
@@ -342,15 +567,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-base font-semibold text-primary/70 flex items-center gap-2">
+                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
                   Total Raised
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-4xl font-bold text-secondary">
+                <p className="font-heading text-3xl font-bold text-secondary">
                   ${totalRaised.toLocaleString()}
                 </p>
               </CardContent>
@@ -362,15 +587,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-base font-semibold text-primary/70 flex items-center gap-2">
+                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
                   <Users className="w-5 h-5" />
                   Total Donors
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-4xl font-bold text-primary">
+                <p className="font-heading text-3xl font-bold text-primary">
                   {completedDonations.length}
                 </p>
               </CardContent>
@@ -382,15 +607,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-base font-semibold text-primary/70 flex items-center gap-2">
+                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
                   Progress
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-4xl font-bold text-primary">
+                <p className="font-heading text-3xl font-bold text-primary">
                   {progressPercentage.toFixed(1)}%
                 </p>
               </CardContent>
@@ -402,75 +627,27 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-base font-semibold text-primary/70 flex items-center gap-2">
+                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
                   Goal
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-4xl font-bold text-primary">
-                  ${campaign?.fundraisingGoal?.toLocaleString() || '0'}
+                <p className="font-heading text-3xl font-bold text-primary">
+                  ${data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
                 </p>
               </CardContent>
             </Card>
           </motion.div>
         </div>
 
-        {/* Global Success/Error Messages */}
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
-          >
-            <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-paragraph font-semibold text-secondary">
-                {successMessage}
-              </p>
-            </div>
-            <button
-              onClick={() => setSuccessMessage(null)}
-              className="text-secondary hover:text-secondary/70 flex-shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </motion.div>
-        )}
-
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
-          >
-            <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-paragraph font-semibold text-destructive">
-                Error
-              </p>
-              <p className="font-paragraph text-sm text-destructive/80 mt-1">
-                {error}
-              </p>
-            </div>
-            <button
-              onClick={() => setError(null)}
-              className="text-destructive hover:text-destructive/70 flex-shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </motion.div>
-        )}
-
-        {/* Main Content */}
+        {/* Tabs */}
         <Tabs defaultValue="campaign" className="space-y-8">
-          <TabsList className="bg-primary/10">
+          <TabsList className="bg-primary/10 border border-primary/20">
             <TabsTrigger value="campaign" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Campaign Settings
+              Campaign
             </TabsTrigger>
             <TabsTrigger value="matchers" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Matchers
@@ -483,134 +660,127 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Campaign Settings Tab */}
+          {/* Campaign Tab */}
           <TabsContent value="campaign">
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader>
                 <CardTitle className="font-heading text-2xl font-bold text-primary">
-                  Edit Campaign Details
+                  Campaign Details
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {saveSuccess && (
-                  <div className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg">
-                    <p className="font-paragraph text-base text-secondary font-semibold">
-                      ✓ Campaign details saved successfully!
-                    </p>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
-                    <p className="font-paragraph text-base text-destructive font-semibold">
-                      ✗ {error}
-                    </p>
-                  </div>
-                )}
-
                 <form onSubmit={handleSaveCampaign} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="font-paragraph text-base font-semibold text-primary">
-                      Campaign Title
-                    </label>
-                    <Input
-                      type="text"
-                      value={campaignTitle}
-                      onChange={(e) => setCampaignTitle(e.target.value)}
-                      required
-                      className="border-primary/20 focus:border-secondary"
-                      placeholder="Building Our Future"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-primary">
+                        Campaign Title *
+                      </label>
+                      <Input
+                        type="text"
+                        value={campaignForm.campaignTitle}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignTitle: e.target.value }))}
+                        placeholder="e.g., Building Our Future"
+                        className="border-primary/20"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-primary">
+                        Fundraising Goal ($) *
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={campaignForm.fundraisingGoal}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, fundraisingGoal: e.target.value }))}
+                        placeholder="e.g., 500000"
+                        className="border-primary/20"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-base font-semibold text-primary">
-                      Fundraising Goal ($)
-                    </label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={fundraisingGoal}
-                      onChange={(e) => setFundraisingGoal(e.target.value)}
-                      required
-                      className="border-primary/20 focus:border-secondary"
-                      placeholder="500000"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="font-paragraph text-base font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
                       Promotional Text
                     </label>
                     <Textarea
-                      value={promotionalText}
-                      onChange={(e) => setPromotionalText(e.target.value)}
-                      className="border-primary/20 focus:border-secondary min-h-[100px]"
+                      value={campaignForm.promotionalText}
+                      onChange={(e) => setCampaignForm(prev => ({ ...prev, promotionalText: e.target.value }))}
                       placeholder="A compelling message to inspire donations..."
+                      className="border-primary/20 min-h-[100px]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-base font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
                       Project Description
                     </label>
                     <Textarea
-                      value={projectDescription}
-                      onChange={(e) => setProjectDescription(e.target.value)}
-                      className="border-primary/20 focus:border-secondary min-h-[200px]"
-                      placeholder="Detailed description of the building project..."
+                      value={campaignForm.projectDescription}
+                      onChange={(e) => setCampaignForm(prev => ({ ...prev, projectDescription: e.target.value }))}
+                      placeholder="Detailed description of the project..."
+                      className="border-primary/20 min-h-[150px]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-base font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
                       Main Campaign Image URL
                     </label>
                     <Input
                       type="text"
-                      value={mainCampaignImage}
-                      onChange={(e) => setMainCampaignImage(e.target.value)}
-                      className="border-primary/20 focus:border-secondary"
+                      value={campaignForm.mainCampaignImage}
+                      onChange={(e) => setCampaignForm(prev => ({ ...prev, mainCampaignImage: e.target.value }))}
                       placeholder="https://example.com/image.jpg"
+                      className="border-primary/20"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="font-paragraph text-base font-semibold text-primary flex items-center gap-2">
+                      <label className="font-paragraph text-sm font-semibold text-primary flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Campaign Start Date
                       </label>
                       <Input
                         type="date"
-                        value={campaignStartDate}
-                        onChange={(e) => setCampaignStartDate(e.target.value)}
-                        className="border-primary/20 focus:border-secondary"
+                        value={campaignForm.campaignStartDate}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignStartDate: e.target.value }))}
+                        className="border-primary/20"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-paragraph text-base font-semibold text-primary flex items-center gap-2">
+                      <label className="font-paragraph text-sm font-semibold text-primary flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Campaign End Date
                       </label>
                       <Input
                         type="date"
-                        value={campaignEndDate}
-                        onChange={(e) => setCampaignEndDate(e.target.value)}
-                        className="border-primary/20 focus:border-secondary"
+                        value={campaignForm.campaignEndDate}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignEndDate: e.target.value }))}
+                        className="border-primary/20"
                       />
                     </div>
                   </div>
 
                   <Button
                     type="submit"
-                    disabled={saving}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-6 text-lg font-semibold"
+                    disabled={ui.saving}
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg px-8 py-2 font-semibold w-full md:w-auto"
                   >
-                    <Save className="w-5 h-5 mr-2" />
-                    {saving ? 'Saving...' : 'Save Campaign Details'}
+                    {ui.saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Campaign
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
@@ -619,7 +789,7 @@ export default function AdminDashboard() {
 
           {/* Matchers Tab */}
           <TabsContent value="matchers">
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle className="font-heading text-2xl font-bold text-primary">
@@ -627,10 +797,13 @@ export default function AdminDashboard() {
                   </CardTitle>
                   <Button
                     onClick={() => {
-                      setShowNewMatcher(!showNewMatcher);
-                      if (showNewMatcher) handleCancelMatcher();
+                      if (ui.showNewMatcher) {
+                        resetMatcherForm();
+                      } else {
+                        setUI(prev => ({ ...prev, showNewMatcher: true }));
+                      }
                     }}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full"
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Matcher
@@ -638,104 +811,97 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
-                {error && (
-                  <div className="p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
-                    <p className="font-paragraph text-base text-destructive font-semibold">
-                      ✗ {error}
-                    </p>
-                  </div>
-                )}
-
-                {showNewMatcher && (
-                  <form onSubmit={handleAddMatcher} className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20">
-                    <h3 className="font-heading text-xl font-bold text-primary">
-                      {editingMatcherId ? 'Edit Matcher' : 'New Matcher'}
+                {ui.showNewMatcher && (
+                  <motion.form
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    onSubmit={handleSaveMatcher}
+                    className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20"
+                  >
+                    <h3 className="font-heading text-lg font-bold text-primary">
+                      {ui.editingMatcherId ? 'Edit Matcher' : 'New Matcher'}
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Matcher Name
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Matcher Name *
                         </label>
                         <Input
                           type="text"
-                          value={matcherName}
-                          onChange={(e) => setMatcherName(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
-                          placeholder="Company or Organization Name"
+                          value={matcherForm.matcherName}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, matcherName: e.target.value }))}
+                          placeholder="Company or Organization"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Contact Email
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Contact Email *
                         </label>
                         <Input
                           type="email"
-                          value={contactEmail}
-                          onChange={(e) => setContactEmail(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={matcherForm.contactEmail}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, contactEmail: e.target.value }))}
                           placeholder="contact@example.com"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Matching Amount ($)
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Matching Amount ($) *
                         </label>
                         <Input
                           type="number"
                           min="0"
                           step="0.01"
-                          value={matchingAmount}
-                          onChange={(e) => setMatchingAmount(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={matcherForm.matchingAmount}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingAmount: e.target.value }))}
                           placeholder="50000"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Matching Percentage (%)
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Matching Percentage (%) *
                         </label>
                         <Input
                           type="number"
                           min="0"
                           max="100"
                           step="0.01"
-                          value={matchingPercentage}
-                          onChange={(e) => setMatchingPercentage(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={matcherForm.matchingPercentage}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingPercentage: e.target.value }))}
                           placeholder="100"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Matching Limit ($) - Optional
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Matching Limit ($)
                         </label>
                         <Input
                           type="number"
                           min="0"
                           step="0.01"
-                          value={matchingLimit}
-                          onChange={(e) => setMatchingLimit(e.target.value)}
-                          className="border-primary/20 focus:border-secondary"
+                          value={matcherForm.matchingLimit}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingLimit: e.target.value }))}
                           placeholder="100000"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-primary">
                           Status
                         </label>
                         <select
-                          value={matcherStatus}
-                          onChange={(e) => setMatcherStatus(e.target.value)}
+                          value={matcherForm.matcherStatus}
+                          onChange={(e) => setMatcherForm(prev => ({ ...prev, matcherStatus: e.target.value }))}
                           className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none font-paragraph"
                         >
                           <option value="active">Active</option>
@@ -748,76 +914,95 @@ export default function AdminDashboard() {
                     <div className="flex gap-4">
                       <Button
                         type="submit"
-                        disabled={saving}
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8"
+                        disabled={ui.saving}
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
                       >
-                        {saving ? 'Saving...' : editingMatcherId ? 'Update Matcher' : 'Add Matcher'}
+                        {ui.saving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4 mr-2" />
+                            {ui.editingMatcherId ? 'Update' : 'Add'} Matcher
+                          </>
+                        )}
                       </Button>
                       <Button
                         type="button"
-                        onClick={handleCancelMatcher}
+                        onClick={resetMatcherForm}
                         variant="outline"
-                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-8"
+                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
                       >
                         Cancel
                       </Button>
                     </div>
-                  </form>
+                  </motion.form>
                 )}
 
-                {matchers.length === 0 ? (
-                  <p className="font-paragraph text-base text-primary/60 text-center py-8">
+                {data.matchers.length === 0 ? (
+                  <p className="font-paragraph text-center text-primary/60 py-8">
                     No matchers yet. Add one to boost donations!
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    {matchers.map((matcher) => (
-                      <div key={matcher._id} className="bg-primary/5 rounded-lg p-6 border-2 border-primary/10 flex justify-between items-start">
-                        <div className="space-y-2 flex-1">
-                          <h4 className="font-heading text-xl font-bold text-primary">
-                            {matcher.matcherName}
-                          </h4>
-                          <p className="font-paragraph text-sm text-primary/70">
-                            {matcher.contactEmail}
-                          </p>
-                          <div className="grid grid-cols-3 gap-4 mt-4">
-                            <div>
-                              <p className="font-paragraph text-xs text-primary/60">Amount</p>
-                              <p className="font-heading text-lg font-bold text-secondary">
-                                ${matcher.matchingAmount?.toLocaleString()}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="font-paragraph text-xs text-primary/60">Rate</p>
-                              <p className="font-heading text-lg font-bold text-primary">
-                                {matcher.matchingPercentage}%
-                              </p>
-                            </div>
-                            <div>
-                              <p className="font-paragraph text-xs text-primary/60">Status</p>
-                              <p className="font-paragraph text-sm font-semibold text-primary">
-                                {matcher.status}
-                              </p>
+                    {data.matchers.map((matcher) => (
+                      <motion.div
+                        key={matcher._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-primary/5 rounded-lg p-6 border border-primary/10"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-heading text-lg font-bold text-primary">
+                              {matcher.matcherName}
+                            </h4>
+                            <p className="font-paragraph text-sm text-primary/70 mt-1">
+                              {matcher.contactEmail}
+                            </p>
+                            <div className="grid grid-cols-3 gap-4 mt-4">
+                              <div>
+                                <p className="font-paragraph text-xs text-primary/60">Amount</p>
+                                <p className="font-heading font-bold text-secondary">
+                                  ${matcher.matchingAmount?.toLocaleString()}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-paragraph text-xs text-primary/60">Rate</p>
+                                <p className="font-heading font-bold text-primary">
+                                  {matcher.matchingPercentage}%
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-paragraph text-xs text-primary/60">Status</p>
+                                <p className="font-paragraph text-sm font-semibold text-primary">
+                                  {matcher.status}
+                                </p>
+                              </div>
                             </div>
                           </div>
+                          <div className="flex gap-2 ml-4">
+                            <Button
+                              onClick={() => handleEditMatcher(matcher)}
+                              variant="outline"
+                              size="sm"
+                              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteMatcher(matcher._id)}
+                              variant="outline"
+                              size="sm"
+                              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex gap-2 ml-4">
-                          <Button
-                            onClick={() => handleEditMatcher(matcher)}
-                            variant="outline"
-                            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteMatcher(matcher._id)}
-                            variant="outline"
-                            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 )}
@@ -827,7 +1012,7 @@ export default function AdminDashboard() {
 
           {/* Teams Tab */}
           <TabsContent value="teams">
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle className="font-heading text-2xl font-bold text-primary">
@@ -835,10 +1020,13 @@ export default function AdminDashboard() {
                   </CardTitle>
                   <Button
                     onClick={() => {
-                      setShowNewTeam(!showNewTeam);
-                      if (showNewTeam) handleCancelTeam();
+                      if (ui.showNewTeam) {
+                        resetTeamForm();
+                      } else {
+                        setUI(prev => ({ ...prev, showNewTeam: true }));
+                      }
                     }}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full"
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Team
@@ -846,132 +1034,145 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
-                {error && (
-                  <div className="p-4 bg-destructive/10 border-2 border-destructive rounded-lg">
-                    <p className="font-paragraph text-base text-destructive font-semibold">
-                      ✗ {error}
-                    </p>
-                  </div>
-                )}
-
-                {showNewTeam && (
-                  <form onSubmit={handleAddTeam} className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20">
-                    <h3 className="font-heading text-xl font-bold text-primary">
-                      {editingTeamId ? 'Edit Team' : 'New Team'}
+                {ui.showNewTeam && (
+                  <motion.form
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    onSubmit={handleSaveTeam}
+                    className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20"
+                  >
+                    <h3 className="font-heading text-lg font-bold text-primary">
+                      {ui.editingTeamId ? 'Edit Team' : 'New Team'}
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Team Name
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Team Name *
                         </label>
                         <Input
                           type="text"
-                          value={teamName}
-                          onChange={(e) => setTeamName(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={teamForm.teamName}
+                          onChange={(e) => setTeamForm(prev => ({ ...prev, teamName: e.target.value }))}
                           placeholder="Team Name"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Fundraising Goal ($)
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Fundraising Goal ($) *
                         </label>
                         <Input
                           type="number"
                           min="0"
                           step="0.01"
-                          value={teamGoal}
-                          onChange={(e) => setTeamGoal(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={teamForm.teamGoal}
+                          onChange={(e) => setTeamForm(prev => ({ ...prev, teamGoal: e.target.value }))}
                           placeholder="50000"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
-                          Number of Members
+                        <label className="font-paragraph text-sm font-semibold text-primary">
+                          Number of Members *
                         </label>
                         <Input
                           type="number"
                           min="0"
-                          value={memberCount}
-                          onChange={(e) => setMemberCount(e.target.value)}
-                          required
-                          className="border-primary/20 focus:border-secondary"
+                          value={teamForm.memberCount}
+                          onChange={(e) => setTeamForm(prev => ({ ...prev, memberCount: e.target.value }))}
                           placeholder="10"
+                          className="border-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-base font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-primary">
                           Team Logo URL
                         </label>
                         <Input
                           type="text"
-                          value={teamLogo}
-                          onChange={(e) => setTeamLogo(e.target.value)}
-                          className="border-primary/20 focus:border-secondary"
+                          value={teamForm.teamLogo}
+                          onChange={(e) => setTeamForm(prev => ({ ...prev, teamLogo: e.target.value }))}
                           placeholder="https://example.com/logo.jpg"
+                          className="border-primary/20"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-paragraph text-base font-semibold text-primary">
-                        Team Description
+                      <label className="font-paragraph text-sm font-semibold text-primary">
+                        Team Description *
                       </label>
                       <Textarea
-                        value={teamDescription}
-                        onChange={(e) => setTeamDescription(e.target.value)}
-                        required
-                        className="border-primary/20 focus:border-secondary min-h-[100px]"
+                        value={teamForm.teamDescription}
+                        onChange={(e) => setTeamForm(prev => ({ ...prev, teamDescription: e.target.value }))}
                         placeholder="Describe the team and its mission..."
+                        className="border-primary/20 min-h-[100px]"
                       />
                     </div>
 
                     <div className="flex gap-4">
                       <Button
                         type="submit"
-                        disabled={saving}
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8"
+                        disabled={ui.saving}
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
                       >
-                        {saving ? 'Saving...' : editingTeamId ? 'Update Team' : 'Add Team'}
+                        {ui.saving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4 mr-2" />
+                            {ui.editingTeamId ? 'Update' : 'Add'} Team
+                          </>
+                        )}
                       </Button>
                       <Button
                         type="button"
-                        onClick={handleCancelTeam}
+                        onClick={resetTeamForm}
                         variant="outline"
-                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-8"
+                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
                       >
                         Cancel
                       </Button>
                     </div>
-                  </form>
+                  </motion.form>
                 )}
 
-                {teams.length === 0 ? (
-                  <p className="font-paragraph text-base text-primary/60 text-center py-8">
+                {data.teams.length === 0 ? (
+                  <p className="font-paragraph text-center text-primary/60 py-8">
                     No teams yet. Create one to encourage group fundraising!
                   </p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {teams.map((team) => {
-                      const teamDonations = donations.filter(d => d.teamId === team._id);
+                    {data.teams.map((team) => {
+                      const teamDonations = data.donations.filter(d => d.teamId === team._id);
                       const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
 
                       return (
-                        <div key={team._id} className="bg-primary/5 rounded-lg p-6 border-2 border-primary/10 space-y-4">
+                        <motion.div
+                          key={team._id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="bg-primary/5 rounded-lg p-6 border border-primary/10 space-y-4"
+                        >
                           {team.teamLogo && (
                             <div className="w-full h-32 rounded-lg overflow-hidden bg-background">
-                              <Image src={team.teamLogo} alt={team.teamName || 'Team logo'} className="w-full h-full object-cover" width={400} />
+                              <Image 
+                                src={team.teamLogo} 
+                                alt={team.teamName || 'Team logo'} 
+                                className="w-full h-full object-cover" 
+                                width={400} 
+                              />
                             </div>
                           )}
                           <div>
-                            <h4 className="font-heading text-xl font-bold text-primary">
+                            <h4 className="font-heading text-lg font-bold text-primary">
                               {team.teamName}
                             </h4>
                             <p className="font-paragraph text-sm text-primary/70 mt-1">
@@ -996,7 +1197,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleEditTeam(team)}
                               variant="outline"
-                              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full"
+                              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
                             >
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
@@ -1004,13 +1205,13 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleDeleteTeam(team._id)}
                               variant="outline"
-                              className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full"
+                              className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-lg"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </Button>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -1021,65 +1222,65 @@ export default function AdminDashboard() {
 
           {/* Donations Tab */}
           <TabsContent value="donations">
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 bg-white">
               <CardHeader>
                 <CardTitle className="font-heading text-2xl font-bold text-primary">
-                  All Donations ({donations.length})
+                  All Donations ({data.donations.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {donations.length === 0 ? (
-                    <p className="font-paragraph text-base text-primary/60 text-center py-8">
-                      No donations yet. Share your campaign to start receiving support!
-                    </p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b-2 border-primary/20">
-                            <th className="font-heading text-left py-3 px-4 text-primary">Donor</th>
-                            <th className="font-heading text-left py-3 px-4 text-primary">Email</th>
-                            <th className="font-heading text-left py-3 px-4 text-primary">Amount</th>
-                            <th className="font-heading text-left py-3 px-4 text-primary">Date</th>
-                            <th className="font-heading text-left py-3 px-4 text-primary">Status</th>
-                            <th className="font-heading text-left py-3 px-4 text-primary">Message</th>
+                {data.donations.length === 0 ? (
+                  <p className="font-paragraph text-center text-primary/60 py-8">
+                    No donations yet. Share your campaign to start receiving support!
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b-2 border-primary/20">
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Donor</th>
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Email</th>
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Amount</th>
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Date</th>
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Status</th>
+                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Message</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.donations.map((donation) => (
+                          <tr key={donation._id} className="border-b border-primary/10 hover:bg-primary/5">
+                            <td className="font-paragraph py-3 px-4 text-primary text-sm">
+                              {donation.donorName || 'Anonymous'}
+                            </td>
+                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm">
+                              {donation.donorEmail}
+                            </td>
+                            <td className="font-paragraph py-3 px-4 text-secondary font-bold text-sm">
+                              ${donation.amount?.toLocaleString()}
+                            </td>
+                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm">
+                              {donation.donationDate 
+                                ? new Date(donation.donationDate).toLocaleDateString() 
+                                : '-'}
+                            </td>
+                            <td className="font-paragraph py-3 px-4 text-sm">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                donation.status === 'completed' 
+                                  ? 'bg-secondary/10 text-secondary' 
+                                  : 'bg-primary/10 text-primary'
+                              }`}>
+                                {donation.status || 'pending'}
+                              </span>
+                            </td>
+                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm max-w-xs truncate">
+                              {donation.donorMessage || '-'}
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {donations.map((donation) => (
-                            <tr key={donation._id} className="border-b border-primary/10 hover:bg-primary/5">
-                              <td className="font-paragraph py-3 px-4 text-primary">
-                                {donation.donorName || 'Anonymous'}
-                              </td>
-                              <td className="font-paragraph py-3 px-4 text-primary/70">
-                                {donation.donorEmail}
-                              </td>
-                              <td className="font-paragraph py-3 px-4 text-secondary font-bold">
-                                ${donation.amount?.toLocaleString()}
-                              </td>
-                              <td className="font-paragraph py-3 px-4 text-primary/70">
-                                {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : '-'}
-                              </td>
-                              <td className="font-paragraph py-3 px-4">
-                                <span className={`px-3 py-1 rounded-full text-sm ${
-                                  donation.status === 'completed' 
-                                    ? 'bg-secondary/10 text-secondary' 
-                                    : 'bg-primary/10 text-primary'
-                                }`}>
-                                  {donation.status || 'pending'}
-                                </span>
-                              </td>
-                              <td className="font-paragraph py-3 px-4 text-primary/70 max-w-xs truncate">
-                                {donation.donorMessage || '-'}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
