@@ -6,19 +6,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
-import { CampaignDetails, Donations } from '@/entities';
-import { ArrowRight, Heart, Users, Target, TrendingUp } from 'lucide-react';
+import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
+import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
   const [donations, setDonations] = useState<Donations[]>([]);
+  const [matchers, setMatchers] = useState<Matchers[]>([]);
+  const [teams, setTeams] = useState<Teams[]>([]);
   const [loading, setLoading] = useState(true);
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   const [amount, setAmount] = useState('');
   const [donorMessage, setDonorMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -30,11 +33,15 @@ export default function HomePage() {
     try {
       const { items: campaignItems } = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
       const { items: donationItems } = await BaseCrudService.getAll<Donations>('donations');
+      const { items: matcherItems } = await BaseCrudService.getAll<Matchers>('matchers');
+      const { items: teamItems } = await BaseCrudService.getAll<Teams>('teams');
       
       if (campaignItems.length > 0) {
         setCampaign(campaignItems[0]);
       }
       setDonations(donationItems.filter(d => d.status === 'completed'));
+      setMatchers(matcherItems.filter(m => m.status === 'active'));
+      setTeams(teamItems);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -56,7 +63,8 @@ export default function HomePage() {
         donationDate: new Date().toISOString(),
         isAnonymous,
         donorMessage,
-        status: 'completed'
+        status: 'completed',
+        teamId: selectedTeamId || undefined
       });
 
       setSubmitSuccess(true);
@@ -65,6 +73,7 @@ export default function HomePage() {
       setAmount('');
       setDonorMessage('');
       setIsAnonymous(false);
+      setSelectedTeamId('');
       
       await loadData();
       
@@ -170,7 +179,7 @@ export default function HomePage() {
           >
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image 
-                src={campaign?.mainCampaignImage || 'https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.png?id=hero-building'}
+                src={campaign?.mainCampaignImage || 'https://static.wixstatic.com/media/28ba1c_c73226414fee4a59bdb7266466a978bb~mv2.png?originWidth=768&originHeight=576'}
                 alt="New school building vision"
                 className="w-full h-[600px] object-cover"
                 width={800}
@@ -384,6 +393,24 @@ export default function HomePage() {
 
                 <div className="space-y-2">
                   <label className="font-paragraph text-base font-semibold text-primary">
+                    Donate as Part of a Team (Optional)
+                  </label>
+                  <select
+                    value={selectedTeamId}
+                    onChange={(e) => setSelectedTeamId(e.target.value)}
+                    className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none font-paragraph"
+                  >
+                    <option value="">Select a team (or donate individually)</option>
+                    {teams.map((team) => (
+                      <option key={team._id} value={team._id}>
+                        {team.teamName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-paragraph text-base font-semibold text-primary">
                     Message (Optional)
                   </label>
                   <Textarea
@@ -421,7 +448,170 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Recent Donations */}
+      {/* Matchers Section */}
+      <section className="w-full bg-secondary/10 py-20">
+        <div className="max-w-[120rem] mx-auto px-8">
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-5xl font-bold text-primary mb-4">
+              Generous <span className="text-secondary italic">Matchers</span>
+            </h2>
+            <p className="font-paragraph text-xl text-primary/80">
+              These organizations are doubling the impact of your donations
+            </p>
+          </div>
+
+          {matchers.length === 0 ? (
+            <p className="font-paragraph text-lg text-primary/60 text-center py-8">
+              No matchers available yet. Check back soon!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {matchers.map((matcher) => (
+                <motion.div
+                  key={matcher._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-background rounded-lg p-8 shadow-lg border-2 border-secondary/20 space-y-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-heading text-2xl font-bold text-primary">
+                        {matcher.matcherName}
+                      </h3>
+                      <p className="font-paragraph text-sm text-primary/60 mt-1">
+                        {matcher.status === 'active' ? '✓ Active' : 'Inactive'}
+                      </p>
+                    </div>
+                    <Award className="w-8 h-8 text-secondary" />
+                  </div>
+                  
+                  <div className="space-y-3 pt-4 border-t border-primary/10">
+                    <div>
+                      <p className="font-paragraph text-sm text-primary/60">Matching Rate</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
+                        {matcher.matchingPercentage}%
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-paragraph text-sm text-primary/60">Matching Amount</p>
+                      <p className="font-heading text-xl font-bold text-primary">
+                        ${matcher.matchingAmount?.toLocaleString()}
+                      </p>
+                    </div>
+
+                    {matcher.matchingLimit && (
+                      <div>
+                        <p className="font-paragraph text-sm text-primary/60">Matching Limit</p>
+                        <p className="font-paragraph text-base text-primary">
+                          ${matcher.matchingLimit.toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Teams Section */}
+      <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-5xl font-bold text-primary mb-4">
+            Fundraising <span className="text-secondary italic">Teams</span>
+          </h2>
+          <p className="font-paragraph text-xl text-primary/80">
+            Join a team or see how teams are competing to make a difference
+          </p>
+        </div>
+
+        {teams.length === 0 ? (
+          <p className="font-paragraph text-lg text-primary/60 text-center py-8">
+            No teams yet. Be the first to create one!
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {teams.map((team) => {
+              const teamDonations = donations.filter(d => d.teamId === team._id);
+              const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+              const teamProgress = team.fundraisingGoal 
+                ? Math.min((teamTotal / team.fundraisingGoal) * 100, 100)
+                : 0;
+
+              return (
+                <motion.div
+                  key={team._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10"
+                >
+                  {team.teamLogo && (
+                    <div className="w-full h-40 rounded-lg overflow-hidden bg-background">
+                      <Image 
+                        src={team.teamLogo}
+                        alt={team.teamName || 'Team logo'}
+                        className="w-full h-full object-cover"
+                        width={400}
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="font-heading text-3xl font-bold text-primary">
+                      {team.teamName}
+                    </h3>
+                    <p className="font-paragraph text-base text-primary/70 mt-2">
+                      {team.teamDescription}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-background rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-primary/60">Members</p>
+                      <p className="font-heading text-2xl font-bold text-primary">
+                        {team.memberCount || 0}
+                      </p>
+                    </div>
+                    <div className="bg-background rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-primary/60">Raised</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
+                        ${teamTotal.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-baseline">
+                      <span className="font-paragraph text-sm text-primary/60">Goal</span>
+                      <span className="font-heading text-lg font-bold text-primary">
+                        ${team.fundraisingGoal?.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="w-full bg-primary/10 rounded-full h-4 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${teamProgress}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="bg-secondary h-full rounded-full"
+                      />
+                    </div>
+                    <p className="font-paragraph text-sm text-primary/70 text-right">
+                      {teamProgress.toFixed(1)}% complete
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </section>
       <section id="progress" className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">

@@ -50,4 +50,50 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
+  /** @wixFieldType text */
+  teamId?: string;
+}
+
+
+/**
+ * Collection ID: matchers
+ * Interface for Matchers
+ */
+export interface Matchers {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  matcherName?: string;
+  /** @wixFieldType number */
+  matchingAmount?: number;
+  /** @wixFieldType number */
+  matchingPercentage?: number;
+  /** @wixFieldType text */
+  status?: string;
+  /** @wixFieldType text */
+  contactEmail?: string;
+  /** @wixFieldType number */
+  matchingLimit?: number;
+}
+
+
+/**
+ * Collection ID: teams
+ * Interface for Teams
+ */
+export interface Teams {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  teamName?: string;
+  /** @wixFieldType number */
+  fundraisingGoal?: number;
+  /** @wixFieldType text */
+  teamDescription?: string;
+  /** @wixFieldType number */
+  memberCount?: number;
+  /** @wixFieldType image */
+  teamLogo?: string;
 }
