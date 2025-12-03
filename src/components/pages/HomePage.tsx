@@ -139,7 +139,7 @@ export default function HomePage() {
             <a href="#progress" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
               Progress
             </a>
-            <Link to="/admin">
+            <Link to="/admin-login">
               <Button 
                 variant="outline" 
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-6"

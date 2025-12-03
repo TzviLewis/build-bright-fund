@@ -4,6 +4,8 @@ import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
 import AdminDashboard from '@/components/pages/AdminDashboard';
+import AdminLoginPage from '@/components/pages/AdminLoginPage';
+import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -26,8 +28,16 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
+        path: "admin-login",
+        element: <AdminLoginPage />,
+      },
+      {
         path: "admin",
-        element: <AdminDashboard />,
+        element: (
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        ),
       },
       {
         path: "*",
