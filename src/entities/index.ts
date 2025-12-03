@@ -96,4 +96,6 @@ export interface Teams {
   memberCount?: number;
   /** @wixFieldType image */
   teamLogo?: string;
+  /** @wixFieldType number */
+  teamId?: number;
 }
