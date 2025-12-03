@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
+import DonationWidget from '@/components/DonationWidget';
 
 interface FormState {
   campaignTitle: string;

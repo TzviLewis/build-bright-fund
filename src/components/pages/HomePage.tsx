@@ -9,6 +9,7 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
 import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import DonationWidget from '@/components/DonationWidget';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
