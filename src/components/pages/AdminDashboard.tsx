@@ -111,6 +111,9 @@ export default function AdminDashboard() {
     teamLogo: '',
   });
 
+  // Team donations filter state
+  const [selectedTeamForDonations, setSelectedTeamForDonations] = useState<string>('');
+
   // Load data on mount
   useEffect(() => {
     loadAllData();
@@ -1226,62 +1229,111 @@ export default function AdminDashboard() {
             <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>
                 <CardTitle className="font-heading text-2xl font-bold text-blue-900">
-                  All Donations ({data.donations.length})
+                  Donations Management
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                {data.donations.length === 0 ? (
-                  <p className="font-paragraph text-center text-blue-600/60 py-8">
-                    No donations yet. Share your campaign to start receiving support!
-                  </p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b-2 border-blue-200">
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Donor</th>
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Email</th>
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Amount</th>
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Date</th>
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Status</th>
-                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Message</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.donations.map((donation) => (
-                          <tr key={donation._id} className="border-b border-blue-100 hover:bg-blue-50">
-                            <td className="font-paragraph py-3 px-4 text-blue-900 text-sm">
-                              {donation.donorName || 'Anonymous'}
-                            </td>
-                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
-                              {donation.donorEmail}
-                            </td>
-                            <td className="font-paragraph py-3 px-4 text-blue-900 font-bold text-sm">
-                              ${donation.amount?.toLocaleString()}
-                            </td>
-                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
-                              {donation.donationDate 
-                                ? new Date(donation.donationDate).toLocaleDateString() 
-                                : '-'}
-                            </td>
-                            <td className="font-paragraph py-3 px-4 text-sm">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                donation.status === 'completed' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-blue-100 text-blue-700'
-                              }`}>
-                                {donation.status || 'pending'}
-                              </span>
-                            </td>
-                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm max-w-xs truncate">
-                              {donation.donorMessage || '-'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <CardContent className="space-y-8">
+                {/* Team Filter */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
+                      Filter by Team (Optional)
+                    </label>
+                    <select
+                      value={selectedTeamForDonations}
+                      onChange={(e) => setSelectedTeamForDonations(e.target.value)}
+                      className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph"
+                    >
+                      <option value="">All Donations</option>
+                      {data.teams.map((team) => (
+                        <option key={team._id} value={team._id}>
+                          {team.teamName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                )}
+                </div>
+
+                {/* Donations List */}
+                {(() => {
+                  const filteredDonations = selectedTeamForDonations 
+                    ? data.donations.filter(d => d.teamId === selectedTeamForDonations)
+                    : data.donations;
+                  
+                  const teamTotal = filteredDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+
+                  return (
+                    <>
+                      {selectedTeamForDonations && (
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <p className="font-paragraph text-sm text-blue-700">
+                            <span className="font-semibold">Team Total:</span> ${teamTotal.toLocaleString()} from {filteredDonations.length} donation{filteredDonations.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      )}
+
+                      {filteredDonations.length === 0 ? (
+                        <p className="font-paragraph text-center text-blue-600/60 py-8">
+                          {selectedTeamForDonations ? 'No donations for this team yet.' : 'No donations yet. Share your campaign to start receiving support!'}
+                        </p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="border-b-2 border-blue-200">
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Donor</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Email</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Amount</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Date</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Team</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Status</th>
+                                <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Message</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredDonations.map((donation) => {
+                                const donationTeam = data.teams.find(t => t._id === donation.teamId);
+                                return (
+                                  <tr key={donation._id} className="border-b border-blue-100 hover:bg-blue-50">
+                                    <td className="font-paragraph py-3 px-4 text-blue-900 text-sm">
+                                      {donation.donorName || 'Anonymous'}
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
+                                      {donation.donorEmail}
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-blue-900 font-bold text-sm">
+                                      ${donation.amount?.toLocaleString()}
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
+                                      {donation.donationDate 
+                                        ? new Date(donation.donationDate).toLocaleDateString() 
+                                        : '-'}
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
+                                      {donationTeam ? donationTeam.teamName : 'Individual'}
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-sm">
+                                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                        donation.status === 'completed' 
+                                          ? 'bg-green-100 text-green-700' 
+                                          : 'bg-blue-100 text-blue-700'
+                                      }`}>
+                                        {donation.status || 'pending'}
+                                      </span>
+                                    </td>
+                                    <td className="font-paragraph py-3 px-4 text-blue-700 text-sm max-w-xs truncate">
+                                      {donation.donorMessage || '-'}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
