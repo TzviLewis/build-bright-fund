@@ -476,34 +476,34 @@ export default function AdminDashboard() {
   // Loading state
   if (ui.loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-          <p className="font-heading text-lg text-primary">Loading dashboard...</p>
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="font-heading text-lg text-blue-900">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground border-b-4 border-secondary">
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-blue-600 shadow-lg">
         <div className="max-w-[120rem] mx-auto px-8 py-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="font-heading text-4xl font-bold">Campaign Admin</h1>
-              <p className="font-paragraph text-base text-primary-foreground/80 mt-2">
-                Manage your fundraising campaign, teams, and donors
+              <h1 className="font-heading text-4xl font-bold">Admin Dashboard</h1>
+              <p className="font-paragraph text-base text-blue-100 mt-2">
+                Campaign management & analytics
               </p>
             </div>
             <Link to="/">
               <Button 
                 variant="outline" 
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary rounded-lg px-6 py-2"
+                className="border-white text-white hover:bg-white hover:text-blue-900 rounded-lg px-6 py-2 font-semibold"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Campaign
+                Back
               </Button>
             </Link>
           </div>
@@ -518,17 +518,17 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+              className="mb-6 p-4 bg-green-50 border-2 border-green-400 rounded-lg flex items-start gap-3"
             >
-              <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-paragraph font-semibold text-secondary">
+                <p className="font-paragraph font-semibold text-green-700">
                   {ui.successMessage}
                 </p>
               </div>
               <button
                 onClick={() => setUI(prev => ({ ...prev, successMessage: null }))}
-                className="text-secondary hover:text-secondary/70 flex-shrink-0"
+                className="text-green-600 hover:text-green-700 flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -540,20 +540,20 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+              className="mb-6 p-4 bg-red-50 border-2 border-red-400 rounded-lg flex items-start gap-3"
             >
-              <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-paragraph font-semibold text-destructive">
+                <p className="font-paragraph font-semibold text-red-700">
                   Error
                 </p>
-                <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                <p className="font-paragraph text-sm text-red-600/80 mt-1">
                   {ui.error}
                 </p>
               </div>
               <button
                 onClick={() => setUI(prev => ({ ...prev, error: null }))}
-                className="text-destructive hover:text-destructive/70 flex-shrink-0"
+                className="text-red-600 hover:text-red-700 flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -568,15 +568,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
+                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-blue-600" />
                   Total Raised
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-3xl font-bold text-secondary">
+                <p className="font-heading text-3xl font-bold text-blue-900">
                   ${totalRaised.toLocaleString()}
                 </p>
               </CardContent>
@@ -588,15 +588,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
-                  <Users className="w-5 h-5" />
+                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-600" />
                   Total Donors
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-3xl font-bold text-primary">
+                <p className="font-heading text-3xl font-bold text-blue-900">
                   {completedDonations.length}
                 </p>
               </CardContent>
@@ -608,15 +608,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
+                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
                   Progress
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-3xl font-bold text-primary">
+                <p className="font-heading text-3xl font-bold text-blue-900">
                   {progressPercentage.toFixed(1)}%
                 </p>
               </CardContent>
@@ -628,15 +628,15 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-primary/70 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
+                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-blue-600" />
                   Goal
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-heading text-3xl font-bold text-primary">
+                <p className="font-heading text-3xl font-bold text-blue-900">
                   ${data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
                 </p>
               </CardContent>
@@ -646,26 +646,26 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="campaign" className="space-y-8">
-          <TabsList className="bg-primary/10 border border-primary/20">
-            <TabsTrigger value="campaign" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="bg-blue-100 border border-blue-300">
+            <TabsTrigger value="campaign" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Campaign
             </TabsTrigger>
-            <TabsTrigger value="matchers" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="matchers" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Matchers
             </TabsTrigger>
-            <TabsTrigger value="teams" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="teams" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Teams
             </TabsTrigger>
-            <TabsTrigger value="donations" className="font-paragraph data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="donations" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Donations
             </TabsTrigger>
           </TabsList>
 
           {/* Campaign Tab */}
           <TabsContent value="campaign">
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="font-heading text-2xl font-bold text-primary">
+                <CardTitle className="font-heading text-2xl font-bold text-blue-900">
                   Campaign Details
                 </CardTitle>
               </CardHeader>
@@ -673,7 +673,7 @@ export default function AdminDashboard() {
                 <form onSubmit={handleSaveCampaign} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="font-paragraph text-sm font-semibold text-primary">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
                         Campaign Title *
                       </label>
                       <Input
@@ -681,12 +681,12 @@ export default function AdminDashboard() {
                         value={campaignForm.campaignTitle}
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignTitle: e.target.value }))}
                         placeholder="e.g., Building Our Future"
-                        className="border-primary/20"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-paragraph text-sm font-semibold text-primary">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
                         Fundraising Goal ($) *
                       </label>
                       <Input
@@ -696,37 +696,37 @@ export default function AdminDashboard() {
                         value={campaignForm.fundraisingGoal}
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, fundraisingGoal: e.target.value }))}
                         placeholder="e.g., 500000"
-                        className="border-primary/20"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-sm font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
                       Promotional Text
                     </label>
                     <Textarea
                       value={campaignForm.promotionalText}
                       onChange={(e) => setCampaignForm(prev => ({ ...prev, promotionalText: e.target.value }))}
                       placeholder="A compelling message to inspire donations..."
-                      className="border-primary/20 min-h-[100px]"
+                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 min-h-[100px]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-sm font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
                       Project Description
                     </label>
                     <Textarea
                       value={campaignForm.projectDescription}
                       onChange={(e) => setCampaignForm(prev => ({ ...prev, projectDescription: e.target.value }))}
                       placeholder="Detailed description of the project..."
-                      className="border-primary/20 min-h-[150px]"
+                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 min-h-[150px]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-paragraph text-sm font-semibold text-primary">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
                       Main Campaign Image URL
                     </label>
                     <Input
@@ -734,13 +734,13 @@ export default function AdminDashboard() {
                       value={campaignForm.mainCampaignImage}
                       onChange={(e) => setCampaignForm(prev => ({ ...prev, mainCampaignImage: e.target.value }))}
                       placeholder="https://example.com/image.jpg"
-                      className="border-primary/20"
+                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="font-paragraph text-sm font-semibold text-primary flex items-center gap-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900 flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Campaign Start Date
                       </label>
@@ -748,12 +748,12 @@ export default function AdminDashboard() {
                         type="date"
                         value={campaignForm.campaignStartDate}
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignStartDate: e.target.value }))}
-                        className="border-primary/20"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-paragraph text-sm font-semibold text-primary flex items-center gap-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900 flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Campaign End Date
                       </label>
@@ -761,7 +761,7 @@ export default function AdminDashboard() {
                         type="date"
                         value={campaignForm.campaignEndDate}
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignEndDate: e.target.value }))}
-                        className="border-primary/20"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -769,7 +769,7 @@ export default function AdminDashboard() {
                   <Button
                     type="submit"
                     disabled={ui.saving}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg px-8 py-2 font-semibold w-full md:w-auto"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg px-8 py-2 font-semibold w-full md:w-auto shadow-lg"
                   >
                     {ui.saving ? (
                       <>
@@ -790,10 +790,10 @@ export default function AdminDashboard() {
 
           {/* Matchers Tab */}
           <TabsContent value="matchers">
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="font-heading text-2xl font-bold text-primary">
+                  <CardTitle className="font-heading text-2xl font-bold text-blue-900">
                     Manage Matchers
                   </CardTitle>
                   <Button
@@ -804,7 +804,7 @@ export default function AdminDashboard() {
                         setUI(prev => ({ ...prev, showNewMatcher: true }));
                       }
                     }}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Matcher
@@ -817,15 +817,15 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     onSubmit={handleSaveMatcher}
-                    className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20"
+                    className="space-y-6 p-6 bg-blue-50 rounded-lg border-2 border-blue-200"
                   >
-                    <h3 className="font-heading text-lg font-bold text-primary">
+                    <h3 className="font-heading text-lg font-bold text-blue-900">
                       {ui.editingMatcherId ? 'Edit Matcher' : 'New Matcher'}
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Matcher Name *
                         </label>
                         <Input
@@ -833,12 +833,12 @@ export default function AdminDashboard() {
                           value={matcherForm.matcherName}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, matcherName: e.target.value }))}
                           placeholder="Company or Organization"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Contact Email *
                         </label>
                         <Input
@@ -846,12 +846,12 @@ export default function AdminDashboard() {
                           value={matcherForm.contactEmail}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, contactEmail: e.target.value }))}
                           placeholder="contact@example.com"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Matching Amount ($) *
                         </label>
                         <Input
@@ -861,12 +861,12 @@ export default function AdminDashboard() {
                           value={matcherForm.matchingAmount}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingAmount: e.target.value }))}
                           placeholder="50000"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Matching Percentage (%) *
                         </label>
                         <Input
@@ -877,12 +877,12 @@ export default function AdminDashboard() {
                           value={matcherForm.matchingPercentage}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingPercentage: e.target.value }))}
                           placeholder="100"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Matching Limit ($)
                         </label>
                         <Input
@@ -892,18 +892,18 @@ export default function AdminDashboard() {
                           value={matcherForm.matchingLimit}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, matchingLimit: e.target.value }))}
                           placeholder="100000"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Status
                         </label>
                         <select
                           value={matcherForm.matcherStatus}
                           onChange={(e) => setMatcherForm(prev => ({ ...prev, matcherStatus: e.target.value }))}
-                          className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none font-paragraph"
+                          className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph"
                         >
                           <option value="active">Active</option>
                           <option value="pending">Pending</option>
@@ -916,7 +916,7 @@ export default function AdminDashboard() {
                       <Button
                         type="submit"
                         disabled={ui.saving}
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
                       >
                         {ui.saving ? (
                           <>
@@ -934,7 +934,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={resetMatcherForm}
                         variant="outline"
-                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
                       >
                         Cancel
                       </Button>
@@ -943,7 +943,7 @@ export default function AdminDashboard() {
                 )}
 
                 {data.matchers.length === 0 ? (
-                  <p className="font-paragraph text-center text-primary/60 py-8">
+                  <p className="font-paragraph text-center text-blue-600/60 py-8">
                     No matchers yet. Add one to boost donations!
                   </p>
                 ) : (
@@ -953,32 +953,32 @@ export default function AdminDashboard() {
                         key={matcher._id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="bg-primary/5 rounded-lg p-6 border border-primary/10"
+                        className="bg-blue-50 rounded-lg p-6 border border-blue-200"
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h4 className="font-heading text-lg font-bold text-primary">
+                            <h4 className="font-heading text-lg font-bold text-blue-900">
                               {matcher.matcherName}
                             </h4>
-                            <p className="font-paragraph text-sm text-primary/70 mt-1">
+                            <p className="font-paragraph text-sm text-blue-700 mt-1">
                               {matcher.contactEmail}
                             </p>
                             <div className="grid grid-cols-3 gap-4 mt-4">
                               <div>
-                                <p className="font-paragraph text-xs text-primary/60">Amount</p>
-                                <p className="font-heading font-bold text-secondary">
+                                <p className="font-paragraph text-xs text-blue-600/60">Amount</p>
+                                <p className="font-heading font-bold text-blue-900">
                                   ${matcher.matchingAmount?.toLocaleString()}
                                 </p>
                               </div>
                               <div>
-                                <p className="font-paragraph text-xs text-primary/60">Rate</p>
-                                <p className="font-heading font-bold text-primary">
+                                <p className="font-paragraph text-xs text-blue-600/60">Rate</p>
+                                <p className="font-heading font-bold text-blue-900">
                                   {matcher.matchingPercentage}%
                                 </p>
                               </div>
                               <div>
-                                <p className="font-paragraph text-xs text-primary/60">Status</p>
-                                <p className="font-paragraph text-sm font-semibold text-primary">
+                                <p className="font-paragraph text-xs text-blue-600/60">Status</p>
+                                <p className="font-paragraph text-sm font-semibold text-blue-900">
                                   {matcher.status}
                                 </p>
                               </div>
@@ -989,7 +989,7 @@ export default function AdminDashboard() {
                               onClick={() => handleEditMatcher(matcher)}
                               variant="outline"
                               size="sm"
-                              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
+                              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -997,7 +997,7 @@ export default function AdminDashboard() {
                               onClick={() => handleDeleteMatcher(matcher._id)}
                               variant="outline"
                               size="sm"
-                              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-lg"
+                              className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-lg"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -1013,10 +1013,10 @@ export default function AdminDashboard() {
 
           {/* Teams Tab */}
           <TabsContent value="teams">
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="font-heading text-2xl font-bold text-primary">
+                  <CardTitle className="font-heading text-2xl font-bold text-blue-900">
                     Manage Teams
                   </CardTitle>
                   <Button
@@ -1027,7 +1027,7 @@ export default function AdminDashboard() {
                         setUI(prev => ({ ...prev, showNewTeam: true }));
                       }
                     }}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Team
@@ -1040,15 +1040,15 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     onSubmit={handleSaveTeam}
-                    className="space-y-6 p-6 bg-primary/5 rounded-lg border-2 border-primary/20"
+                    className="space-y-6 p-6 bg-blue-50 rounded-lg border-2 border-blue-200"
                   >
-                    <h3 className="font-heading text-lg font-bold text-primary">
+                    <h3 className="font-heading text-lg font-bold text-blue-900">
                       {ui.editingTeamId ? 'Edit Team' : 'New Team'}
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Team Name *
                         </label>
                         <Input
@@ -1056,12 +1056,12 @@ export default function AdminDashboard() {
                           value={teamForm.teamName}
                           onChange={(e) => setTeamForm(prev => ({ ...prev, teamName: e.target.value }))}
                           placeholder="Team Name"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Fundraising Goal ($) *
                         </label>
                         <Input
@@ -1071,12 +1071,12 @@ export default function AdminDashboard() {
                           value={teamForm.teamGoal}
                           onChange={(e) => setTeamForm(prev => ({ ...prev, teamGoal: e.target.value }))}
                           placeholder="50000"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Number of Members *
                         </label>
                         <Input
@@ -1085,12 +1085,12 @@ export default function AdminDashboard() {
                           value={teamForm.memberCount}
                           onChange={(e) => setTeamForm(prev => ({ ...prev, memberCount: e.target.value }))}
                           placeholder="10"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="font-paragraph text-sm font-semibold text-primary">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
                           Team Logo URL
                         </label>
                         <Input
@@ -1098,20 +1098,20 @@ export default function AdminDashboard() {
                           value={teamForm.teamLogo}
                           onChange={(e) => setTeamForm(prev => ({ ...prev, teamLogo: e.target.value }))}
                           placeholder="https://example.com/logo.jpg"
-                          className="border-primary/20"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-paragraph text-sm font-semibold text-primary">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
                         Team Description *
                       </label>
                       <Textarea
                         value={teamForm.teamDescription}
                         onChange={(e) => setTeamForm(prev => ({ ...prev, teamDescription: e.target.value }))}
                         placeholder="Describe the team and its mission..."
-                        className="border-primary/20 min-h-[100px]"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 min-h-[100px]"
                       />
                     </div>
 
@@ -1119,7 +1119,7 @@ export default function AdminDashboard() {
                       <Button
                         type="submit"
                         disabled={ui.saving}
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
                       >
                         {ui.saving ? (
                           <>
@@ -1137,7 +1137,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={resetTeamForm}
                         variant="outline"
-                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
                       >
                         Cancel
                       </Button>
@@ -1146,7 +1146,7 @@ export default function AdminDashboard() {
                 )}
 
                 {data.teams.length === 0 ? (
-                  <p className="font-paragraph text-center text-primary/60 py-8">
+                  <p className="font-paragraph text-center text-blue-600/60 py-8">
                     No teams yet. Create one to encourage group fundraising!
                   </p>
                 ) : (
@@ -1160,10 +1160,10 @@ export default function AdminDashboard() {
                           key={team._id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="bg-primary/5 rounded-lg p-6 border border-primary/10 space-y-4"
+                          className="bg-blue-50 rounded-lg p-6 border border-blue-200 space-y-4"
                         >
                           {team.teamLogo && (
-                            <div className="w-full h-32 rounded-lg overflow-hidden bg-background">
+                            <div className="w-full h-32 rounded-lg overflow-hidden bg-white">
                               <Image 
                                 src={team.teamLogo} 
                                 alt={team.teamName || 'Team logo'} 
@@ -1173,32 +1173,32 @@ export default function AdminDashboard() {
                             </div>
                           )}
                           <div>
-                            <h4 className="font-heading text-lg font-bold text-primary">
+                            <h4 className="font-heading text-lg font-bold text-blue-900">
                               {team.teamName}
                             </h4>
-                            <p className="font-paragraph text-sm text-primary/70 mt-1">
+                            <p className="font-paragraph text-sm text-blue-700 mt-1">
                               {team.teamDescription}
                             </p>
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-sm">
-                            <div className="bg-background rounded p-2">
-                              <p className="font-paragraph text-xs text-primary/60">Members</p>
-                              <p className="font-heading font-bold text-primary">{team.memberCount}</p>
+                            <div className="bg-white rounded p-2">
+                              <p className="font-paragraph text-xs text-blue-600/60">Members</p>
+                              <p className="font-heading font-bold text-blue-900">{team.memberCount}</p>
                             </div>
-                            <div className="bg-background rounded p-2">
-                              <p className="font-paragraph text-xs text-primary/60">Goal</p>
-                              <p className="font-heading font-bold text-primary">${(team.fundraisingGoal || 0) / 1000}k</p>
+                            <div className="bg-white rounded p-2">
+                              <p className="font-paragraph text-xs text-blue-600/60">Goal</p>
+                              <p className="font-heading font-bold text-blue-900">${(team.fundraisingGoal || 0) / 1000}k</p>
                             </div>
-                            <div className="bg-background rounded p-2">
-                              <p className="font-paragraph text-xs text-primary/60">Raised</p>
-                              <p className="font-heading font-bold text-secondary">${(teamTotal / 1000).toFixed(1)}k</p>
+                            <div className="bg-white rounded p-2">
+                              <p className="font-paragraph text-xs text-blue-600/60">Raised</p>
+                              <p className="font-heading font-bold text-blue-900">${(teamTotal / 1000).toFixed(1)}k</p>
                             </div>
                           </div>
                           <div className="flex gap-2">
                             <Button
                               onClick={() => handleEditTeam(team)}
                               variant="outline"
-                              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-lg"
+                              className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
                             >
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
@@ -1206,7 +1206,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleDeleteTeam(team._id)}
                               variant="outline"
-                              className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-lg"
+                              className="flex-1 border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-lg"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
@@ -1223,43 +1223,43 @@ export default function AdminDashboard() {
 
           {/* Donations Tab */}
           <TabsContent value="donations">
-            <Card className="border-primary/20 bg-white">
+            <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="font-heading text-2xl font-bold text-primary">
+                <CardTitle className="font-heading text-2xl font-bold text-blue-900">
                   All Donations ({data.donations.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {data.donations.length === 0 ? (
-                  <p className="font-paragraph text-center text-primary/60 py-8">
+                  <p className="font-paragraph text-center text-blue-600/60 py-8">
                     No donations yet. Share your campaign to start receiving support!
                   </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b-2 border-primary/20">
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Donor</th>
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Email</th>
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Amount</th>
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Date</th>
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Status</th>
-                          <th className="font-heading text-left py-3 px-4 text-primary text-sm">Message</th>
+                        <tr className="border-b-2 border-blue-200">
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Donor</th>
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Email</th>
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Amount</th>
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Date</th>
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Status</th>
+                          <th className="font-heading text-left py-3 px-4 text-blue-900 text-sm">Message</th>
                         </tr>
                       </thead>
                       <tbody>
                         {data.donations.map((donation) => (
-                          <tr key={donation._id} className="border-b border-primary/10 hover:bg-primary/5">
-                            <td className="font-paragraph py-3 px-4 text-primary text-sm">
+                          <tr key={donation._id} className="border-b border-blue-100 hover:bg-blue-50">
+                            <td className="font-paragraph py-3 px-4 text-blue-900 text-sm">
                               {donation.donorName || 'Anonymous'}
                             </td>
-                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm">
+                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
                               {donation.donorEmail}
                             </td>
-                            <td className="font-paragraph py-3 px-4 text-secondary font-bold text-sm">
+                            <td className="font-paragraph py-3 px-4 text-blue-900 font-bold text-sm">
                               ${donation.amount?.toLocaleString()}
                             </td>
-                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm">
+                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
                               {donation.donationDate 
                                 ? new Date(donation.donationDate).toLocaleDateString() 
                                 : '-'}
@@ -1267,13 +1267,13 @@ export default function AdminDashboard() {
                             <td className="font-paragraph py-3 px-4 text-sm">
                               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                 donation.status === 'completed' 
-                                  ? 'bg-secondary/10 text-secondary' 
-                                  : 'bg-primary/10 text-primary'
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-blue-100 text-blue-700'
                               }`}>
                                 {donation.status || 'pending'}
                               </span>
                             </td>
-                            <td className="font-paragraph py-3 px-4 text-primary/70 text-sm max-w-xs truncate">
+                            <td className="font-paragraph py-3 px-4 text-blue-700 text-sm max-w-xs truncate">
                               {donation.donorMessage || '-'}
                             </td>
                           </tr>
