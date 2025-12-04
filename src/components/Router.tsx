@@ -5,6 +5,7 @@ import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
 import AdminDashboard from '@/components/pages/AdminDashboard';
 import AdminLoginPage from '@/components/pages/AdminLoginPage';
+import TeamPage from '@/components/pages/TeamPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 
 // Layout component that includes ScrollToTop
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
             <AdminDashboard />
           </AdminProtectedRoute>
         ),
+      },
+      {
+        path: "team/:teamId",
+        element: <TeamPage />,
       },
       {
         path: "*",
