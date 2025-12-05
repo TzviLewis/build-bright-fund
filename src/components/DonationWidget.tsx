@@ -263,7 +263,7 @@ export default function DonationWidget({
 
                   <div className="space-y-2">
                     <label className="font-paragraph text-sm font-semibold text-primary">
-                      Amount ($) *
+                      Amount (£) *
                     </label>
                     <Input
                       type="number"

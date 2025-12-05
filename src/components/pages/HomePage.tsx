@@ -313,10 +313,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="flex justify-between items-baseline">
                 <span className="font-heading text-5xl font-bold text-secondary">
-                  ${totalRaised.toLocaleString()}
+                  £{totalRaised.toLocaleString()}
                 </span>
                 <span className="font-paragraph text-xl text-primary/70">
-                  of ${campaign?.fundraisingGoal?.toLocaleString() || '0'} goal
+                  of £{campaign?.fundraisingGoal?.toLocaleString() || '0'} goal
                 </span>
               </div>
               
@@ -442,7 +442,7 @@ export default function HomePage() {
 
                 <div className="space-y-2">
                   <label className="font-paragraph text-base font-semibold text-primary">
-                    Donation Amount ($)
+                    Donation Amount (£)
                   </label>
                   <Input
                     type="number"
@@ -570,7 +570,7 @@ export default function HomePage() {
                     <div>
                       <p className="font-paragraph text-sm text-primary/60">Matching Amount</p>
                       <p className="font-heading text-xl font-bold text-primary">
-                        ${matcher.matchingAmount?.toLocaleString()}
+                        £{matcher.matchingAmount?.toLocaleString()}
                       </p>
                     </div>
 
@@ -578,7 +578,7 @@ export default function HomePage() {
                       <div>
                         <p className="font-paragraph text-sm text-primary/60">Matching Limit</p>
                         <p className="font-paragraph text-base text-primary">
-                          ${matcher.matchingLimit.toLocaleString()}
+                          £{matcher.matchingLimit.toLocaleString()}
                         </p>
                       </div>
                     )}
@@ -653,7 +653,7 @@ export default function HomePage() {
                     <div className="bg-background rounded-lg p-4">
                       <p className="font-paragraph text-sm text-primary/60">Raised</p>
                       <p className="font-heading text-2xl font-bold text-secondary">
-                        ${teamTotal.toLocaleString()}
+                        £{teamTotal.toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -662,7 +662,7 @@ export default function HomePage() {
                     <div className="flex justify-between items-baseline">
                       <span className="font-paragraph text-sm text-primary/60">Goal</span>
                       <span className="font-heading text-lg font-bold text-primary">
-                        ${team.fundraisingGoal?.toLocaleString()}
+                        £{team.fundraisingGoal?.toLocaleString()}
                       </span>
                     </div>
                     <div className="w-full bg-primary/10 rounded-full h-4 overflow-hidden">

@@ -133,7 +133,7 @@ export default function TeamPage() {
               <div className="bg-secondary/10 rounded-lg p-6">
                 <p className="font-paragraph text-sm text-primary/60 mb-2">Total Raised</p>
                 <p className="font-heading text-4xl font-bold text-secondary">
-                  ${totalRaised.toLocaleString()}
+                  £{totalRaised.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -178,10 +178,10 @@ export default function TeamPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-baseline">
                 <span className="font-heading text-5xl font-bold text-secondary">
-                  ${totalRaised.toLocaleString()}
+                  £{totalRaised.toLocaleString()}
                 </span>
                 <span className="font-paragraph text-xl text-primary/70">
-                  of ${team.fundraisingGoal?.toLocaleString() || '0'} goal
+                  of £{team.fundraisingGoal?.toLocaleString() || '0'} goal
                 </span>
               </div>
               

@@ -580,7 +580,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <p className="font-heading text-3xl font-bold text-blue-900">
-                  ${totalRaised.toLocaleString()}
+                  £{totalRaised.toLocaleString()}
                 </p>
               </CardContent>
             </Card>
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <p className="font-heading text-3xl font-bold text-blue-900">
-                  ${data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
+                  £{data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
                 </p>
               </CardContent>
             </Card>
@@ -970,7 +970,7 @@ export default function AdminDashboard() {
                               <div>
                                 <p className="font-paragraph text-xs text-blue-600/60">Amount</p>
                                 <p className="font-heading font-bold text-blue-900">
-                                  ${matcher.matchingAmount?.toLocaleString()}
+                                  £{matcher.matchingAmount?.toLocaleString()}
                                 </p>
                               </div>
                               <div>
@@ -1190,11 +1190,11 @@ export default function AdminDashboard() {
                             </div>
                             <div className="bg-white rounded p-2">
                               <p className="font-paragraph text-xs text-blue-600/60">Goal</p>
-                              <p className="font-heading font-bold text-blue-900">${(team.fundraisingGoal || 0) / 1000}k</p>
+                              <p className="font-heading font-bold text-blue-900">£{(team.fundraisingGoal || 0) / 1000}k</p>
                             </div>
                             <div className="bg-white rounded p-2">
                               <p className="font-paragraph text-xs text-blue-600/60">Raised</p>
-                              <p className="font-heading font-bold text-blue-900">${(teamTotal / 1000).toFixed(1)}k</p>
+                              <p className="font-heading font-bold text-blue-900">£{(teamTotal / 1000).toFixed(1)}k</p>
                             </div>
                           </div>
                           <div className="flex gap-2">
@@ -1267,7 +1267,7 @@ export default function AdminDashboard() {
                       {selectedTeamForDonations && (
                         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                           <p className="font-paragraph text-sm text-blue-700">
-                            <span className="font-semibold">Team Total:</span> ${teamTotal.toLocaleString()} from {filteredDonations.length} donation{filteredDonations.length !== 1 ? 's' : ''}
+                            <span className="font-semibold">Team Total:</span> £{teamTotal.toLocaleString()} from {filteredDonations.length} donation{filteredDonations.length !== 1 ? 's' : ''}
                           </p>
                         </div>
                       )}
