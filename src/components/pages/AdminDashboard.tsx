@@ -1302,7 +1302,7 @@ export default function AdminDashboard() {
                                       {donation.donorEmail}
                                     </td>
                                     <td className="font-paragraph py-3 px-4 text-blue-900 font-bold text-sm">
-                                      ${donation.amount?.toLocaleString()}
+                                      £{donation.amount?.toLocaleString()}
                                     </td>
                                     <td className="font-paragraph py-3 px-4 text-blue-700 text-sm">
                                       {donation.donationDate 

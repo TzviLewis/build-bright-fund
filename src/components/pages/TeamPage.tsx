@@ -242,7 +242,7 @@ export default function TeamPage() {
                     </p>
                   </div>
                   <p className="font-heading text-2xl font-bold text-secondary">
-                    ${donation.amount?.toLocaleString()}
+                    £{donation.amount?.toLocaleString()}
                   </p>
                 </div>
                 {donation.donorMessage && (
