@@ -7,11 +7,13 @@ import { BaseCrudService } from '@/integrations';
 import { Donations } from '@/entities';
 import { Plus, Edit, Trash2, Loader2, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useDonationStore } from '@/stores/donationStore';
 
 interface DonationWidgetProps {
   onDonationsChange?: (donations: Donations[]) => void;
   showManagementTools?: boolean;
   maxDisplayCount?: number;
+  pageName?: string;
 }
 
 interface DonationFormState {
@@ -25,7 +27,8 @@ interface DonationFormState {
 export default function DonationWidget({ 
   onDonationsChange, 
   showManagementTools = false,
-  maxDisplayCount = 9 
+  maxDisplayCount = 9,
+  pageName = 'Donation Page'
 }: DonationWidgetProps) {
   const [donations, setDonations] = useState<Donations[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +39,7 @@ export default function DonationWidget({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'recent' | 'amount'>('recent');
   const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'pending'>('all');
+  const { addNotification } = useDonationStore();
 
   const [formData, setFormData] = useState<DonationFormState>({
     donorName: '',
@@ -92,6 +96,12 @@ export default function DonationWidget({
       } else {
         await BaseCrudService.create('donations', donationData);
         setSuccessMessage('Donation added successfully!');
+        
+        // Add notification to store for popup display
+        addNotification({
+          ...donationData,
+          pageName: pageName,
+        });
       }
 
       resetForm();

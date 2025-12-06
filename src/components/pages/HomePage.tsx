@@ -10,6 +10,7 @@ import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
 import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DonationWidget from '@/components/DonationWidget';
+import { useDonationStore } from '@/stores/donationStore';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -26,6 +27,7 @@ export default function HomePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { addNotification } = useDonationStore();
 
   useEffect(() => {
     loadData();
@@ -76,7 +78,7 @@ export default function HomePage() {
         return;
       }
 
-      await BaseCrudService.create('donations', {
+      const donationData: Donations = {
         _id: crypto.randomUUID(),
         donorName: isAnonymous ? 'Anonymous' : donorName,
         donorEmail,
@@ -86,6 +88,14 @@ export default function HomePage() {
         donorMessage,
         status: 'completed',
         teamId: selectedTeamId || undefined
+      };
+
+      await BaseCrudService.create('donations', donationData);
+
+      // Add notification to store for popup display
+      addNotification({
+        ...donationData,
+        pageName: 'Home Page',
       });
 
       setSubmitSuccess(true);

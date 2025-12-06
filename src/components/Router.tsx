@@ -7,12 +7,14 @@ import AdminDashboard from '@/components/pages/AdminDashboard';
 import AdminLoginPage from '@/components/pages/AdminLoginPage';
 import TeamPage from '@/components/pages/TeamPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
+import DonationNotificationPopup from '@/components/DonationNotificationPopup';
 
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
+      <DonationNotificationPopup />
       <Outlet />
     </>
   );
