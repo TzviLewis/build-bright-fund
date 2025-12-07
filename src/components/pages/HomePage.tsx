@@ -11,6 +11,7 @@ import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, 
 import { motion } from 'framer-motion';
 import DonationWidget from '@/components/DonationWidget';
 import { useDonationStore } from '@/stores/donationStore';
+import CountdownTimer from '@/components/CountdownTimer';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -348,6 +349,15 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Countdown Timer Section */}
+      {campaign?.campaignEndDate && (
+        <section className="w-full bg-secondary/5 py-20">
+          <div className="max-w-[120rem] mx-auto px-8">
+            <CountdownTimer endDate={campaign.campaignEndDate} />
+          </div>
+        </section>
+      )}
+
       {/* Donation Form */}
       <section id="donate" className="w-full bg-primary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
@@ -631,7 +641,7 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
-                  className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10"
+                  className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer"
                 >
                   {team.teamLogo && (
                     <div className="w-full h-40 rounded-lg overflow-hidden bg-background">
@@ -688,12 +698,19 @@ export default function HomePage() {
                       {teamProgress.toFixed(1)}% complete
                     </p>
                   </div>
+
+                  <Link to={`/team/${team._id}`}>
+                    <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full">
+                      View Team Details
+                    </Button>
+                  </Link>
                 </motion.div>
               );
             })}
           </div>
         )}
       </section>
+
       <section id="progress" className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">

@@ -25,6 +25,10 @@ export interface CampaignDetails {
   campaignStartDate?: Date | string;
   /** @wixFieldType date */
   campaignEndDate?: Date | string;
+  /** @wixFieldType time */
+  campaignStartTime?: any;
+  /** @wixFieldType time */
+  campaignEndTime?: any;
 }
 
 
