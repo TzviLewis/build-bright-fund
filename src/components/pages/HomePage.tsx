@@ -43,7 +43,11 @@ export default function HomePage() {
       const { items: teamItems } = await BaseCrudService.getAll<Teams>('teams');
       
       if (campaignItems.length > 0) {
-        setCampaign(campaignItems[0]);
+        const campaignData = campaignItems[0];
+        // Set campaign times to 10:00 AM for start and 22:00 (10:00 PM) for end
+        campaignData.campaignStartTime = '10:00 AM';
+        campaignData.campaignEndTime = '22:00';
+        setCampaign(campaignData);
       }
       setDonations(donationItems.filter(d => d.status === 'completed'));
       setMatchers(matcherItems.filter(m => m.status === 'active'));
