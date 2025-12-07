@@ -452,9 +452,7 @@ export default function HomePage() {
               <h2 className="font-heading text-4xl font-bold text-primary mb-4">
                 Time is <span className="text-secondary italic">Running Out</span>
               </h2>
-              <p className="font-paragraph text-xl text-primary/80">
-                Don't miss your chance to make a difference
-              </p>
+
             </div>
             <div className="flex justify-center">
               <CircularCountdownTimer endDate={campaign.campaignEndDate} />
@@ -671,37 +669,11 @@ export default function HomePage() {
                       <h3 className="font-heading text-2xl font-bold text-primary">
                         {matcher.matcherName}
                       </h3>
-                      <p className="font-paragraph text-sm text-primary/60 mt-1">
-                        {matcher.status === 'active' ? '✓ Active' : 'Inactive'}
-                      </p>
-                    </div>
-                    <Award className="w-8 h-8 text-secondary" />
-                  </div>
-                  
-                  <div className="space-y-3 pt-4 border-t border-primary/10">
-                    <div>
-                      <p className="font-paragraph text-sm text-primary/60">Matching Rate</p>
-                      <p className="font-heading text-2xl font-bold text-secondary">
-                        {matcher.matchingPercentage}%
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-paragraph text-sm text-primary/60">Matching Amount</p>
-                      <p className="font-heading text-xl font-bold text-primary">
-                        £{matcher.matchingAmount?.toLocaleString()}
-                      </p>
+
                     </div>
 
-                    {matcher.matchingLimit && (
-                      <div>
-                        <p className="font-paragraph text-sm text-primary/60">Matching Limit</p>
-                        <p className="font-paragraph text-base text-primary">
-                          £{matcher.matchingLimit.toLocaleString()}
-                        </p>
-                      </div>
-                    )}
                   </div>
+
                 </motion.div>
               ))}
             </div>
