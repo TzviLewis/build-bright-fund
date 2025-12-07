@@ -99,32 +99,32 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
     >
       <div className="relative w-80 h-80 flex items-center justify-center">
         {/* Outer circle background */}
-        <svg className="absolute inset-0 w-full h-full fill-secondary" viewBox="0 0 320 320">
+        <svg className="absolute inset-0 w-full h-full fill-secondary opacity-[1] my-0 mx-[5px]" viewBox="0 0 320 320">
           {/* Background circle */}
-          <circle
-            cx="160"
-            cy="160"
-            r="150"
-            fill="none"
-            stroke="#0B1E5B"
-            strokeWidth="2"
-            opacity="0.1"
-          />
-          {/* Progress circle */}
           <motion.circle
-            cx="160"
-            cy="160"
-            r="150"
-            fill="none"
-            stroke="#E31B23"
-            strokeWidth="8"
-            strokeDasharray={`${2 * Math.PI * 150}`}
-            strokeDashoffset={`${2 * Math.PI * 150 * (1 - progressPercentage / 100)}`}
-            strokeLinecap="round"
-            transform="rotate(-90 160 160)"
-            transition={{ strokeDashoffset: { duration: 1, ease: 'linear' } }}
-          />
-        </svg>
+          cx="160"
+          cy="160"
+          r="150"
+          fill="none"
+          stroke="#E31B23"
+          strokeWidth="8"
+          strokeDasharray={`${2 * Math.PI * 150}`}
+          strokeDashoffset={`${2 * Math.PI * 150 * (1 - progressPercentage / 100)}`}
+          strokeLinecap="round"
+          transform="rotate(-90 160 160)"
+          transition={{ strokeDashoffset: { duration: 1, ease: 'linear' } }}
+        />
+        <circle
+              cx="160"
+              cy="160"
+              r="150"
+              fill="none"
+              stroke="#0B1E5B"
+              strokeWidth="2"
+              opacity="0.1"
+            />
+          {/* Progress circle */}
+          </svg>
 
         {/* Center content */}
         <div className="relative z-10 text-center space-y-4">
@@ -133,13 +133,13 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
           </p>
           
           <div className="space-y-2">
-            <div className="font-heading text-5xl font-bold text-primary">
-              {String(timeLeft.days).padStart(2, '0')}
-            </div>
             <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">
               Days
             </p>
-          </div>
+          <div className="font-heading text-5xl font-bold text-primary">
+              {String(timeLeft.days).padStart(2, '0')}
+            </div>
+            </div>
 
           <div className="flex items-center justify-center gap-4 pt-2">
             <div className="text-center">
@@ -150,11 +150,11 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
             </div>
             <div className="text-primary/30 text-2xl">:</div>
             <div className="text-center">
-              <div className="font-heading text-2xl font-bold text-secondary">
+              <p className="font-paragraph text-xs text-primary/60 uppercase">min</p>
+            <div className="font-heading text-2xl font-bold text-secondary">
                 {String(timeLeft.minutes).padStart(2, '0')}
               </div>
-              <p className="font-paragraph text-xs text-primary/60 uppercase">min</p>
-            </div>
+              </div>
             <div className="text-primary/30 text-2xl">:</div>
             <div className="text-center">
               <div className="font-heading text-2xl font-bold text-secondary">
