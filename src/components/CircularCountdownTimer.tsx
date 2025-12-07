@@ -99,7 +99,7 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
     >
       <div className="relative w-80 h-80 flex items-center justify-center">
         {/* Outer circle background */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 320">
+        <svg className="absolute inset-0 w-full h-full fill-secondary" viewBox="0 0 320 320">
           {/* Background circle */}
           <circle
             cx="160"

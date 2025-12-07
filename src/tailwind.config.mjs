@@ -20,7 +20,7 @@ export default {
             },
             fontFamily: {
                 heading: ["patrick hand", "cursive"],
-                paragraph: ["sriracha", "cursive"]
+                paragraph: ["patrick hand", "cursive"]
             },
             colors: {
                 primary: "#0B1E5B",
