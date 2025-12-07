@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import DonationWidget from '@/components/DonationWidget';
 import { useDonationStore } from '@/stores/donationStore';
 import CountdownTimer from '@/components/CountdownTimer';
+import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -161,6 +162,45 @@ export default function HomePage() {
           </nav>
         </div>
       </header>
+
+      {/* Campaign Media Hero Section */}
+      <section className="w-full bg-primary/5 py-16">
+        <div className="max-w-[120rem] mx-auto px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Campaign Video */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="rounded-lg overflow-hidden shadow-xl"
+            >
+              <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
+                <video
+                  src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.mp4?id=campaign-video-placeholder"
+                  controls
+                  className="w-full h-full object-cover"
+                  poster="https://static.wixstatic.com/media/28ba1c_763e75fa5d304521850a4c245190616c~mv2.png?originWidth=640&originHeight=320"
+                />
+              </div>
+            </motion.div>
+
+            {/* Campaign GIF */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="rounded-lg overflow-hidden shadow-xl"
+            >
+              <Image
+                src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.gif?id=campaign-gif-placeholder"
+                alt="Campaign animation"
+                className="w-full h-80 object-cover"
+                width={600}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Hero Section - Inspired by reference image */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
@@ -351,9 +391,19 @@ export default function HomePage() {
 
       {/* Countdown Timer Section */}
       {campaign?.campaignEndDate && (
-        <section className="w-full bg-secondary/5 py-20">
+        <section className="w-full bg-gradient-to-r from-primary/5 to-secondary/5 py-20">
           <div className="max-w-[120rem] mx-auto px-8">
-            <CountdownTimer endDate={campaign.campaignEndDate} />
+            <div className="text-center mb-12">
+              <h2 className="font-heading text-4xl font-bold text-primary mb-4">
+                Time is <span className="text-secondary italic">Running Out</span>
+              </h2>
+              <p className="font-paragraph text-xl text-primary/80">
+                Don't miss your chance to make a difference
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <CircularCountdownTimer endDate={campaign.campaignEndDate} />
+            </div>
           </div>
         </section>
       )}
