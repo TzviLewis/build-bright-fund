@@ -149,9 +149,7 @@ export default function HomePage() {
       {/* Header */}
       <header className="bg-background border-b border-primary/10 shadow-sm">
         <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
-          <div className="font-heading text-2xl font-bold text-primary tracking-wider">
-            SCHOOL CAMPAIGN
-          </div>
+
           <nav className="flex items-center gap-8">
             <a href="#campaign" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
               Campaign
@@ -202,11 +200,11 @@ export default function HomePage() {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <Image
-                src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.gif?id=campaign-gif-placeholder"
-                alt="Campaign animation"
+                src="https://static.wixstatic.com/media/28ba1c_61d66837cb8a4faa9ec76959ec0581ba~mv2.jpg"
                 className="w-full h-80 object-cover"
                 width={600}
-              />
+                originWidth={1600}
+                originHeight={896} />
             </motion.div>
           </div>
         </div>
@@ -228,10 +226,6 @@ export default function HomePage() {
               </h1>
             </div>
 
-            <p className="font-paragraph text-xl text-primary/80 max-w-2xl leading-relaxed">
-              {campaign?.promotionalText || 'Join us in creating a space where dreams take shape and futures are built. Every contribution brings us closer to our goal.'}
-            </p>
-
             <div className="flex items-center gap-4 pt-4">
               <a href="#donate">
                 <Button 
@@ -242,13 +236,7 @@ export default function HomePage() {
                 </Button>
               </a>
               <a href="#campaign">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold"
-                >
-                  LEARN MORE
-                </Button>
+
               </a>
             </div>
           </motion.div>
@@ -276,59 +264,6 @@ export default function HomePage() {
         </div>
       </section>
       {/* Three Column Features - Inspired by reference image */}
-      <section id="campaign" className="w-full bg-primary/5 py-20">
-        <div className="max-w-[120rem] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center gap-3">
-                <Target className="w-8 h-8 text-secondary" />
-                <h3 className="font-heading text-2xl font-bold text-primary">OUR MISSION</h3>
-              </div>
-              <p className="font-paragraph text-base text-primary/80 leading-relaxed">
-                Creating state-of-the-art facilities that inspire learning and foster innovation for generations to come. This is where excellence begins.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center gap-3">
-                <Users className="w-8 h-8 text-secondary" />
-                <h3 className="font-heading text-2xl font-bold text-primary">COMMUNITY IMPACT</h3>
-              </div>
-              <p className="font-paragraph text-base text-primary/80 leading-relaxed">
-                Every dollar raised strengthens our community and provides students with opportunities to thrive, grow, and achieve their fullest potential.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center gap-3">
-                <Heart className="w-8 h-8 text-secondary" />
-                <h3 className="font-heading text-2xl font-bold text-primary">YOUR CONTRIBUTION</h3>
-              </div>
-              <p className="font-paragraph text-base text-primary/80 leading-relaxed">
-                Join hundreds of supporters who believe in the power of education. Together, we are building more than a structure—we are building dreams.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
       {/* Campaign Details */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -343,13 +278,11 @@ export default function HomePage() {
               The Vision for <span className="text-secondary italic">Tomorrow</span>
             </h2>
             <div className="prose prose-lg max-w-none">
-              <p className="font-paragraph text-lg text-primary/80 leading-relaxed whitespace-pre-line">
-                {campaign?.projectDescription || 'Our new building will provide modern classrooms, advanced laboratories, and collaborative spaces designed to inspire the next generation of leaders and innovators.'}
-              </p>
+
             </div>
             {campaign?.campaignStartDate && campaign?.campaignEndDate && (
               <div className="pt-6 space-y-4 border-t border-primary/10">
-                <h3 className="font-heading text-2xl font-bold text-primary">Campaign Timeline</h3>
+                <h3 className="font-heading text-2xl font-bold text-primary">{"Campaign"}</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Start Date</p>
@@ -414,9 +347,9 @@ export default function HomePage() {
                 />
               </div>
               
-              <p className="font-paragraph text-lg text-primary/80">
+              <h3 className="font-paragraph text-primary/80 uppercase text-lg">
                 <span className="font-bold text-secondary">{progressPercentage.toFixed(1)}%</span> of our goal achieved with the support of <span className="font-bold">{donations.length}</span> generous donors
-              </p>
+              </h3>
             </div>
           </motion.div>
         </div>
@@ -519,7 +452,9 @@ export default function HomePage() {
               <h2 className="font-heading text-4xl font-bold text-primary mb-4">
                 Time is <span className="text-secondary italic">Running Out</span>
               </h2>
-
+              <p className="font-paragraph text-xl text-primary/80">
+                Don't miss your chance to make a difference
+              </p>
             </div>
             <div className="flex justify-center">
               <CircularCountdownTimer endDate={campaign.campaignEndDate} />

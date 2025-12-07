@@ -87,9 +87,7 @@ export default function TeamPage() {
       {/* Header */}
       <header className="bg-background border-b border-primary/10 shadow-sm">
         <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
-          <div className="font-heading text-2xl font-bold text-primary tracking-wider">
-            SCHOOL CAMPAIGN
-          </div>
+
           <Link to="/">
             <Button 
               variant="outline" 
@@ -101,7 +99,6 @@ export default function TeamPage() {
           </Link>
         </div>
       </header>
-
       {/* Team Hero Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -119,17 +116,8 @@ export default function TeamPage() {
               </h1>
             </div>
 
-            <p className="font-paragraph text-xl text-primary/80 max-w-2xl leading-relaxed">
-              {team.teamDescription}
-            </p>
-
             <div className="grid grid-cols-2 gap-6 pt-4">
-              <div className="bg-primary/5 rounded-lg p-6">
-                <p className="font-paragraph text-sm text-primary/60 mb-2">Team Members</p>
-                <p className="font-heading text-4xl font-bold text-primary">
-                  {team.memberCount || 0}
-                </p>
-              </div>
+
               <div className="bg-secondary/10 rounded-lg p-6">
                 <p className="font-paragraph text-sm text-primary/60 mb-2">Total Raised</p>
                 <p className="font-heading text-4xl font-bold text-secondary">
@@ -159,7 +147,6 @@ export default function TeamPage() {
           )}
         </div>
       </section>
-
       {/* Progress Section */}
       <section className="w-full bg-primary/5 py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -202,16 +189,13 @@ export default function TeamPage() {
           </motion.div>
         </div>
       </section>
-
       {/* Donors Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
             Team <span className="text-secondary italic">Supporters</span>
           </h2>
-          <p className="font-paragraph text-xl text-primary/80">
-            Thank you to everyone who has contributed to {team.teamName}
-          </p>
+
         </div>
 
         {donations.length === 0 ? (
@@ -255,7 +239,6 @@ export default function TeamPage() {
           </div>
         )}
       </section>
-
       {/* Call to Action */}
       <section className="w-full bg-primary py-20">
         <div className="max-w-[120rem] mx-auto px-8 text-center">
@@ -269,9 +252,7 @@ export default function TeamPage() {
             <h2 className="font-heading text-5xl font-bold text-primary-foreground mb-4">
               Support <span className="italic text-secondary">{team.teamName}</span>
             </h2>
-            <p className="font-paragraph text-xl text-primary-foreground/90 mb-8">
-              Join the team and help them reach their fundraising goal
-            </p>
+
             <Link to="/#donate">
               <Button 
                 size="lg" 
@@ -283,16 +264,12 @@ export default function TeamPage() {
           </motion.div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
         <div className="max-w-[120rem] mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
-              <h3 className="font-heading text-2xl font-bold">SCHOOL CAMPAIGN</h3>
-              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
-                Building the future of education, one contribution at a time. Your support creates lasting impact.
-              </p>
+
             </div>
 
             <div className="space-y-4">
@@ -311,10 +288,7 @@ export default function TeamPage() {
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-heading text-xl font-bold">Support</h4>
-              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
-                For questions about the campaign or to discuss partnership opportunities, please contact our development office.
-              </p>
+
             </div>
           </div>
 
