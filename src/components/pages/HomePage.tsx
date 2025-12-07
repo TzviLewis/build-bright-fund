@@ -341,10 +341,36 @@ export default function HomePage() {
               </p>
             </div>
             {campaign?.campaignStartDate && campaign?.campaignEndDate && (
-              <div className="pt-4 space-y-2">
-                <p className="font-paragraph text-base text-primary/70">
-                  <span className="font-semibold">Campaign Period:</span> {new Date(campaign.campaignStartDate).toLocaleDateString()} - {new Date(campaign.campaignEndDate).toLocaleDateString()}
-                </p>
+              <div className="pt-6 space-y-4 border-t border-primary/10">
+                <h3 className="font-heading text-2xl font-bold text-primary">Campaign Timeline</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Start Date</p>
+                    <p className="font-heading text-xl font-bold text-primary">
+                      {new Date(campaign.campaignStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                    {campaign.campaignStartTime && (
+                      <p className="font-paragraph text-base text-secondary font-semibold">
+                        {typeof campaign.campaignStartTime === 'string' 
+                          ? campaign.campaignStartTime 
+                          : new Date(campaign.campaignStartTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">End Date</p>
+                    <p className="font-heading text-xl font-bold text-primary">
+                      {new Date(campaign.campaignEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                    {campaign.campaignEndTime && (
+                      <p className="font-paragraph text-base text-secondary font-semibold">
+                        {typeof campaign.campaignEndTime === 'string' 
+                          ? campaign.campaignEndTime 
+                          : new Date(campaign.campaignEndTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>
