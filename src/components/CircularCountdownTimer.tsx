@@ -144,17 +144,17 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
           <div className="flex items-center justify-center gap-4 pt-2">
             <div className="text-center">
               <div className="font-heading text-2xl font-bold text-secondary">
-                {String(timeLeft.hours).padStart(2, '0')}
-              </div>
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </div>
               <p className="font-paragraph text-xs text-primary/60 uppercase">hrs</p>
             </div>
             <div className="text-primary/30 text-2xl">:</div>
             <div className="text-center">
+              <div className="font-heading text-2xl font-bold text-secondary">
+                    {String(timeLeft.minutes).padStart(2, '0')}
+                  </div>
               <p className="font-paragraph text-xs text-primary/60 uppercase">min</p>
-            <div className="font-heading text-2xl font-bold text-secondary">
-                {String(timeLeft.minutes).padStart(2, '0')}
-              </div>
-              </div>
+            </div>
             <div className="text-primary/30 text-2xl">:</div>
             <div className="text-center">
               <div className="font-heading text-2xl font-bold text-secondary">
