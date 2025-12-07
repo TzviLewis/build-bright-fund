@@ -822,7 +822,6 @@ export default function HomePage() {
                       />
                     </div>
                   )}
-
                   <div>
                     <h3 className="font-heading text-3xl font-bold text-primary">
                       {team.teamName}
@@ -831,14 +830,8 @@ export default function HomePage() {
                       {team.teamDescription}
                     </p>
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-background rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-primary/60">Members</p>
-                      <p className="font-heading text-2xl font-bold text-primary">
-                        {team.memberCount || 0}
-                      </p>
-                    </div>
+
                     <div className="bg-background rounded-lg p-4">
                       <p className="font-paragraph text-sm text-primary/60">Raised</p>
                       <p className="font-heading text-2xl font-bold text-secondary">
@@ -846,7 +839,6 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <div className="flex justify-between items-baseline">
                       <span className="font-paragraph text-sm text-primary/60">Goal</span>
@@ -867,7 +859,6 @@ export default function HomePage() {
                       {teamProgress.toFixed(1)}% complete
                     </p>
                   </div>
-
                   <Link to={`/team/${team._id}`}>
                     <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full">
                       View Team Details
