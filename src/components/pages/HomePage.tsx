@@ -519,9 +519,7 @@ export default function HomePage() {
               <h2 className="font-heading text-4xl font-bold text-primary mb-4">
                 Time is <span className="text-secondary italic">Running Out</span>
               </h2>
-              <p className="font-paragraph text-xl text-primary/80">
-                Don't miss your chance to make a difference
-              </p>
+
             </div>
             <div className="flex justify-center">
               <CircularCountdownTimer endDate={campaign.campaignEndDate} />
@@ -824,7 +822,7 @@ export default function HomePage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
 
-                    <div className="bg-background rounded-lg border-0 border-solid border-gray-200 m-0 p-4">
+                    <div className="bg-background rounded-lg p-4">
                       <p className="font-paragraph text-sm text-primary/60">Raised</p>
                       <p className="font-heading text-2xl font-bold text-secondary">
                         £{teamTotal.toLocaleString()}
@@ -867,9 +865,7 @@ export default function HomePage() {
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
             Our Generous <span className="text-secondary italic">Supporters</span>
           </h2>
-          <p className="font-paragraph text-xl text-primary/80">
-            Thank you to everyone who has contributed to our campaign
-          </p>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -910,9 +906,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
               <h3 className="font-heading text-2xl font-bold">SCHOOL CAMPAIGN</h3>
-              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
-                Building the future of education, one contribution at a time. Your support creates lasting impact.
-              </p>
+
             </div>
 
             <div className="space-y-4">
@@ -932,9 +926,7 @@ export default function HomePage() {
 
             <div className="space-y-4">
               <h4 className="font-heading text-xl font-bold">Support</h4>
-              <p className="font-paragraph text-base text-primary-foreground/80 leading-relaxed">
-                For questions about the campaign or to discuss partnership opportunities, please contact our development office.
-              </p>
+
             </div>
           </div>
 
