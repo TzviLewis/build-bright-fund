@@ -23,14 +23,14 @@ export default {
                 paragraph: "playfair display"
             },
             colors: {
-                foreground: '#0B1E5B',
-                destructive: '#DF3131',
-                destructiveforeground: '#FFFFFF',
-                background: '#FFF8F0',
-                secondary: '#E31B23',
-                'secondary-foreground': '#FFFFFF',
-                'primary-foreground': '#FFFFFF',
-                primary: '#0B1E5B'
+                primary: "#0B1E5B",
+                "primary-foreground": "#FFFFFF",
+                secondary: "#60a2ff",
+                "secondary-foreground": "#FFFFFF",
+                background: "#ffffff",
+                foreground: "#0B1E5B",
+                destructive: "#60a2ff",
+                destructiveforeground: "#FFFFFF"
             },
         },
     },

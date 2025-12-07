@@ -29,6 +29,10 @@ export interface CampaignDetails {
   campaignStartTime?: any;
   /** @wixFieldType time */
   campaignEndTime?: any;
+  /** @wixFieldType number */
+  bonusGoal?: number;
+  /** @wixFieldType text */
+  bonusGoalDescription?: string;
 }
 
 

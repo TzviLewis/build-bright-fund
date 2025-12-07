@@ -128,6 +128,13 @@ export default function HomePage() {
   const progressPercentage = campaign?.fundraisingGoal 
     ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
     : 0;
+  
+  const mainGoalAchieved = campaign?.fundraisingGoal && totalRaised >= campaign.fundraisingGoal;
+  const bonusGoalAmount = campaign?.bonusGoal || 0;
+  const totalGoal = (campaign?.fundraisingGoal || 0) + bonusGoalAmount;
+  const bonusProgressPercentage = bonusGoalAmount && mainGoalAchieved
+    ? Math.min(((totalRaised - (campaign?.fundraisingGoal || 0)) / bonusGoalAmount) * 100, 100)
+    : 0;
 
   if (loading) {
     return (
@@ -166,11 +173,10 @@ export default function HomePage() {
           </nav>
         </div>
       </header>
-
       {/* Campaign Media Hero Section */}
       <section className="w-full bg-primary/5 py-16">
         <div className="max-w-[120rem] mx-auto px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 gap-x-[99px] gap-y-0">
             {/* Campaign Video */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -205,7 +211,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Hero Section - Inspired by reference image */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -270,7 +275,6 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-
       {/* Three Column Features - Inspired by reference image */}
       <section id="campaign" className="w-full bg-primary/5 py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -325,7 +329,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Campaign Details */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -418,7 +421,96 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+      {/* Bonus Goal Section - Only show if main goal is achieved */}
+      {mainGoalAchieved && bonusGoalAmount > 0 && (
+        <section className="w-full bg-gradient-to-r from-secondary/10 to-secondary/5 py-20 border-t-4 border-secondary">
+          <div className="max-w-[120rem] mx-auto px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="text-center mb-12">
+                <div className="inline-block mb-4 px-4 py-2 bg-secondary text-secondary-foreground rounded-full">
+                  <p className="font-heading text-sm font-bold uppercase tracking-wider">🎯 Bonus Goal Unlocked</p>
+                </div>
+                <h2 className="font-heading text-5xl font-bold text-primary mb-4">
+                  We've Reached Our <span className="text-secondary italic">Main Goal!</span>
+                </h2>
+                <p className="font-paragraph text-xl text-primary/80 max-w-2xl mx-auto">
+                  {campaign?.bonusGoalDescription || 'Thanks to your incredible support, we\'ve achieved our primary goal! Now we\'re reaching for an even bigger dream.'}
+                </p>
+              </div>
 
+              <div className="bg-background rounded-lg p-10 shadow-lg space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-2">Main Goal</p>
+                    <p className="font-heading text-3xl font-bold text-primary">
+                      £{campaign?.fundraisingGoal?.toLocaleString()}
+                    </p>
+                    <p className="font-paragraph text-sm text-secondary font-semibold mt-1">✓ Achieved</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-2">Bonus Goal</p>
+                    <p className="font-heading text-3xl font-bold text-secondary">
+                      £{bonusGoalAmount.toLocaleString()}
+                    </p>
+                    <p className="font-paragraph text-sm text-primary/70 mt-1">Additional Target</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-2">Total Goal</p>
+                    <p className="font-heading text-3xl font-bold text-primary">
+                      £{totalGoal.toLocaleString()}
+                    </p>
+                    <p className="font-paragraph text-sm text-primary/70 mt-1">Combined Target</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-baseline">
+                    <span className="font-paragraph text-lg text-primary/80">
+                      Bonus Progress: <span className="font-bold text-secondary">{bonusProgressPercentage.toFixed(1)}%</span>
+                    </span>
+                    <span className="font-heading text-2xl font-bold text-secondary">
+                      £{Math.max(0, totalRaised - (campaign?.fundraisingGoal || 0)).toLocaleString()}
+                    </span>
+                  </div>
+                  
+                  <div className="w-full bg-primary/10 rounded-full h-8 overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${bonusProgressPercentage}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
+                    />
+                  </div>
+                  
+                  <p className="font-paragraph text-base text-primary/80 text-center pt-2">
+                    of £{bonusGoalAmount.toLocaleString()} bonus goal
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-center mt-8">
+                <a href="#donate">
+                  <Button 
+                    size="lg" 
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-6 text-lg font-semibold"
+                  >
+                    CONTINUE SUPPORTING
+                  </Button>
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
       {/* Countdown Timer Section */}
       {campaign?.campaignEndDate && (
         <section className="w-full bg-gradient-to-r from-primary/5 to-secondary/5 py-20">
@@ -437,7 +529,6 @@ export default function HomePage() {
           </div>
         </section>
       )}
-
       {/* Donation Form */}
       <section id="donate" className="w-full bg-primary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
@@ -619,7 +710,6 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-
       {/* Matchers Section */}
       <section className="w-full bg-secondary/10 py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -689,7 +779,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
       {/* Teams Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
@@ -790,7 +879,6 @@ export default function HomePage() {
           </div>
         )}
       </section>
-
       <section id="progress" className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
@@ -833,7 +921,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
         <div className="max-w-[120rem] mx-auto px-8">
