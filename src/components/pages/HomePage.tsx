@@ -543,9 +543,7 @@ export default function HomePage() {
               <h2 className="font-heading text-5xl font-bold text-primary-foreground mb-4">
                 Make Your <span className="italic text-secondary">Contribution</span>
               </h2>
-              <p className="font-paragraph text-xl text-primary-foreground/90">
-                Every donation, no matter the size, brings us closer to our shared vision
-              </p>
+
             </div>
 
             <div className="bg-background rounded-lg p-10 shadow-2xl">
@@ -717,9 +715,7 @@ export default function HomePage() {
             <h2 className="font-heading text-5xl font-bold text-primary mb-4">
               Generous <span className="text-secondary italic">Matchers</span>
             </h2>
-            <p className="font-paragraph text-xl text-primary/80">
-              These organizations are doubling the impact of your donations
-            </p>
+
           </div>
 
           {matchers.length === 0 ? (
@@ -785,9 +781,7 @@ export default function HomePage() {
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
             Fundraising <span className="text-secondary italic">Teams</span>
           </h2>
-          <p className="font-paragraph text-xl text-primary/80">
-            Join a team or see how teams are competing to make a difference
-          </p>
+
         </div>
 
         {teams.length === 0 ? (
@@ -826,13 +820,11 @@ export default function HomePage() {
                     <h3 className="font-heading text-3xl font-bold text-primary">
                       {team.teamName}
                     </h3>
-                    <p className="font-paragraph text-base text-primary/70 mt-2">
-                      {team.teamDescription}
-                    </p>
+
                   </div>
                   <div className="grid grid-cols-2 gap-4">
 
-                    <div className="bg-background rounded-lg p-4">
+                    <div className="bg-background rounded-lg border-0 border-solid border-gray-200 m-0 p-4">
                       <p className="font-paragraph text-sm text-primary/60">Raised</p>
                       <p className="font-heading text-2xl font-bold text-secondary">
                         £{teamTotal.toLocaleString()}
