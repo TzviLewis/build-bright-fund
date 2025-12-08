@@ -13,6 +13,7 @@ import DonationWidget from '@/components/DonationWidget';
 import { useDonationStore } from '@/stores/donationStore';
 import CountdownTimer from '@/components/CountdownTimer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
+import ConfettiAnimation from '@/components/ConfettiAnimation';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -29,11 +30,26 @@ export default function HomePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [previousGoalAchieved, setPreviousGoalAchieved] = useState(false);
   const { addNotification } = useDonationStore();
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    // Check if goal was just achieved
+    const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const mainGoalAchieved = campaign?.fundraisingGoal && totalRaised >= campaign.fundraisingGoal;
+    
+    if (mainGoalAchieved && !previousGoalAchieved) {
+      setShowConfetti(true);
+      setPreviousGoalAchieved(true);
+      // Auto-hide confetti after animation
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
+  }, [donations, campaign, previousGoalAchieved]);
 
   const loadData = async () => {
     try {
@@ -146,6 +162,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {showConfetti && <ConfettiAnimation />}
       {/* Header */}
       <header className="bg-background border-b border-primary/10 shadow-sm">
         <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
