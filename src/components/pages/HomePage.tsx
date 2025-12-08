@@ -160,6 +160,11 @@ export default function HomePage() {
             <a href="#progress" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
               Progress
             </a>
+            <Link to="/gallery">
+              <a className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
+                Gallery
+              </a>
+            </Link>
             <Link to="/admin-login">
               <Button 
                 variant="outline" 
@@ -184,10 +189,10 @@ export default function HomePage() {
             >
               <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
                 <video
-                  src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.mp4?id=campaign-video-placeholder"
+                  src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.mp4?id=campaign-video-main"
                   controls
                   className="w-full h-full object-cover"
-                  poster="https://static.wixstatic.com/media/28ba1c_763e75fa5d304521850a4c245190616c~mv2.png?originWidth=640&originHeight=320"
+                  poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
                 />
               </div>
             </motion.div>

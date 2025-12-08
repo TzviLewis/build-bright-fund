@@ -6,6 +6,7 @@ import HomePage from '@/components/pages/HomePage';
 import AdminDashboard from '@/components/pages/AdminDashboard';
 import AdminLoginPage from '@/components/pages/AdminLoginPage';
 import TeamPage from '@/components/pages/TeamPage';
+import GalleryPage from '@/components/pages/GalleryPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import DonationNotificationPopup from '@/components/DonationNotificationPopup';
 
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "team/:teamId",
         element: <TeamPage />,
+      },
+      {
+        path: "gallery",
+        element: <GalleryPage />,
       },
       {
         path: "*",
