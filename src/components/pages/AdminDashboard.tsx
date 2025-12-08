@@ -6,10 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BaseCrudService } from '@/integrations';
-import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
+import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2 
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -42,6 +42,16 @@ interface TeamFormState {
   teamLogo: string;
 }
 
+interface GalleryFormState {
+  title: string;
+  image: string;
+  altText: string;
+  width: string;
+  height: string;
+  description: string;
+  displayOrder: string;
+}
+
 interface UIState {
   loading: boolean;
   saving: boolean;
@@ -49,8 +59,10 @@ interface UIState {
   successMessage: string | null;
   showNewMatcher: boolean;
   showNewTeam: boolean;
+  showNewGalleryImage: boolean;
   editingMatcherId: string | null;
   editingTeamId: string | null;
+  editingGalleryImageId: string | null;
 }
 
 interface DataState {
@@ -58,6 +70,7 @@ interface DataState {
   donations: Donations[];
   matchers: Matchers[];
   teams: Teams[];
+  galleryImages: GalleryImages[];
 }
 
 export default function AdminDashboard() {
@@ -69,8 +82,10 @@ export default function AdminDashboard() {
     successMessage: null,
     showNewMatcher: false,
     showNewTeam: false,
+    showNewGalleryImage: false,
     editingMatcherId: null,
     editingTeamId: null,
+    editingGalleryImageId: null,
   });
 
   // Data State
@@ -79,6 +94,7 @@ export default function AdminDashboard() {
     donations: [],
     matchers: [],
     teams: [],
+    galleryImages: [],
   });
 
   // Campaign Form State
@@ -111,6 +127,17 @@ export default function AdminDashboard() {
     teamLogo: '',
   });
 
+  // Gallery Form State
+  const [galleryForm, setGalleryForm] = useState<GalleryFormState>({
+    title: '',
+    image: '',
+    altText: '',
+    width: '',
+    height: '',
+    description: '',
+    displayOrder: '',
+  });
+
   // Team donations filter state
   const [selectedTeamForDonations, setSelectedTeamForDonations] = useState<string>('');
 
@@ -124,11 +151,12 @@ export default function AdminDashboard() {
     try {
       setUI(prev => ({ ...prev, loading: true, error: null }));
       
-      const [campaignRes, donationsRes, matchersRes, teamsRes] = await Promise.all([
+      const [campaignRes, donationsRes, matchersRes, teamsRes, galleryRes] = await Promise.all([
         BaseCrudService.getAll<CampaignDetails>('campaigndetails'),
         BaseCrudService.getAll<Donations>('donations'),
         BaseCrudService.getAll<Matchers>('matchers'),
         BaseCrudService.getAll<Teams>('teams'),
+        BaseCrudService.getAll<GalleryImages>('galleryimages'),
       ]);
 
       const campaign = campaignRes.items?.[0] || null;
@@ -138,6 +166,7 @@ export default function AdminDashboard() {
         donations: donationsRes.items || [],
         matchers: matchersRes.items || [],
         teams: teamsRes.items || [],
+        galleryImages: galleryRes.items || [],
       });
 
       // Load campaign form if exists
@@ -469,6 +498,130 @@ export default function AdminDashboard() {
     }));
   };
 
+  // Add/Update gallery image
+  const handleSaveGalleryImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!galleryForm.title || !galleryForm.image || !galleryForm.altText) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'Title, image, and alt text are required' 
+      }));
+      return;
+    }
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+
+      const imageData: GalleryImages = {
+        _id: ui.editingGalleryImageId || crypto.randomUUID(),
+        title: galleryForm.title,
+        image: galleryForm.image,
+        altText: galleryForm.altText,
+        width: galleryForm.width ? parseInt(galleryForm.width) : undefined,
+        height: galleryForm.height ? parseInt(galleryForm.height) : undefined,
+        description: galleryForm.description,
+        displayOrder: galleryForm.displayOrder ? parseInt(galleryForm.displayOrder) : undefined,
+      };
+
+      if (ui.editingGalleryImageId) {
+        await BaseCrudService.update('galleryimages', imageData);
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Gallery image updated successfully!' 
+        }));
+      } else {
+        await BaseCrudService.create('galleryimages', imageData);
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: 'Gallery image added successfully!' 
+        }));
+      }
+
+      resetGalleryForm();
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error saving gallery image';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to save gallery image: ${errorMsg}` 
+      }));
+      console.error('Error saving gallery image:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
+  // Delete gallery image
+  const handleDeleteGalleryImage = async (imageId: string) => {
+    if (!confirm('Are you sure you want to delete this gallery image?')) return;
+
+    try {
+      setUI(prev => ({ ...prev, error: null }));
+      await BaseCrudService.delete('galleryimages', imageId);
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: 'Gallery image deleted successfully!' 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error deleting gallery image';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to delete gallery image: ${errorMsg}` 
+      }));
+      console.error('Error deleting gallery image:', error);
+    }
+  };
+
+  // Edit gallery image
+  const handleEditGalleryImage = (image: GalleryImages) => {
+    setGalleryForm({
+      title: image.title || '',
+      image: image.image || '',
+      altText: image.altText || '',
+      width: image.width?.toString() || '',
+      height: image.height?.toString() || '',
+      description: image.description || '',
+      displayOrder: image.displayOrder?.toString() || '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewGalleryImage: true, 
+      editingGalleryImageId: image._id,
+      error: null 
+    }));
+  };
+
+  // Reset gallery form
+  const resetGalleryForm = () => {
+    setGalleryForm({
+      title: '',
+      image: '',
+      altText: '',
+      width: '',
+      height: '',
+      description: '',
+      displayOrder: '',
+    });
+    setUI(prev => ({ 
+      ...prev, 
+      showNewGalleryImage: false, 
+      editingGalleryImageId: null,
+      error: null 
+    }));
+  };
+
   // Calculate stats
   const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const completedDonations = data.donations.filter(d => d.status === 'completed');
@@ -653,6 +806,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="campaign" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Campaign
             </TabsTrigger>
+            <TabsTrigger value="gallery" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+              Gallery
+            </TabsTrigger>
             <TabsTrigger value="matchers" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               Matchers
             </TabsTrigger>
@@ -791,7 +947,246 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Matchers Tab */}
+          {/* Gallery Tab */}
+          <TabsContent value="gallery">
+            <Card className="border-blue-200 bg-white shadow-lg">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="font-heading text-2xl font-bold text-blue-900 flex items-center gap-2">
+                    <ImageIcon className="w-6 h-6" />
+                    Manage Gallery Images
+                  </CardTitle>
+                  <Button
+                    onClick={() => {
+                      if (ui.showNewGalleryImage) {
+                        resetGalleryForm();
+                      } else {
+                        setUI(prev => ({ ...prev, showNewGalleryImage: true }));
+                      }
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Image
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {ui.showNewGalleryImage && (
+                  <motion.form
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    onSubmit={handleSaveGalleryImage}
+                    className="space-y-6 p-6 bg-blue-50 rounded-lg border-2 border-blue-200"
+                  >
+                    <h3 className="font-heading text-lg font-bold text-blue-900">
+                      {ui.editingGalleryImageId ? 'Edit Gallery Image' : 'New Gallery Image'}
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Title *
+                        </label>
+                        <Input
+                          type="text"
+                          value={galleryForm.title}
+                          onChange={(e) => setGalleryForm(prev => ({ ...prev, title: e.target.value }))}
+                          placeholder="e.g., Main Entrance"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Display Order
+                        </label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={galleryForm.displayOrder}
+                          onChange={(e) => setGalleryForm(prev => ({ ...prev, displayOrder: e.target.value }))}
+                          placeholder="1"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        Image URL *
+                      </label>
+                      <Input
+                        type="text"
+                        value={galleryForm.image}
+                        onChange={(e) => setGalleryForm(prev => ({ ...prev, image: e.target.value }))}
+                        placeholder="https://example.com/image.jpg"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        Alt Text *
+                      </label>
+                      <Input
+                        type="text"
+                        value={galleryForm.altText}
+                        onChange={(e) => setGalleryForm(prev => ({ ...prev, altText: e.target.value }))}
+                        placeholder="Descriptive text for accessibility"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Width (px)
+                        </label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={galleryForm.width}
+                          onChange={(e) => setGalleryForm(prev => ({ ...prev, width: e.target.value }))}
+                          placeholder="400"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Height (px)
+                        </label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={galleryForm.height}
+                          onChange={(e) => setGalleryForm(prev => ({ ...prev, height: e.target.value }))}
+                          placeholder="500"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        Description
+                      </label>
+                      <Textarea
+                        value={galleryForm.description}
+                        onChange={(e) => setGalleryForm(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Additional details about the image..."
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 min-h-[100px]"
+                      />
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Button
+                        type="submit"
+                        disabled={ui.saving}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg"
+                      >
+                        {ui.saving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4 mr-2" />
+                            {ui.editingGalleryImageId ? 'Update' : 'Add'} Image
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={resetGalleryForm}
+                        variant="outline"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </motion.form>
+                )}
+
+                {data.galleryImages.length === 0 ? (
+                  <p className="font-paragraph text-center text-blue-600/60 py-8">
+                    No gallery images yet. Add one to get started!
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {data.galleryImages.map((image) => (
+                      <motion.div
+                        key={image._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-blue-50 rounded-lg overflow-hidden border border-blue-200 space-y-4"
+                      >
+                        {image.image && (
+                          <div className="w-full h-40 overflow-hidden bg-white">
+                            <Image 
+                              src={image.image} 
+                              alt={image.altText || image.title || 'Gallery image'} 
+                              className="w-full h-full object-cover" 
+                              width={300} 
+                            />
+                          </div>
+                        )}
+                        <div className="p-4 space-y-2">
+                          <h4 className="font-heading text-lg font-bold text-blue-900">
+                            {image.title}
+                          </h4>
+                          <p className="font-paragraph text-sm text-blue-700">
+                            {image.altText}
+                          </p>
+                          {image.description && (
+                            <p className="font-paragraph text-xs text-blue-600/70">
+                              {image.description}
+                            </p>
+                          )}
+                          <div className="grid grid-cols-2 gap-2 text-xs pt-2">
+                            {image.width && (
+                              <div className="bg-white rounded p-2">
+                                <p className="text-blue-600/60">Width</p>
+                                <p className="font-bold text-blue-900">{image.width}px</p>
+                              </div>
+                            )}
+                            {image.height && (
+                              <div className="bg-white rounded p-2">
+                                <p className="text-blue-600/60">Height</p>
+                                <p className="font-bold text-blue-900">{image.height}px</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex gap-2 pt-4">
+                            <Button
+                              onClick={() => handleEditGalleryImage(image)}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteGalleryImage(image._id)}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="matchers">
             <Card className="border-blue-200 bg-white shadow-lg">
               <CardHeader>

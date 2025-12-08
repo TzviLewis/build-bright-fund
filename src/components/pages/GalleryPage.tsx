@@ -2,103 +2,33 @@ import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BaseCrudService } from '@/integrations';
+import { GalleryImages } from '@/entities';
 
 export default function GalleryPage() {
-  // 13 placeholder images for the gallery
-  const galleryImages = [
-    {
-      id: 1,
-      src: 'https://static.wixstatic.com/media/28ba1c_c3462b4a313946bb8d9b9809012b29db~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Main entrance',
-      width: 400,
-      height: 500,
-    },
-    {
-      id: 2,
-      src: 'https://static.wixstatic.com/media/28ba1c_2f9e3cb1b7cb4c048dad8ad9cbfed7db~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Classroom wing',
-      width: 300,
-      height: 400,
-    },
-    {
-      id: 3,
-      src: 'https://static.wixstatic.com/media/28ba1c_3108af5f06fc4713a83236daf2578394~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Library area',
-      width: 350,
-      height: 450,
-    },
-    {
-      id: 4,
-      src: 'https://static.wixstatic.com/media/28ba1c_84398a21a7be42e0bab8a346d4303fc8~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Sports facility',
-      width: 400,
-      height: 300,
-    },
-    {
-      id: 5,
-      src: 'https://static.wixstatic.com/media/28ba1c_ba9bc3e42b1c4f2caa68f172073368ba~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Auditorium',
-      width: 450,
-      height: 350,
-    },
-    {
-      id: 6,
-      src: 'https://static.wixstatic.com/media/28ba1c_db366dc582494e36b40b20b737425865~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Courtyard',
-      width: 350,
-      height: 400,
-    },
-    {
-      id: 7,
-      src: 'https://static.wixstatic.com/media/28ba1c_e2cc385f5c3f4d9ba08c86ab873a716e~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Laboratory',
-      width: 400,
-      height: 450,
-    },
-    {
-      id: 8,
-      src: 'https://static.wixstatic.com/media/28ba1c_932bcd29417c4325a88f264d5dac4d63~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Cafeteria',
-      width: 350,
-      height: 300,
-    },
-    {
-      id: 9,
-      src: 'https://static.wixstatic.com/media/28ba1c_00676cc6e7384704a1f0c7afddcd433b~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Hallway',
-      width: 400,
-      height: 500,
-    },
-    {
-      id: 10,
-      src: 'https://static.wixstatic.com/media/28ba1c_797549ce05e34ff4aaea22115831d8ee~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Playground',
-      width: 450,
-      height: 350,
-    },
-    {
-      id: 11,
-      src: 'https://static.wixstatic.com/media/28ba1c_dc70332a3818448980731c8cc8b435de~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Art studio',
-      width: 350,
-      height: 450,
-    },
-    {
-      id: 12,
-      src: 'https://static.wixstatic.com/media/28ba1c_d7779541fc29497fb1afc917ca0a00ea~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Music room',
-      width: 400,
-      height: 400,
-    },
-    {
-      id: 13,
-      src: 'https://static.wixstatic.com/media/28ba1c_d3a9dd1bc08f40d0b0e34e28c8e51f17~mv2.png?originWidth=384&originHeight=448',
-      alt: 'School architecture - Exterior view',
-      width: 450,
-      height: 400,
-    },
-  ];
+  const [galleryImages, setGalleryImages] = useState<GalleryImages[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadGalleryImages();
+  }, []);
+
+  const loadGalleryImages = async () => {
+    try {
+      setLoading(true);
+      const { items } = await BaseCrudService.getAll<GalleryImages>('galleryimages');
+      // Sort by displayOrder if available
+      const sorted = (items || []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+      setGalleryImages(sorted);
+    } catch (error) {
+      console.error('Error loading gallery images:', error);
+      setGalleryImages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -122,6 +52,17 @@ export default function GalleryPage() {
       },
     },
   } as const;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="font-paragraph text-lg text-primary">Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -178,20 +119,20 @@ export default function GalleryPage() {
         >
           {galleryImages.map((image) => (
             <motion.div
-              key={image.id}
+              key={image._id}
               variants={itemVariants}
               className="break-inside-avoid"
             >
               <div className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
                 <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={image.width}
+                  src={image.image || ''}
+                  alt={image.altText || image.title || 'Gallery image'}
+                  width={image.width || 400}
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <p className="font-paragraph text-base text-primary-foreground font-semibold">
-                    {image.alt}
+                    {image.title || image.altText}
                   </p>
                 </div>
               </div>
