@@ -455,7 +455,7 @@ export default function HomePage() {
 
             </div>
             <div className="flex justify-center">
-              <CircularCountdownTimer endDate={campaign.campaignEndDate} />
+              <CircularCountdownTimer endDate={campaign.campaignEndDate} startDate={campaign.campaignStartDate} />
             </div>
           </div>
         </section>

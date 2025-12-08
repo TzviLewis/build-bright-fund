@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 interface CircularCountdownTimerProps {
   endDate: Date | string;
+  startDate?: Date | string;
 }
 
 interface TimeLeft {
@@ -14,7 +15,7 @@ interface TimeLeft {
   isExpired: boolean;
 }
 
-export default function CircularCountdownTimer({ endDate }: CircularCountdownTimerProps) {
+export default function CircularCountdownTimer({ endDate, startDate }: CircularCountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -64,9 +65,29 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
     return () => clearInterval(timer);
   }, [endDate]);
 
-  // Calculate total seconds for a full campaign (30 days for example)
-  const maxTotalSeconds = 30 * 24 * 60 * 60;
-  const progressPercentage = Math.min((timeLeft.totalSeconds / maxTotalSeconds) * 100, 100);
+  // Calculate progress based on campaign start and end dates
+  const calculateProgressPercentage = () => {
+    if (!startDate || !endDate) {
+      // Fallback: assume 30-day campaign
+      const maxTotalSeconds = 30 * 24 * 60 * 60;
+      return Math.min((timeLeft.totalSeconds / maxTotalSeconds) * 100, 100);
+    }
+
+    const start = new Date(startDate).getTime();
+    const end = new Date(endDate).getTime();
+    const now = new Date().getTime();
+    
+    const totalDuration = end - start;
+    const elapsed = now - start;
+    const remaining = end - now;
+
+    // Progress is how much time has elapsed (0% at start, 100% at end)
+    // But we show remaining time, so it's inverted
+    const elapsedPercentage = Math.max(0, Math.min((elapsed / totalDuration) * 100, 100));
+    return 100 - elapsedPercentage; // Show remaining time as the "fill"
+  };
+
+  const progressPercentage = calculateProgressPercentage();
 
   if (timeLeft.isExpired) {
     return (
