@@ -152,7 +152,6 @@ export default function GalleryPage() {
           </nav>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="w-full bg-gradient-to-r from-primary/5 to-secondary/5 py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -165,13 +164,10 @@ export default function GalleryPage() {
             <h1 className="font-heading text-6xl lg:text-7xl font-bold text-primary">
               School <span className="text-secondary italic">Architecture</span>
             </h1>
-            <p className="font-paragraph text-xl text-primary/70 max-w-2xl mx-auto">
-              Explore the beautiful design and modern facilities of our new school building. These images showcase the vision we're bringing to life with your support.
-            </p>
+
           </motion.div>
         </div>
       </section>
-
       {/* Gallery Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <motion.div
@@ -203,7 +199,6 @@ export default function GalleryPage() {
           ))}
         </motion.div>
       </section>
-
       {/* Call to Action Section */}
       <section className="w-full bg-primary py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -242,7 +237,6 @@ export default function GalleryPage() {
           </motion.div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
         <div className="max-w-[120rem] mx-auto px-8">
