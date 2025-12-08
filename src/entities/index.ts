@@ -13,6 +13,10 @@ export interface CampaignDetails {
   _updatedDate?: Date;
   /** @wixFieldType text */
   campaignTitle?: string;
+  /** @wixFieldType text */
+  bonusGoalDescription?: string;
+  /** @wixFieldType number */
+  bonusGoal?: number;
   /** @wixFieldType number */
   fundraisingGoal?: number;
   /** @wixFieldType text */

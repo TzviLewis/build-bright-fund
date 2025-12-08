@@ -99,7 +99,7 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
     >
       <div className="relative w-80 h-80 flex items-center justify-center">
         {/* Outer circle background */}
-        <svg className="absolute inset-0 w-full h-full opacity-[1] my-0 mx-[5px] fill-destructive" viewBox="0 0 320 320">
+        <svg className="absolute inset-0 w-full h-full opacity-[1] my-0 mx-[5px]" viewBox="0 0 320 320">
           {/* Background circle */}
           <circle
                 cx="160"
@@ -115,13 +115,19 @@ export default function CircularCountdownTimer({ endDate }: CircularCountdownTim
         cy="160"
         r="150"
         fill="none"
-        stroke="#E31B23"
+        stroke="#60a2ff"
         strokeWidth="8"
         strokeDasharray={`${2 * Math.PI * 150}`}
         strokeDashoffset={`${2 * Math.PI * 150 * (1 - progressPercentage / 100)}`}
         strokeLinecap="round"
         transform="rotate(-90 160 160)"
-        transition={{ strokeDashoffset: { duration: 1, ease: 'linear' } }}
+        animate={{
+          filter: ['drop-shadow(0 0 0px rgba(96, 162, 255, 0.5))', 'drop-shadow(0 0 8px rgba(96, 162, 255, 0.8))', 'drop-shadow(0 0 0px rgba(96, 162, 255, 0.5))']
+        }}
+        transition={{ 
+          strokeDashoffset: { duration: 1, ease: 'linear' },
+          filter: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+        }}
       />
         {/* Progress circle */}
           </svg>
