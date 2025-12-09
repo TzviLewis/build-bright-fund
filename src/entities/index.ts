@@ -132,28 +132,3 @@ export interface Teams {
   /** @wixFieldType number */
   teamId?: number;
 }
-
-
-/**
- * Collection ID: galleryimages
- * Interface for GalleryImages
- */
-export interface GalleryImages {
-  _id: string;
-  _createdDate?: Date;
-  _updatedDate?: Date;
-  /** @wixFieldType text */
-  title?: string;
-  /** @wixFieldType image */
-  image?: string;
-  /** @wixFieldType text */
-  altText?: string;
-  /** @wixFieldType number */
-  width?: number;
-  /** @wixFieldType number */
-  height?: number;
-  /** @wixFieldType text */
-  description?: string;
-  /** @wixFieldType number */
-  displayOrder?: number;
-}

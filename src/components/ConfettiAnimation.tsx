@@ -13,21 +13,21 @@ export default function ConfettiAnimation() {
   const [confetti, setConfetti] = useState<Confetti[]>([]);
 
   useEffect(() => {
-    // Generate confetti pieces
-    const pieces: Confetti[] = Array.from({ length: 50 }, (_, i) => ({
+    // Generate confetti pieces - increased count and duration
+    const pieces: Confetti[] = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 0.3,
-      duration: 2.5 + Math.random() * 0.5,
+      delay: Math.random() * 0.5,
+      duration: 4 + Math.random() * 1.5,
       color: ['#60a2ff', '#0B1E5B', '#FFFFFF'][Math.floor(Math.random() * 3)],
     }));
 
     setConfetti(pieces);
 
-    // Clear confetti after animation completes
+    // Clear confetti after animation completes - increased timeout
     const timer = setTimeout(() => {
       setConfetti([]);
-    }, 3500);
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -53,7 +53,7 @@ export default function ConfettiAnimation() {
             delay: piece.delay,
             ease: 'easeIn',
           }}
-          className="absolute w-2 h-2 rounded-full"
+          className="absolute w-4 h-4 rounded-full"
           style={{ backgroundColor: piece.color }}
         />
       ))}

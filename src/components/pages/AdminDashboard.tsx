@@ -50,6 +50,7 @@ interface GalleryFormState {
   height: string;
   description: string;
   displayOrder: string;
+  uploadedFile?: File;
 }
 
 interface UIState {
@@ -613,6 +614,7 @@ export default function AdminDashboard() {
       height: '',
       description: '',
       displayOrder: '',
+      uploadedFile: undefined,
     });
     setUI(prev => ({ 
       ...prev, 
@@ -620,6 +622,24 @@ export default function AdminDashboard() {
       editingGalleryImageId: null,
       error: null 
     }));
+  };
+
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create a data URL for preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setGalleryForm(prev => ({ 
+          ...prev, 
+          image: dataUrl,
+          uploadedFile: file 
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Calculate stats
@@ -1014,15 +1034,37 @@ export default function AdminDashboard() {
 
                     <div className="space-y-2">
                       <label className="font-paragraph text-sm font-semibold text-blue-900">
-                        Image URL *
+                        Image URL or Upload *
                       </label>
-                      <Input
-                        type="text"
-                        value={galleryForm.image}
-                        onChange={(e) => setGalleryForm(prev => ({ ...prev, image: e.target.value }))}
-                        placeholder="https://example.com/image.jpg"
-                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
-                      />
+                      <div className="space-y-3">
+                        <Input
+                          type="text"
+                          value={galleryForm.image}
+                          onChange={(e) => setGalleryForm(prev => ({ ...prev, image: e.target.value }))}
+                          placeholder="https://example.com/image.jpg"
+                          className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        />
+                        <div className="relative">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="gallery-file-upload"
+                          />
+                          <label
+                            htmlFor="gallery-file-upload"
+                            className="block w-full px-4 py-2 border-2 border-dashed border-blue-300 rounded-lg text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors font-paragraph text-sm text-blue-700"
+                          >
+                            Or click to upload an image
+                          </label>
+                        </div>
+                        {galleryForm.uploadedFile && (
+                          <p className="text-sm text-green-600 font-semibold">
+                            ✓ File selected: {galleryForm.uploadedFile.name}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-2">
