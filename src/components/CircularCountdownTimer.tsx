@@ -163,14 +163,14 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
         stroke="#60a2ff"
         strokeWidth="8"
         strokeDasharray={`${2 * Math.PI * 150}`}
-        strokeDashoffset={`${2 * Math.PI * 150 * (1 - progressPercentage / 100)}`}
+        strokeDashoffset={2 * Math.PI * 150 * (1 - progressPercentage / 100)}
         strokeLinecap="round"
         transform="rotate(-90 160 160)"
         animate={{
           filter: ['drop-shadow(0 0 0px rgba(96, 162, 255, 0.5))', 'drop-shadow(0 0 8px rgba(96, 162, 255, 0.8))', 'drop-shadow(0 0 0px rgba(96, 162, 255, 0.5))']
         }}
         transition={{ 
-          strokeDashoffset: { duration: 1, ease: 'linear' },
+          strokeDashoffset: { duration: 0.5, ease: 'linear' },
           filter: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
         }}
       />
