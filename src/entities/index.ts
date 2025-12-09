@@ -25,6 +25,8 @@ export interface CampaignDetails {
   promotionalText?: string;
   /** @wixFieldType image */
   mainCampaignImage?: string;
+  /** @wixFieldType url */
+  campaignVideo?: string;
   /** @wixFieldType date */
   campaignStartDate?: Date | string;
   /** @wixFieldType date */

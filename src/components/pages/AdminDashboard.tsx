@@ -18,9 +18,12 @@ import DonationWidget from '@/components/DonationWidget';
 interface FormState {
   campaignTitle: string;
   fundraisingGoal: string;
+  bonusGoal: string;
+  bonusGoalDescription: string;
   projectDescription: string;
   promotionalText: string;
   mainCampaignImage: string;
+  campaignVideo: string;
   campaignStartDate: string;
   campaignEndDate: string;
 }
@@ -102,9 +105,12 @@ export default function AdminDashboard() {
   const [campaignForm, setCampaignForm] = useState<FormState>({
     campaignTitle: '',
     fundraisingGoal: '',
+    bonusGoal: '',
+    bonusGoalDescription: '',
     projectDescription: '',
     promotionalText: '',
     mainCampaignImage: '',
+    campaignVideo: '',
     campaignStartDate: '',
     campaignEndDate: '',
   });
@@ -175,9 +181,12 @@ export default function AdminDashboard() {
         setCampaignForm({
           campaignTitle: campaign.campaignTitle || '',
           fundraisingGoal: campaign.fundraisingGoal?.toString() || '',
+          bonusGoal: campaign.bonusGoal?.toString() || '',
+          bonusGoalDescription: campaign.bonusGoalDescription || '',
           projectDescription: campaign.projectDescription || '',
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
+          campaignVideo: campaign.campaignVideo || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
             : '',
@@ -217,9 +226,12 @@ export default function AdminDashboard() {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
         fundraisingGoal: parseFloat(campaignForm.fundraisingGoal),
+        bonusGoal: campaignForm.bonusGoal ? parseFloat(campaignForm.bonusGoal) : undefined,
+        bonusGoalDescription: campaignForm.bonusGoalDescription,
         projectDescription: campaignForm.projectDescription,
         promotionalText: campaignForm.promotionalText,
         mainCampaignImage: campaignForm.mainCampaignImage,
+        campaignVideo: campaignForm.campaignVideo,
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : undefined,
@@ -878,6 +890,34 @@ export default function AdminDashboard() {
                         className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
                     </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        Bonus Goal ($)
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={campaignForm.bonusGoal}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, bonusGoal: e.target.value }))}
+                        placeholder="e.g., 750000"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        Bonus Goal Description
+                      </label>
+                      <Input
+                        type="text"
+                        value={campaignForm.bonusGoalDescription}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, bonusGoalDescription: e.target.value }))}
+                        placeholder="e.g., Unlock additional features at this milestone"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -902,6 +942,22 @@ export default function AdminDashboard() {
                       placeholder="Detailed description of the project..."
                       className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 min-h-[150px]"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
+                      Campaign Video URL
+                    </label>
+                    <Input
+                      type="text"
+                      value={campaignForm.campaignVideo}
+                      onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignVideo: e.target.value }))}
+                      placeholder="https://example.com/video.mp4 or https://youtube.com/watch?v=..."
+                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                    />
+                    <p className="font-paragraph text-xs text-blue-600/60 mt-1">
+                      Supports video URLs (MP4, WebM) or YouTube/Vimeo links
+                    </p>
                   </div>
 
                   <div className="space-y-2">
