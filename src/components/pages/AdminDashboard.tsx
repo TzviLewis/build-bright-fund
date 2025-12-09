@@ -26,6 +26,7 @@ interface FormState {
   campaignVideo: string;
   campaignStartDate: string;
   campaignEndDate: string;
+  uploadedVideoFile?: File;
 }
 
 interface MatcherFormState {
@@ -654,6 +655,35 @@ export default function AdminDashboard() {
     }
   };
 
+  // Handle video file upload
+  const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate video file type
+      const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+      if (!validVideoTypes.includes(file.type)) {
+        setUI(prev => ({ 
+          ...prev, 
+          error: 'Please upload a valid video file (MP4, WebM, OGG, or MOV)' 
+        }));
+        return;
+      }
+
+      // Create a data URL for preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setCampaignForm(prev => ({ 
+          ...prev, 
+          campaignVideo: dataUrl,
+          uploadedVideoFile: file 
+        }));
+        setUI(prev => ({ ...prev, error: null }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Calculate stats
   const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const completedDonations = data.donations.filter(d => d.status === 'completed');
@@ -946,17 +976,39 @@ export default function AdminDashboard() {
 
                   <div className="space-y-2">
                     <label className="font-paragraph text-sm font-semibold text-blue-900">
-                      Campaign Video URL
+                      Campaign Video URL or Upload
                     </label>
-                    <Input
-                      type="text"
-                      value={campaignForm.campaignVideo}
-                      onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignVideo: e.target.value }))}
-                      placeholder="https://example.com/video.mp4 or https://youtube.com/watch?v=..."
-                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
-                    />
+                    <div className="space-y-3">
+                      <Input
+                        type="text"
+                        value={campaignForm.campaignVideo}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignVideo: e.target.value }))}
+                        placeholder="https://example.com/video.mp4 or https://youtube.com/watch?v=..."
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="video/*"
+                          onChange={handleVideoFileUpload}
+                          className="hidden"
+                          id="campaign-video-upload"
+                        />
+                        <label
+                          htmlFor="campaign-video-upload"
+                          className="block w-full px-4 py-2 border-2 border-dashed border-blue-300 rounded-lg text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors font-paragraph text-sm text-blue-700"
+                        >
+                          Or click to upload a video file
+                        </label>
+                      </div>
+                      {campaignForm.uploadedVideoFile && (
+                        <p className="text-sm text-green-600 font-semibold">
+                          ✓ Video selected: {campaignForm.uploadedVideoFile.name}
+                        </p>
+                      )}
+                    </div>
                     <p className="font-paragraph text-xs text-blue-600/60 mt-1">
-                      Supports video URLs (MP4, WebM) or YouTube/Vimeo links
+                      Supports video URLs (MP4, WebM, OGG) or YouTube/Vimeo links, or upload video files directly
                     </p>
                   </div>
 

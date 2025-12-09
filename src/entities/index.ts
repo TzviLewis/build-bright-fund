@@ -13,6 +13,8 @@ export interface CampaignDetails {
   _updatedDate?: Date;
   /** @wixFieldType text */
   campaignTitle?: string;
+  /** @wixFieldType url */
+  campaignVideo?: string;
   /** @wixFieldType text */
   bonusGoalDescription?: string;
   /** @wixFieldType number */
@@ -25,8 +27,6 @@ export interface CampaignDetails {
   promotionalText?: string;
   /** @wixFieldType image */
   mainCampaignImage?: string;
-  /** @wixFieldType url */
-  campaignVideo?: string;
   /** @wixFieldType date */
   campaignStartDate?: Date | string;
   /** @wixFieldType date */
