@@ -13,6 +13,7 @@ interface TimeLeft {
   seconds: number;
   totalSeconds: number;
   isExpired: boolean;
+  hasStarted: boolean;
 }
 
 export default function CircularCountdownTimer({ endDate, startDate }: CircularCountdownTimerProps) {
@@ -23,12 +24,33 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
     seconds: 0,
     totalSeconds: 0,
     isExpired: false,
+    hasStarted: false,
   });
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const targetDate = new Date(endDate).getTime();
       const now = new Date().getTime();
+      
+      // Check if campaign has started
+      let targetDate: number;
+      let campaignHasStarted = true;
+      
+      if (startDate) {
+        const startTime = new Date(startDate).getTime();
+        if (now < startTime) {
+          // Campaign hasn't started yet
+          targetDate = startTime;
+          campaignHasStarted = false;
+        } else {
+          // Campaign has started, count down to end
+          targetDate = new Date(endDate).getTime();
+          campaignHasStarted = true;
+        }
+      } else {
+        // No start date provided, just count to end date
+        targetDate = new Date(endDate).getTime();
+      }
+
       const difference = targetDate - now;
 
       if (difference <= 0) {
@@ -39,6 +61,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
           seconds: 0,
           totalSeconds: 0,
           isExpired: true,
+          hasStarted: campaignHasStarted,
         });
         return;
       }
@@ -56,6 +79,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
         seconds,
         totalSeconds,
         isExpired: false,
+        hasStarted: campaignHasStarted,
       });
     };
 
@@ -63,7 +87,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [endDate]);
+  }, [endDate, startDate]);
 
   // Calculate progress based on campaign start and end dates
   const calculateProgressPercentage = () => {
@@ -100,10 +124,10 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
           <div className="absolute inset-0 rounded-full bg-destructive/10 border-4 border-destructive"></div>
           <div className="text-center z-10">
             <p className="font-heading text-3xl font-bold text-destructive">
-              Campaign Ended
+              {timeLeft.hasStarted ? 'Campaign Ended' : 'Coming Soon'}
             </p>
             <p className="font-paragraph text-base text-destructive/80 mt-2">
-              Thank you for your support!
+              {timeLeft.hasStarted ? 'Thank you for your support!' : 'Stay tuned!'}
             </p>
           </div>
         </div>
@@ -156,7 +180,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
         {/* Center content */}
         <div className="relative z-10 text-center space-y-4">
           <p className="font-paragraph text-lg text-primary/70 uppercase tracking-wider">
-            Campaign Ends In
+            {timeLeft.hasStarted ? 'Campaign Ends In' : 'Campaign Starts In'}
           </p>
           
           <div className="space-y-2">

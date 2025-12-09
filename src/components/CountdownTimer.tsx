@@ -4,6 +4,7 @@ import { Clock } from 'lucide-react';
 
 interface CountdownTimerProps {
   endDate: Date | string;
+  startDate?: Date | string;
 }
 
 interface TimeLeft {
@@ -12,21 +13,43 @@ interface TimeLeft {
   minutes: number;
   seconds: number;
   isExpired: boolean;
+  hasStarted: boolean;
 }
 
-export default function CountdownTimer({ endDate }: CountdownTimerProps) {
+export default function CountdownTimer({ endDate, startDate }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
     isExpired: false,
+    hasStarted: false,
   });
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const targetDate = new Date(endDate).getTime();
       const now = new Date().getTime();
+      
+      // Check if campaign has started
+      let targetDate: number;
+      let campaignHasStarted = true;
+      
+      if (startDate) {
+        const startTime = new Date(startDate).getTime();
+        if (now < startTime) {
+          // Campaign hasn't started yet
+          targetDate = startTime;
+          campaignHasStarted = false;
+        } else {
+          // Campaign has started, count down to end
+          targetDate = new Date(endDate).getTime();
+          campaignHasStarted = true;
+        }
+      } else {
+        // No start date provided, just count to end date
+        targetDate = new Date(endDate).getTime();
+      }
+
       const difference = targetDate - now;
 
       if (difference <= 0) {
@@ -36,6 +59,7 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
           minutes: 0,
           seconds: 0,
           isExpired: true,
+          hasStarted: campaignHasStarted,
         });
         return;
       }
@@ -51,6 +75,7 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
         minutes,
         seconds,
         isExpired: false,
+        hasStarted: campaignHasStarted,
       });
     };
 
@@ -58,7 +83,7 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [endDate]);
+  }, [endDate, startDate]);
 
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
     <motion.div
@@ -85,10 +110,10 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
         className="bg-destructive/10 border-2 border-destructive rounded-lg p-8 text-center"
       >
         <p className="font-heading text-2xl font-bold text-destructive">
-          Campaign Has Ended
+          {timeLeft.hasStarted ? 'Campaign Has Ended' : 'Campaign Coming Soon'}
         </p>
         <p className="font-paragraph text-base text-destructive/80 mt-2">
-          Thank you for your support!
+          {timeLeft.hasStarted ? 'Thank you for your support!' : 'Stay tuned for updates!'}
         </p>
       </motion.div>
     );
@@ -104,7 +129,7 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
       <div className="flex items-center gap-3 mb-6">
         <Clock className="w-8 h-8 text-secondary" />
         <h3 className="font-heading text-2xl font-bold text-primary">
-          Campaign Ends In
+          {timeLeft.hasStarted ? 'Campaign Ends In' : 'Campaign Starts In'}
         </h3>
       </div>
 
