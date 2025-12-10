@@ -227,18 +227,18 @@ export default function AdminDashboard() {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
         fundraisingGoal: parseFloat(campaignForm.fundraisingGoal),
-        bonusGoal: campaignForm.bonusGoal ? parseFloat(campaignForm.bonusGoal) : undefined,
-        bonusGoalDescription: campaignForm.bonusGoalDescription,
-        projectDescription: campaignForm.projectDescription,
-        promotionalText: campaignForm.promotionalText,
-        mainCampaignImage: campaignForm.mainCampaignImage,
-        campaignVideo: campaignForm.campaignVideo,
+        bonusGoal: campaignForm.bonusGoal ? parseFloat(campaignForm.bonusGoal) : 0,
+        bonusGoalDescription: campaignForm.bonusGoalDescription || '',
+        projectDescription: campaignForm.projectDescription || '',
+        promotionalText: campaignForm.promotionalText || '',
+        mainCampaignImage: campaignForm.mainCampaignImage || '',
+        campaignVideo: campaignForm.campaignVideo || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
-          : undefined,
+          : '',
         campaignEndDate: campaignForm.campaignEndDate 
           ? new Date(campaignForm.campaignEndDate).toISOString() 
-          : undefined,
+          : '',
       };
 
       if (data.campaign?._id) {
