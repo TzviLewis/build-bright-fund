@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
+import { uploadVideoFile, uploadImageFile, isValidVideoFile, isValidImageFile } from '@/lib/media-upload';
 
 interface FormState {
   campaignTitle: string;
@@ -223,6 +224,23 @@ export default function AdminDashboard() {
     try {
       setUI(prev => ({ ...prev, saving: true, error: null }));
 
+      let videoUrl = campaignForm.campaignVideo;
+
+      // Upload video file if one was selected
+      if (campaignForm.uploadedVideoFile) {
+        try {
+          const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile);
+          videoUrl = uploadResponse.url;
+        } catch (uploadError) {
+          setUI(prev => ({ 
+            ...prev, 
+            error: `Failed to upload video: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`,
+            saving: false
+          }));
+          return;
+        }
+      }
+
       const campaignData: CampaignDetails = {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
@@ -232,7 +250,7 @@ export default function AdminDashboard() {
         projectDescription: campaignForm.projectDescription || '',
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
-        campaignVideo: campaignForm.campaignVideo || '',
+        campaignVideo: videoUrl || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
@@ -255,6 +273,9 @@ export default function AdminDashboard() {
       setTimeout(() => {
         setUI(prev => ({ ...prev, successMessage: null }));
       }, 3000);
+
+      // Clear uploaded file after successful save
+      setCampaignForm(prev => ({ ...prev, uploadedVideoFile: undefined }));
 
       await loadAllData();
     } catch (error) {
@@ -656,31 +677,32 @@ export default function AdminDashboard() {
   };
 
   // Handle video file upload
-  const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate video file type - includes MOV (video/quicktime)
-      const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
-      if (!validVideoTypes.includes(file.type)) {
+      const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'];
+      const validExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+      
+      if (!validVideoTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
         setUI(prev => ({ 
           ...prev, 
-          error: 'Please upload a valid video file (MP4, WebM, OGG, or MOV)' 
+          error: 'Please upload a valid video file (MP4, WebM, OGG, MOV, or AVI)' 
         }));
         return;
       }
 
-      // Create a data URL for preview
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
-        setCampaignForm(prev => ({ 
-          ...prev, 
-          campaignVideo: dataUrl,
-          uploadedVideoFile: file 
-        }));
-        setUI(prev => ({ ...prev, error: null }));
-      };
-      reader.readAsDataURL(file);
+      // Store the file for upload during save
+      setCampaignForm(prev => ({ 
+        ...prev, 
+        uploadedVideoFile: file 
+      }));
+      setUI(prev => ({ ...prev, error: null, successMessage: 'Video file selected. It will be uploaded when you save the campaign.' }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
     }
   };
 
