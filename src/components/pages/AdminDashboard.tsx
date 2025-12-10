@@ -69,6 +69,7 @@ interface UIState {
   editingMatcherId: string | null;
   editingTeamId: string | null;
   editingGalleryImageId: string | null;
+  uploadProgress: number;
 }
 
 interface DataState {
@@ -92,6 +93,7 @@ export default function AdminDashboard() {
     editingMatcherId: null,
     editingTeamId: null,
     editingGalleryImageId: null,
+    uploadProgress: 0,
   });
 
   // Data State
@@ -229,13 +231,19 @@ export default function AdminDashboard() {
       // Upload video file if one was selected
       if (campaignForm.uploadedVideoFile) {
         try {
-          const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile);
+          setUI(prev => ({ ...prev, uploadProgress: 0 }));
+          const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile, (progress) => {
+            setUI(prev => ({ ...prev, uploadProgress: progress }));
+          });
           videoUrl = uploadResponse.url;
+          setUI(prev => ({ ...prev, uploadProgress: 0 }));
         } catch (uploadError) {
+          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown error';
           setUI(prev => ({ 
             ...prev, 
-            error: `Failed to upload video: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`,
-            saving: false
+            error: errorMessage,
+            saving: false,
+            uploadProgress: 0
           }));
           return;
         }
@@ -1124,10 +1132,20 @@ export default function AdminDashboard() {
                     className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg px-8 py-2 font-semibold w-full md:w-auto shadow-lg"
                   >
                     {ui.saving ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <div className="flex-1">
+                          <div className="text-sm font-semibold">Saving...</div>
+                          {ui.uploadProgress > 0 && ui.uploadProgress < 100 && (
+                            <div className="mt-1 w-32 h-2 bg-blue-400 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-white transition-all duration-300"
+                                style={{ width: `${ui.uploadProgress}%` }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <>
                         <Save className="w-4 h-4 mr-2" />
