@@ -3,6 +3,15 @@
  * Handles uploading video and image files to Wix Media Manager
  */
 
+// File size limits (in bytes)
+export const FILE_SIZE_LIMITS = {
+  VIDEO_MAX_MB: 500, // 500 MB max for videos
+  IMAGE_MAX_MB: 50,  // 50 MB max for images
+};
+
+export const VIDEO_MAX_BYTES = FILE_SIZE_LIMITS.VIDEO_MAX_MB * 1024 * 1024;
+export const IMAGE_MAX_BYTES = FILE_SIZE_LIMITS.IMAGE_MAX_MB * 1024 * 1024;
+
 interface UploadResponse {
   url: string;
   fileId: string;
@@ -84,6 +93,22 @@ export function isValidVideoFile(file: File): boolean {
   const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
   
   return validVideoTypes.includes(file.type) || validExtensions.includes(fileExtension);
+}
+
+/**
+ * Validates if a video file is within the size limit
+ * @param file - The file to validate
+ * @returns { isValid: boolean, error?: string }
+ */
+export function validateVideoFileSize(file: File): { isValid: boolean; error?: string } {
+  if (file.size > VIDEO_MAX_BYTES) {
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    return {
+      isValid: false,
+      error: `Video file is too large (${fileSizeMB} MB). Maximum size is ${FILE_SIZE_LIMITS.VIDEO_MAX_MB} MB.`,
+    };
+  }
+  return { isValid: true };
 }
 
 /**

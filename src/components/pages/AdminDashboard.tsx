@@ -14,7 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
-import { uploadVideoFile, uploadImageFile, isValidVideoFile, isValidImageFile } from '@/lib/media-upload';
+import { uploadVideoFile, uploadImageFile, isValidVideoFile, isValidImageFile, validateVideoFileSize, FILE_SIZE_LIMITS } from '@/lib/media-upload';
 
 interface FormState {
   campaignTitle: string;
@@ -680,15 +680,21 @@ export default function AdminDashboard() {
   const handleVideoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate video file type - includes MOV (video/quicktime)
-      const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'];
-      const validExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-      
-      if (!validVideoTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+      // Validate video file type
+      if (!isValidVideoFile(file)) {
         setUI(prev => ({ 
           ...prev, 
           error: 'Please upload a valid video file (MP4, WebM, OGG, MOV, or AVI)' 
+        }));
+        return;
+      }
+
+      // Validate file size
+      const sizeValidation = validateVideoFileSize(file);
+      if (!sizeValidation.isValid) {
+        setUI(prev => ({ 
+          ...prev, 
+          error: sizeValidation.error || 'Video file is too large'
         }));
         return;
       }
@@ -1007,11 +1013,12 @@ export default function AdminDashboard() {
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignVideo: e.target.value }))}
                         placeholder="https://example.com/video.mp4 or https://youtube.com/watch?v=..."
                         className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                        disabled={!!campaignForm.uploadedVideoFile}
                       />
                       <div className="relative">
                         <input
                           type="file"
-                          accept="video/mp4,video/webm,video/ogg,video/quicktime,.mov,.mp4,.webm,.ogg"
+                          accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo,.mov,.mp4,.webm,.ogg,.avi"
                           onChange={handleVideoFileUpload}
                           className="hidden"
                           id="campaign-video-upload"
@@ -1024,14 +1031,50 @@ export default function AdminDashboard() {
                         </label>
                       </div>
                       {campaignForm.uploadedVideoFile && (
-                        <p className="text-sm text-green-600 font-semibold">
-                          ✓ Video selected: {campaignForm.uploadedVideoFile.name}
-                        </p>
+                        <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg border border-green-200">
+                          <div className="flex-1">
+                            <p className="text-sm text-green-700 font-semibold">
+                              ✓ Video selected: {campaignForm.uploadedVideoFile.name}
+                            </p>
+                            <p className="text-xs text-green-600 mt-1">
+                              Size: {(campaignForm.uploadedVideoFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCampaignForm(prev => ({ ...prev, uploadedVideoFile: undefined }))}
+                            className="text-green-600 hover:text-green-800 flex-shrink-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       )}
                     </div>
-                    <p className="font-paragraph text-xs text-blue-600/60 mt-1">
-                      Supports video URLs (MP4, WebM, OGG, MOV) or YouTube/Vimeo links, or upload video files directly
-                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                      <p className="font-paragraph text-sm font-semibold text-blue-900">
+                        📹 Video Upload Guidelines
+                      </p>
+                      <div className="space-y-2">
+                        <p className="font-paragraph text-xs text-blue-700">
+                          <span className="font-semibold">Maximum file size:</span> {FILE_SIZE_LIMITS.VIDEO_MAX_MB} MB
+                        </p>
+                        <p className="font-paragraph text-xs text-blue-700">
+                          <span className="font-semibold">Supported formats:</span> MP4, WebM, OGG, MOV, AVI
+                        </p>
+                        <div className="mt-3 pt-3 border-t border-blue-200">
+                          <p className="font-paragraph text-xs font-semibold text-blue-900 mb-2">
+                            💡 Tips for compressing videos:
+                          </p>
+                          <ul className="space-y-1 text-xs text-blue-700">
+                            <li>• <span className="font-semibold">Reduce resolution:</span> Use 1080p or 720p instead of 4K</li>
+                            <li>• <span className="font-semibold">Lower bitrate:</span> 5-8 Mbps is usually sufficient</li>
+                            <li>• <span className="font-semibold">Use H.264 codec:</span> Most efficient for MP4 files</li>
+                            <li>• <span className="font-semibold">Trim length:</span> Keep videos under 5 minutes</li>
+                            <li>• <span className="font-semibold">Online tools:</span> Try HandBrake, FFmpeg, or CloudConvert</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
