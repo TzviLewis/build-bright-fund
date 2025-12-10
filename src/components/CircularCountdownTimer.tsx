@@ -90,7 +90,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
   }, [endDate, startDate]);
 
   // Calculate progress based on remaining time
-  const calculateProgressPercentage = () => {
+  const getProgressPercentage = () => {
     if (!startDate || !endDate) {
       // Fallback: assume 30-day campaign
       const maxTotalSeconds = 30 * 24 * 60 * 60;
@@ -110,7 +110,7 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
     return remainingPercentage;
   };
 
-  const progressPercentage = calculateProgressPercentage();
+  const progressPercentage = getProgressPercentage();
 
   if (timeLeft.isExpired) {
     return (
