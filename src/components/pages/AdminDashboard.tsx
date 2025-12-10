@@ -659,7 +659,7 @@ export default function AdminDashboard() {
   const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate video file type
+      // Validate video file type - includes MOV (video/quicktime)
       const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
       if (!validVideoTypes.includes(file.type)) {
         setUI(prev => ({ 
@@ -989,7 +989,7 @@ export default function AdminDashboard() {
                       <div className="relative">
                         <input
                           type="file"
-                          accept="video/*"
+                          accept="video/mp4,video/webm,video/ogg,video/quicktime,.mov,.mp4,.webm,.ogg"
                           onChange={handleVideoFileUpload}
                           className="hidden"
                           id="campaign-video-upload"
@@ -1008,7 +1008,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                     <p className="font-paragraph text-xs text-blue-600/60 mt-1">
-                      Supports video URLs (MP4, WebM, OGG) or YouTube/Vimeo links, or upload video files directly
+                      Supports video URLs (MP4, WebM, OGG, MOV) or YouTube/Vimeo links, or upload video files directly
                     </p>
                   </div>
 
