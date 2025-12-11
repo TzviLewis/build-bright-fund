@@ -707,10 +707,11 @@ export default function AdminDashboard() {
         return;
       }
 
-      // Store the file for upload during save
+      // Store the file for upload during save and clear the URL field
       setCampaignForm(prev => ({ 
         ...prev, 
-        uploadedVideoFile: file 
+        uploadedVideoFile: file,
+        campaignVideo: '' // Clear URL field when file is selected
       }));
       setUI(prev => ({ ...prev, error: null, successMessage: 'Video file selected. It will be uploaded when you save the campaign.' }));
       
@@ -1021,7 +1022,6 @@ export default function AdminDashboard() {
                         onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignVideo: e.target.value }))}
                         placeholder="https://example.com/video.mp4 or https://youtube.com/watch?v=..."
                         className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
-                        disabled={!!campaignForm.uploadedVideoFile}
                       />
                       <div className="relative">
                         <input
