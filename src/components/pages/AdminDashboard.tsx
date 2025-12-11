@@ -14,7 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
-import { isValidVideoFile, validateVideoFileSize, FILE_SIZE_LIMITS } from '@/lib/media-upload';
+import { uploadVideoFile, isValidVideoFile, validateVideoFileSize, FILE_SIZE_LIMITS } from '@/lib/media-upload';
 
 interface FormState {
   campaignTitle: string;
@@ -226,6 +226,29 @@ export default function AdminDashboard() {
     try {
       setUI(prev => ({ ...prev, saving: true, error: null }));
 
+      let videoUrl = campaignForm.campaignVideo;
+
+      // Upload video file if one was selected
+      if (campaignForm.uploadedVideoFile) {
+        try {
+          setUI(prev => ({ ...prev, uploadProgress: 0 }));
+          const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile, (progress) => {
+            setUI(prev => ({ ...prev, uploadProgress: progress }));
+          });
+          videoUrl = uploadResponse.url;
+          setUI(prev => ({ ...prev, uploadProgress: 0 }));
+        } catch (uploadError) {
+          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown error';
+          setUI(prev => ({ 
+            ...prev, 
+            error: errorMessage,
+            saving: false,
+            uploadProgress: 0
+          }));
+          return;
+        }
+      }
+
       const campaignData: CampaignDetails = {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
@@ -235,7 +258,7 @@ export default function AdminDashboard() {
         projectDescription: campaignForm.projectDescription || '',
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
-        campaignVideo: campaignForm.campaignVideo || '',
+        campaignVideo: videoUrl || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
