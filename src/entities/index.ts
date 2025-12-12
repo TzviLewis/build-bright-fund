@@ -14,11 +14,11 @@ export interface CampaignDetails {
   /** @wixFieldType text */
   campaignTitle?: string;
   /** @wixFieldType url */
+  homepageVideo?: string;
+  /** @wixFieldType url */
   uploadedVideo?: string;
   /** @wixFieldType url */
   campaignVideo?: string;
-  /** @wixFieldType url */
-  homepageVideo?: string;
   /** @wixFieldType text */
   bonusGoalDescription?: string;
   /** @wixFieldType number */
@@ -39,6 +39,8 @@ export interface CampaignDetails {
   campaignStartTime?: any;
   /** @wixFieldType time */
   campaignEndTime?: any;
+  /** @wixFieldType video */
+  video?: string;
 }
 
 
