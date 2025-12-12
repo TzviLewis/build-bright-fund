@@ -17,6 +17,8 @@ export interface CampaignDetails {
   uploadedVideo?: string;
   /** @wixFieldType url */
   campaignVideo?: string;
+  /** @wixFieldType url */
+  homepageVideo?: string;
   /** @wixFieldType text */
   bonusGoalDescription?: string;
   /** @wixFieldType number */
