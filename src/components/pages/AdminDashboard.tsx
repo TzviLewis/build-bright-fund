@@ -14,7 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
-import { uploadVideoFile, isValidVideoFile, validateVideoFileSize, FILE_SIZE_LIMITS } from '@/lib/media-upload';
+import { FILE_SIZE_LIMITS } from '@/lib/media-upload';
 
 interface FormState {
   campaignTitle: string;
@@ -25,7 +25,6 @@ interface FormState {
   promotionalText: string;
   mainCampaignImage: string;
   campaignVideo: string;
-  uploadedVideo: string;
   campaignStartDate: string;
   campaignEndDate: string;
   uploadedVideoFile?: File;
@@ -116,7 +115,6 @@ export default function AdminDashboard() {
     promotionalText: '',
     mainCampaignImage: '',
     campaignVideo: '',
-    uploadedVideo: '',
     campaignStartDate: '',
     campaignEndDate: '',
   });
@@ -193,7 +191,6 @@ export default function AdminDashboard() {
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
           campaignVideo: campaign.campaignVideo || '',
-          uploadedVideo: campaign.uploadedVideo || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
             : '',
@@ -229,29 +226,7 @@ export default function AdminDashboard() {
     try {
       setUI(prev => ({ ...prev, saving: true, error: null }));
 
-      let videoUrl = campaignForm.campaignVideo;
-      let uploadedVideoUrl = campaignForm.uploadedVideo;
-
-      // Upload video file if one was selected
-      if (campaignForm.uploadedVideoFile) {
-        try {
-          setUI(prev => ({ ...prev, uploadProgress: 0 }));
-          const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile, (progress) => {
-            setUI(prev => ({ ...prev, uploadProgress: progress }));
-          });
-          uploadedVideoUrl = uploadResponse.url;
-          setUI(prev => ({ ...prev, uploadProgress: 0 }));
-        } catch (uploadError) {
-          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown error';
-          setUI(prev => ({ 
-            ...prev, 
-            error: errorMessage,
-            saving: false,
-            uploadProgress: 0
-          }));
-          return;
-        }
-      }
+      const videoUrl = campaignForm.campaignVideo;
 
       const campaignData: CampaignDetails = {
         _id: data.campaign?._id || crypto.randomUUID(),
@@ -263,7 +238,6 @@ export default function AdminDashboard() {
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
         campaignVideo: videoUrl || '',
-        uploadedVideo: uploadedVideoUrl || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
@@ -286,9 +260,6 @@ export default function AdminDashboard() {
       setTimeout(() => {
         setUI(prev => ({ ...prev, successMessage: null }));
       }, 3000);
-
-      // Clear uploaded file after successful save
-      setCampaignForm(prev => ({ ...prev, uploadedVideoFile: undefined }));
 
       await loadAllData();
     } catch (error) {
@@ -690,39 +661,20 @@ export default function AdminDashboard() {
   };
 
   // Handle video file upload
-  const handleVideoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate video file type
-      if (!isValidVideoFile(file)) {
-        setUI(prev => ({ 
+      // Create a data URL for preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setCampaignForm(prev => ({ 
           ...prev, 
-          error: 'Please upload a valid video file (MP4, WebM, OGG, MOV, or AVI)' 
+          campaignVideo: dataUrl,
+          uploadedVideoFile: file 
         }));
-        return;
-      }
-
-      // Validate file size
-      const sizeValidation = validateVideoFileSize(file);
-      if (!sizeValidation.isValid) {
-        setUI(prev => ({ 
-          ...prev, 
-          error: sizeValidation.error || 'Video file is too large'
-        }));
-        return;
-      }
-
-      // Store the file for upload during save and clear the URL field
-      setCampaignForm(prev => ({ 
-        ...prev, 
-        uploadedVideoFile: file,
-        uploadedVideo: '' // Clear URL field when file is selected
-      }));
-      setUI(prev => ({ ...prev, error: null, successMessage: 'Video file selected. It will be uploaded when you save the campaign.' }));
-      
-      setTimeout(() => {
-        setUI(prev => ({ ...prev, successMessage: null }));
-      }, 3000);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
