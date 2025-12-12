@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
+import VideoPlayer from '@/components/VideoPlayer';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
 interface FormState {
@@ -1179,6 +1180,34 @@ export default function AdminDashboard() {
                         </p>
                       </div>
                     </div>
+
+                    {/* Video Preview Section */}
+                    {campaignForm.videos && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-3 pt-4 border-t border-blue-200"
+                      >
+                        <div className="flex items-center justify-between">
+                          <label className="font-paragraph text-sm font-semibold text-blue-900">
+                            📺 Video Preview
+                          </label>
+                          <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">
+                            Interactive Player
+                          </span>
+                        </div>
+                        <VideoPlayer 
+                          src={campaignForm.videos}
+                          title={campaignForm.campaignTitle || 'Campaign Video'}
+                          className="shadow-lg border border-blue-200"
+                        />
+                        <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                          <p className="font-paragraph text-xs text-blue-700">
+                            <span className="font-semibold">💡 Tip:</span> Use the player controls to preview your video before saving. You can play, pause, adjust volume, and go fullscreen!
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
