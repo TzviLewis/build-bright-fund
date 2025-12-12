@@ -21,6 +21,7 @@ export default function HomePage() {
   const [matchers, setMatchers] = useState<Matchers[]>([]);
   const [teams, setTeams] = useState<Teams[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   const [amount, setAmount] = useState('');
@@ -53,6 +54,7 @@ export default function HomePage() {
 
   const loadData = async () => {
     try {
+      setLoadError(null);
       const { items: campaignItems } = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
       const { items: donationItems } = await BaseCrudService.getAll<Donations>('donations');
       const { items: matcherItems } = await BaseCrudService.getAll<Matchers>('matchers');
@@ -69,8 +71,9 @@ export default function HomePage() {
       setMatchers(matcherItems.filter(m => m.status === 'active'));
       setTeams(teamItems);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error('Error loading data:', error);
-      setSubmitError('Failed to load campaign data. Please refresh the page.');
+      setLoadError(`Failed to load campaign data: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -159,6 +162,31 @@ export default function HomePage() {
       </div>
     );
   }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-8">
+        <div className="max-w-md text-center">
+          <div className="mb-6 flex justify-center">
+            <AlertCircle className="w-16 h-16 text-destructive" />
+          </div>
+          <h1 className="font-heading text-3xl font-bold text-primary mb-4">
+            Unable to Load Campaign
+          </h1>
+          <p className="font-paragraph text-lg text-primary/70 mb-6">
+            {loadError}
+          </p>
+          <Button 
+            onClick={() => window.location.reload()}
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-3"
+          >
+            Refresh Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-background">
