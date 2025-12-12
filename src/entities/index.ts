@@ -41,8 +41,6 @@ export interface CampaignDetails {
   campaignEndTime?: any;
   /** @wixFieldType video */
   video?: string;
-  /** @wixFieldType video */
-  videos?: string;
 }
 
 

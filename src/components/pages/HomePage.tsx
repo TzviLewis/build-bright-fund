@@ -228,9 +228,9 @@ export default function HomePage() {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
-                {campaign?.videos ? (
+                {campaign?.video ? (
                   <video
-                    src={campaign.videos}
+                    src={campaign.video}
                     controls
                     className="w-full h-full object-cover"
                     poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"

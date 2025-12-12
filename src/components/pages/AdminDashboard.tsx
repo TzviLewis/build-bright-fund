@@ -25,6 +25,7 @@ interface FormState {
   promotionalText: string;
   mainCampaignImage: string;
   campaignVideo: string;
+  video: string;
   campaignStartDate: string;
   campaignEndDate: string;
   uploadedVideoFile?: File;
@@ -115,6 +116,7 @@ export default function AdminDashboard() {
     promotionalText: '',
     mainCampaignImage: '',
     campaignVideo: '',
+    video: '',
     campaignStartDate: '',
     campaignEndDate: '',
   });
@@ -191,6 +193,7 @@ export default function AdminDashboard() {
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
           campaignVideo: campaign.campaignVideo || '',
+          video: campaign.video || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
             : '',
@@ -238,6 +241,7 @@ export default function AdminDashboard() {
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
         campaignVideo: videoUrl || '',
+        video: campaignForm.video || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
@@ -1038,6 +1042,60 @@ export default function AdminDashboard() {
                             <li>• <span className="font-semibold">Online tools:</span> Try HandBrake, FFmpeg, or CloudConvert</li>
                           </ul>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
+                      📹 Video File (Wix Media Manager)
+                    </label>
+                    <div className="space-y-3">
+                      <Input
+                        type="text"
+                        value={campaignForm.video}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, video: e.target.value }))}
+                        placeholder="Paste the video URL from Wix Media Manager here"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+                      <p className="font-paragraph text-sm font-semibold text-amber-900">
+                        📋 How to Upload Video to Wix Media Manager
+                      </p>
+                      <div className="space-y-2">
+                        <p className="font-paragraph text-xs text-amber-800 font-semibold">Step 1: Access Wix Media Manager</p>
+                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
+                          <li>• Go to your Wix Dashboard</li>
+                          <li>• Click on "Media" in the left sidebar</li>
+                          <li>• Select "Videos" tab</li>
+                        </ul>
+                        
+                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 2: Upload Your Video</p>
+                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
+                          <li>• Click the "Upload" button</li>
+                          <li>• Select your video file from your computer</li>
+                          <li>• Wait for the upload to complete (this may take a few minutes)</li>
+                        </ul>
+                        
+                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 3: Copy the Video URL</p>
+                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
+                          <li>• Once uploaded, right-click on the video</li>
+                          <li>• Select "Copy URL" or click the copy icon</li>
+                          <li>• The URL will be copied to your clipboard</li>
+                        </ul>
+                        
+                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 4: Paste URL Here</p>
+                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
+                          <li>• Paste the copied URL in the field above</li>
+                          <li>• Click "Save Campaign" to save your changes</li>
+                          <li>• The video will now display on your homepage!</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white rounded p-3 mt-3 border border-amber-100">
+                        <p className="font-paragraph text-xs text-amber-900">
+                          <span className="font-semibold">💡 Pro Tip:</span> The video URL from Wix Media Manager has the highest priority and will display first on your homepage, followed by other video fields if this one is empty.
+                        </p>
                       </div>
                     </div>
                   </div>
