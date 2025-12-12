@@ -9,12 +9,12 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
-import { FILE_SIZE_LIMITS } from '@/lib/media-upload';
+import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
 interface FormState {
   campaignTitle: string;
@@ -25,7 +25,7 @@ interface FormState {
   promotionalText: string;
   mainCampaignImage: string;
   campaignVideo: string;
-  video: string;
+  videos: string;
   campaignStartDate: string;
   campaignEndDate: string;
   uploadedVideoFile?: File;
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
     promotionalText: '',
     mainCampaignImage: '',
     campaignVideo: '',
-    video: '',
+    videos: '',
     campaignStartDate: '',
     campaignEndDate: '',
   });
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
           campaignVideo: campaign.campaignVideo || '',
-          video: campaign.video || '',
+          videos: campaign.video || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
             : '',
@@ -241,7 +241,7 @@ export default function AdminDashboard() {
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
         campaignVideo: videoUrl || '',
-        video: campaignForm.video || '',
+        video: campaignForm.videos || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
@@ -665,20 +665,64 @@ export default function AdminDashboard() {
   };
 
   // Handle video file upload
-  const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Create a data URL for preview
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
-        setCampaignForm(prev => ({ 
-          ...prev, 
-          campaignVideo: dataUrl,
-          uploadedVideoFile: file 
-        }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate file type
+    if (!isValidVideoFile(file)) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'Invalid video format. Supported formats: MP4, WebM, OGG, MOV, AVI' 
+      }));
+      return;
+    }
+
+    // Validate file size
+    const sizeValidation = validateVideoFileSize(file);
+    if (!sizeValidation.isValid) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: sizeValidation.error || 'Video file is too large' 
+      }));
+      return;
+    }
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+
+      // Upload to Wix Media Manager
+      const uploadResponse = await uploadVideoFile(file, (progress) => {
+        setUI(prev => ({ ...prev, uploadProgress: progress }));
+      });
+
+      // Set the videos field with the uploaded URL
+      setCampaignForm(prev => ({ 
+        ...prev, 
+        videos: uploadResponse.url,
+        uploadedVideoFile: file 
+      }));
+
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `Video uploaded successfully! URL: ${uploadResponse.url}`,
+        uploadProgress: 0
+      }));
+
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 5000);
+
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error uploading video';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to upload video: ${errorMsg}`,
+        uploadProgress: 0
+      }));
+      console.error('Error uploading video:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
     }
   };
 
@@ -1051,50 +1095,87 @@ export default function AdminDashboard() {
                       📹 Video File (Wix Media Manager)
                     </label>
                     <div className="space-y-3">
-                      <Input
-                        type="text"
-                        value={campaignForm.video}
-                        onChange={(e) => setCampaignForm(prev => ({ ...prev, video: e.target.value }))}
-                        placeholder="Paste the video URL from Wix Media Manager here"
-                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
-                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo,.mov,.mp4,.webm,.ogg,.avi"
+                          onChange={handleVideoFileUpload}
+                          className="hidden"
+                          id="wix-video-upload"
+                          disabled={ui.saving}
+                        />
+                        <label
+                          htmlFor="wix-video-upload"
+                          className={`block w-full px-4 py-3 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors font-paragraph text-sm ${
+                            ui.saving
+                              ? 'border-blue-200 bg-blue-50 text-blue-500 cursor-not-allowed'
+                              : 'border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-blue-700'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <Upload className="w-4 h-4" />
+                            {ui.saving ? 'Uploading...' : 'Click to upload video to Wix Media Manager'}
+                          </div>
+                        </label>
+                      </div>
+
+                      {ui.uploadProgress > 0 && ui.uploadProgress < 100 && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <p className="font-paragraph text-xs text-blue-700">Uploading to Wix Media Manager...</p>
+                            <p className="font-paragraph text-xs font-semibold text-blue-900">{Math.round(ui.uploadProgress)}%</p>
+                          </div>
+                          <div className="w-full h-2 bg-blue-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-blue-600 transition-all duration-300"
+                              style={{ width: `${ui.uploadProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {campaignForm.uploadedVideoFile && (
+                        <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg border border-green-200">
+                          <div className="flex-1">
+                            <p className="text-sm text-green-700 font-semibold">
+                              ✓ Video uploaded: {campaignForm.uploadedVideoFile.name}
+                            </p>
+                            <p className="text-xs text-green-600 mt-1">
+                              Size: {(campaignForm.uploadedVideoFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                            {campaignForm.videos && (
+                              <p className="text-xs text-green-600 mt-1 break-all">
+                                URL: {campaignForm.videos}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCampaignForm(prev => ({ ...prev, uploadedVideoFile: undefined, videos: '' }))}
+                            className="text-green-600 hover:text-green-800 flex-shrink-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
-                      <p className="font-paragraph text-sm font-semibold text-amber-900">
-                        📋 How to Upload Video to Wix Media Manager
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+                      <p className="font-paragraph text-sm font-semibold text-green-900">
+                        ✨ Automatic Upload Feature
                       </p>
                       <div className="space-y-2">
-                        <p className="font-paragraph text-xs text-amber-800 font-semibold">Step 1: Access Wix Media Manager</p>
-                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
-                          <li>• Go to your Wix Dashboard</li>
-                          <li>• Click on "Media" in the left sidebar</li>
-                          <li>• Select "Videos" tab</li>
+                        <p className="font-paragraph text-xs text-green-800">
+                          <span className="font-semibold">How it works:</span>
+                        </p>
+                        <ul className="space-y-1 text-xs text-green-700 ml-3">
+                          <li>• Select a video file from your computer</li>
+                          <li>• The video automatically uploads to Wix Media Manager</li>
+                          <li>• The file URL is automatically saved to the 'videos' field</li>
+                          <li>• Click "Save Campaign" to finalize</li>
+                          <li>• Video displays on your homepage immediately!</li>
                         </ul>
-                        
-                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 2: Upload Your Video</p>
-                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
-                          <li>• Click the "Upload" button</li>
-                          <li>• Select your video file from your computer</li>
-                          <li>• Wait for the upload to complete (this may take a few minutes)</li>
-                        </ul>
-                        
-                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 3: Copy the Video URL</p>
-                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
-                          <li>• Once uploaded, right-click on the video</li>
-                          <li>• Select "Copy URL" or click the copy icon</li>
-                          <li>• The URL will be copied to your clipboard</li>
-                        </ul>
-                        
-                        <p className="font-paragraph text-xs text-amber-800 font-semibold mt-3">Step 4: Paste URL Here</p>
-                        <ul className="space-y-1 text-xs text-amber-700 ml-3">
-                          <li>• Paste the copied URL in the field above</li>
-                          <li>• Click "Save Campaign" to save your changes</li>
-                          <li>• The video will now display on your homepage!</li>
-                        </ul>
-                      </div>
-                      <div className="bg-white rounded p-3 mt-3 border border-amber-100">
-                        <p className="font-paragraph text-xs text-amber-900">
-                          <span className="font-semibold">💡 Pro Tip:</span> The video URL from Wix Media Manager has the highest priority and will display first on your homepage, followed by other video fields if this one is empty.
+                        <p className="font-paragraph text-xs text-green-700 mt-3">
+                          <span className="font-semibold">Supported formats:</span> MP4, WebM, OGG, MOV, AVI (Max {FILE_SIZE_LIMITS.VIDEO_MAX_MB} MB)
                         </p>
                       </div>
                     </div>
