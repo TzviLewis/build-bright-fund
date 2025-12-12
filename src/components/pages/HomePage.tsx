@@ -200,12 +200,18 @@ export default function HomePage() {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
-                <video
-                  src="https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.mp4?id=campaign-video-main"
-                  controls
-                  className="w-full h-full object-cover"
-                  poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
-                />
+                {campaign?.campaignVideo ? (
+                  <video
+                    src={campaign.campaignVideo}
+                    controls
+                    className="w-full h-full object-cover"
+                    poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-primary/60">
+                    <p className="font-paragraph text-lg">No video uploaded yet</p>
+                  </div>
+                )}
               </div>
             </motion.div>
 
