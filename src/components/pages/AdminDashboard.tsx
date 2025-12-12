@@ -25,6 +25,7 @@ interface FormState {
   promotionalText: string;
   mainCampaignImage: string;
   campaignVideo: string;
+  uploadedVideo: string;
   campaignStartDate: string;
   campaignEndDate: string;
   uploadedVideoFile?: File;
@@ -115,6 +116,7 @@ export default function AdminDashboard() {
     promotionalText: '',
     mainCampaignImage: '',
     campaignVideo: '',
+    uploadedVideo: '',
     campaignStartDate: '',
     campaignEndDate: '',
   });
@@ -191,6 +193,7 @@ export default function AdminDashboard() {
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
           campaignVideo: campaign.campaignVideo || '',
+          uploadedVideo: campaign.uploadedVideo || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
             : '',
@@ -227,6 +230,7 @@ export default function AdminDashboard() {
       setUI(prev => ({ ...prev, saving: true, error: null }));
 
       let videoUrl = campaignForm.campaignVideo;
+      let uploadedVideoUrl = campaignForm.uploadedVideo;
 
       // Upload video file if one was selected
       if (campaignForm.uploadedVideoFile) {
@@ -235,7 +239,7 @@ export default function AdminDashboard() {
           const uploadResponse = await uploadVideoFile(campaignForm.uploadedVideoFile, (progress) => {
             setUI(prev => ({ ...prev, uploadProgress: progress }));
           });
-          videoUrl = uploadResponse.url;
+          uploadedVideoUrl = uploadResponse.url;
           setUI(prev => ({ ...prev, uploadProgress: 0 }));
         } catch (uploadError) {
           const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown error';
@@ -259,6 +263,7 @@ export default function AdminDashboard() {
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
         campaignVideo: videoUrl || '',
+        uploadedVideo: uploadedVideoUrl || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
           : '',
@@ -711,7 +716,7 @@ export default function AdminDashboard() {
       setCampaignForm(prev => ({ 
         ...prev, 
         uploadedVideoFile: file,
-        campaignVideo: '' // Clear URL field when file is selected
+        uploadedVideo: '' // Clear URL field when file is selected
       }));
       setUI(prev => ({ ...prev, error: null, successMessage: 'Video file selected. It will be uploaded when you save the campaign.' }));
       
