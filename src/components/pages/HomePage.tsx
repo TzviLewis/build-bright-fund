@@ -14,6 +14,7 @@ import { useDonationStore } from '@/stores/donationStore';
 import CountdownTimer from '@/components/CountdownTimer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 import ConfettiAnimation from '@/components/ConfettiAnimation';
+import VideoPlayer from '@/components/VideoPlayer';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -229,32 +230,28 @@ export default function HomePage() {
             >
               <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
                 {campaign?.video ? (
-                  <video
+                  <VideoPlayer 
                     src={campaign.video}
-                    controls
-                    className="w-full h-full object-cover"
-                    poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
+                    title="Campaign Video"
+                    className="w-full h-full"
                   />
                 ) : campaign?.homepageVideo ? (
-                  <video
+                  <VideoPlayer 
                     src={campaign.homepageVideo}
-                    controls
-                    className="w-full h-full object-cover"
-                    poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
+                    title="Campaign Video"
+                    className="w-full h-full"
                   />
                 ) : campaign?.uploadedVideo ? (
-                  <video
+                  <VideoPlayer 
                     src={campaign.uploadedVideo}
-                    controls
-                    className="w-full h-full object-cover"
-                    poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
+                    title="Campaign Video"
+                    className="w-full h-full"
                   />
                 ) : campaign?.campaignVideo ? (
-                  <video
+                  <VideoPlayer 
                     src={campaign.campaignVideo}
-                    controls
-                    className="w-full h-full object-cover"
-                    poster="https://static.wixstatic.com/media/28ba1c_85fe0b52ac454146ac98eccc491782b9~mv2.png?originWidth=512&originHeight=320"
+                    title="Campaign Video"
+                    className="w-full h-full"
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-primary/60">

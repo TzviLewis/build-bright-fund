@@ -158,6 +158,7 @@ export default function VideoPlayer({ src, title, className = '' }: VideoPlayerP
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleVideoEnd}
+        crossOrigin="anonymous"
       />
 
       {/* Play Button Overlay (when paused) */}
