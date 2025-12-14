@@ -249,11 +249,11 @@ export default function HomePage() {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <Image
-                src="https://static.wixstatic.com/media/28ba1c_61d66837cb8a4faa9ec76959ec0581ba~mv2.jpg"
+                src="https://static.wixstatic.com/media/28ba1c_84aeec8c1182455781efd0126900d053~mv2.jpeg"
                 className="w-full h-80 object-cover"
                 width={600}
-                originWidth={1600}
-                originHeight={896} />
+                originWidth={1724}
+                originHeight={966} />
             </motion.div>
           </div>
         </div>
