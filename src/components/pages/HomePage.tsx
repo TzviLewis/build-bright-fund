@@ -230,17 +230,23 @@ export default function HomePage() {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <div className="relative w-full bg-black flex items-center justify-center">
-                {/* files.fm embedded video player */}
-                <iframe
-                  src="https://share.zight.com/bLuPqKqG"
-                  width="360"
-                  height="270"
-                  frameBorder="0"
-                  allowFullScreen
-                  allow="autoplay; encrypted-media"
-                  className="w-full"
-                  title="Campaign Video"
-                />
+                {/* Embedded video player - URL from CMS */}
+                {campaign?.homepageVideo ? (
+                  <iframe
+                    src={campaign.homepageVideo}
+                    width="360"
+                    height="270"
+                    frameBorder="0"
+                    allowFullScreen
+                    allow="autoplay; encrypted-media"
+                    className="w-full"
+                    title="Campaign Video"
+                  />
+                ) : (
+                  <div className="w-full h-64 flex items-center justify-center text-gray-400">
+                    <p>No video embed configured</p>
+                  </div>
+                )}
               </div>
             </motion.div>
 

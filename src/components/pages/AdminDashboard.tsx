@@ -26,6 +26,7 @@ interface FormState {
   promotionalText: string;
   mainCampaignImage: string;
   campaignVideo: string;
+  homepageVideo: string;
   videos: string;
   campaignStartDate: string;
   campaignEndDate: string;
@@ -117,6 +118,7 @@ export default function AdminDashboard() {
     promotionalText: '',
     mainCampaignImage: '',
     campaignVideo: '',
+    homepageVideo: '',
     videos: '',
     campaignStartDate: '',
     campaignEndDate: '',
@@ -194,6 +196,7 @@ export default function AdminDashboard() {
           promotionalText: campaign.promotionalText || '',
           mainCampaignImage: campaign.mainCampaignImage || '',
           campaignVideo: campaign.campaignVideo || '',
+          homepageVideo: campaign.homepageVideo || '',
           videos: campaign.video || '',
           campaignStartDate: campaign.campaignStartDate 
             ? new Date(campaign.campaignStartDate).toISOString().split('T')[0] 
@@ -242,6 +245,7 @@ export default function AdminDashboard() {
         promotionalText: campaignForm.promotionalText || '',
         mainCampaignImage: campaignForm.mainCampaignImage || '',
         campaignVideo: videoUrl || '',
+        homepageVideo: campaignForm.homepageVideo || '',
         video: campaignForm.videos || '',
         campaignStartDate: campaignForm.campaignStartDate 
           ? new Date(campaignForm.campaignStartDate).toISOString() 
