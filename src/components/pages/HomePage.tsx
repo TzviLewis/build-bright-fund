@@ -232,7 +232,7 @@ export default function HomePage() {
               <div className="relative w-full bg-black flex items-center justify-center">
                 {/* files.fm embedded video player */}
                 <iframe
-                  src="https://files.fm/embed/4rmx75pxum"
+                  src="https://share.zight.com/bLuPqKqG"
                   width="100%"
                   height="480"
                   frameBorder="0"
