@@ -23,6 +23,7 @@ export default function UpdateCampaignVideo() {
             campaignTitle: 'School Fundraising Campaign',
             fundraisingGoal: 500000,
             video: 'https://files.fm/u/4rmx75pxum',
+            homepageVideo: 'https://share.zight.com/bLuPqKqG',
           };
           await BaseCrudService.create('campaigndetails', newCampaign);
         } else {
@@ -31,6 +32,7 @@ export default function UpdateCampaignVideo() {
           const updatedCampaign: CampaignDetails = {
             ...campaign,
             video: 'https://files.fm/u/4rmx75pxum',
+            homepageVideo: 'https://share.zight.com/bLuPqKqG',
           };
           await BaseCrudService.update('campaigndetails', updatedCampaign);
         }
