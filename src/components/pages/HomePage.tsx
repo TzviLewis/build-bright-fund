@@ -233,8 +233,8 @@ export default function HomePage() {
                 {/* files.fm embedded video player */}
                 <iframe
                   src="https://share.zight.com/bLuPqKqG"
-                  width="100%"
-                  height="480"
+                  width="360"
+                  height="270"
                   frameBorder="0"
                   allowFullScreen
                   allow="autoplay; encrypted-media"
