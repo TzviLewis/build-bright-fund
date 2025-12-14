@@ -229,25 +229,18 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               className="rounded-lg overflow-hidden shadow-xl"
             >
-              <div className="relative w-full bg-black flex items-center justify-center">
-                {/* Embedded video player - URL from CMS */}
-                {campaign?.homepageVideo ? (
-                  <iframe
-                    src={campaign.homepageVideo}
-                    width="360"
-                    height="270"
-                    frameBorder="0"
-                    allowFullScreen
-                    allow="autoplay; encrypted-media"
-                    className="w-full"
-                    title="Campaign Video"
-                  />
-                ) : (
-                  <div className="w-full h-64 flex items-center justify-center text-gray-400">
-                    <p>No video embed configured</p>
+              {campaign?.homepageVideo ? (
+                <FilesFilePlayer 
+                  videoUrl={campaign.homepageVideo}
+                  title="Campaign Video"
+                />
+              ) : (
+                <div className="w-full h-80 bg-black/50 flex items-center justify-center rounded-lg">
+                  <div className="text-center">
+                    <p className="text-white font-paragraph text-lg">No video embed configured</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Campaign GIF */}
