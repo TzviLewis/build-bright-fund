@@ -229,18 +229,16 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               className="rounded-lg overflow-hidden shadow-xl"
             >
-              {campaign?.homepageVideo ? (
-                <FilesFilePlayer 
-                  videoUrl={campaign.homepageVideo}
-                  title="Campaign Video"
-                />
-              ) : (
-                <div className="w-full h-80 bg-black/50 flex items-center justify-center rounded-lg">
-                  <div className="text-center">
-                    <p className="text-white font-paragraph text-lg">No video embed configured</p>
-                  </div>
-                </div>
-              )}
+              <div style={{ position: 'relative', width: '100%', height: '0px', paddingBottom: '56.250%' }}>
+              <iframe 
+                allow="fullscreen" 
+                allowFullScreen 
+                height="100%" 
+                src="https://streamable.com/e/ljo4xs?loop=0&muted=1" 
+                width="100%" 
+                style={{ border: 'none', width: '100%', height: '100%', position: 'absolute', left: '0px', top: '0px', overflow: 'hidden' }}
+              />
+            </div>
             </motion.div>
 
             {/* Campaign GIF */}
