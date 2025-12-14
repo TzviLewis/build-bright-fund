@@ -7,6 +7,7 @@ import AdminDashboard from '@/components/pages/AdminDashboard';
 import AdminLoginPage from '@/components/pages/AdminLoginPage';
 import TeamPage from '@/components/pages/TeamPage';
 import GalleryPage from '@/components/pages/GalleryPage';
+import UpdateCampaignVideo from '@/components/pages/UpdateCampaignVideo';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import DonationNotificationPopup from '@/components/DonationNotificationPopup';
 
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "gallery",
         element: <GalleryPage />,
+      },
+      {
+        path: "update-video",
+        element: <UpdateCampaignVideo />,
       },
       {
         path: "*",
