@@ -1023,6 +1023,35 @@ export default function AdminDashboard() {
 
                   <div className="space-y-2">
                     <label className="font-paragraph text-sm font-semibold text-blue-900">
+                      Homepage Video Embed URL
+                    </label>
+                    <Input
+                      type="text"
+                      value={campaignForm.homepageVideo}
+                      onChange={(e) => setCampaignForm(prev => ({ ...prev, homepageVideo: e.target.value }))}
+                      placeholder="https://share.zight.com/bLuPqKqG or any embed URL"
+                      className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                      <p className="font-paragraph text-sm font-semibold text-blue-900">
+                        🎬 Homepage Video Embed
+                      </p>
+                      <div className="space-y-2">
+                        <p className="font-paragraph text-xs text-blue-700">
+                          <span className="font-semibold">Purpose:</span> This video is displayed on your homepage to showcase your campaign
+                        </p>
+                        <p className="font-paragraph text-xs text-blue-700">
+                          <span className="font-semibold">Supported sources:</span> Zight, YouTube, Vimeo, or any embed URL
+                        </p>
+                        <p className="font-paragraph text-xs text-blue-700">
+                          <span className="font-semibold">Example:</span> https://share.zight.com/bLuPqKqG
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-blue-900">
                       Campaign Video URL or Upload
                     </label>
                     <div className="space-y-3">
