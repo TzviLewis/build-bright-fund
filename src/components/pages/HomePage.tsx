@@ -15,6 +15,7 @@ import CountdownTimer from '@/components/CountdownTimer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 import ConfettiAnimation from '@/components/ConfettiAnimation';
 import VideoPlayer from '@/components/VideoPlayer';
+import FilesFilePlayer from '@/components/FilesFilePlayer';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -221,43 +222,25 @@ export default function HomePage() {
       <section className="w-full bg-primary/5 py-16">
         <div className="max-w-[120rem] mx-auto px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 gap-x-[99px] gap-y-0">
-            {/* Campaign Video */}
+            {/* Campaign Video - Using files.fm embed */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className="rounded-lg overflow-hidden shadow-xl"
             >
-              <div className="relative w-full h-80 bg-primary/10 flex items-center justify-center">
-                {campaign?.video ? (
-                  <VideoPlayer 
-                    src={campaign.video}
-                    title="Campaign Video"
-                    className="w-full h-full"
-                  />
-                ) : campaign?.homepageVideo ? (
-                  <VideoPlayer 
-                    src={campaign.homepageVideo}
-                    title="Campaign Video"
-                    className="w-full h-full"
-                  />
-                ) : campaign?.uploadedVideo ? (
-                  <VideoPlayer 
-                    src={campaign.uploadedVideo}
-                    title="Campaign Video"
-                    className="w-full h-full"
-                  />
-                ) : campaign?.campaignVideo ? (
-                  <VideoPlayer 
-                    src={campaign.campaignVideo}
-                    title="Campaign Video"
-                    className="w-full h-full"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-primary/60">
-                    <p className="font-paragraph text-lg">No video uploaded yet</p>
-                  </div>
-                )}
+              <div className="relative w-full bg-black flex items-center justify-center">
+                {/* files.fm embedded video player */}
+                <iframe
+                  src="https://files.fm/embed/4rmx75pxum"
+                  width="100%"
+                  height="480"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; encrypted-media"
+                  className="w-full"
+                  title="Campaign Video"
+                />
               </div>
             </motion.div>
 
