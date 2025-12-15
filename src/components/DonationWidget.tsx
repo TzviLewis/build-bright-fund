@@ -14,6 +14,7 @@ interface DonationWidgetProps {
   showManagementTools?: boolean;
   maxDisplayCount?: number;
   pageName?: string;
+  teams?: Array<{ _id: string; teamName?: string }>;
 }
 
 interface DonationFormState {
@@ -22,13 +23,15 @@ interface DonationFormState {
   amount: string;
   donorMessage: string;
   status: string;
+  selectedTeamIds: string[];
 }
 
 export default function DonationWidget({ 
   onDonationsChange, 
   showManagementTools = false,
   maxDisplayCount = 9,
-  pageName = 'Donation Page'
+  pageName = 'Donation Page',
+  teams = []
 }: DonationWidgetProps) {
   const [donations, setDonations] = useState<Donations[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +50,7 @@ export default function DonationWidget({
     amount: '',
     donorMessage: '',
     status: 'completed',
+    selectedTeamIds: [],
   });
 
   useEffect(() => {
@@ -80,26 +84,50 @@ export default function DonationWidget({
       setSaving(true);
       setError(null);
 
-      const donationData: Donations = {
-        _id: editingId || crypto.randomUUID(),
-        donorName: formData.donorName || 'Anonymous',
-        donorEmail: formData.donorEmail,
-        amount: parseFloat(formData.amount),
-        donationDate: new Date().toISOString(),
-        donorMessage: formData.donorMessage,
-        status: formData.status,
-      };
+      // Double the donation amount
+      const originalAmount = parseFloat(formData.amount);
+      const doubledAmount = originalAmount * 2;
 
-      if (editingId) {
-        await BaseCrudService.update('donations', donationData);
-        setSuccessMessage('Donation updated successfully!');
-      } else {
-        await BaseCrudService.create('donations', donationData);
-        setSuccessMessage('Donation added successfully!');
+      // If multiple teams selected, create separate donations for each team
+      const teamsToProcess = formData.selectedTeamIds.length > 0 
+        ? formData.selectedTeamIds 
+        : ['']; // Empty string for individual donation
+
+      for (const teamId of teamsToProcess) {
+        const donationData: Donations = {
+          _id: editingId || crypto.randomUUID(),
+          donorName: formData.donorName || 'Anonymous',
+          donorEmail: formData.donorEmail,
+          amount: doubledAmount,
+          originalAmount: originalAmount,
+          donationDate: new Date().toISOString(),
+          donorMessage: formData.donorMessage,
+          status: formData.status,
+          teamId: teamId || undefined,
+          teamIds: formData.selectedTeamIds.join(','),
+        };
+
+        if (editingId && teamsToProcess.length === 1) {
+          await BaseCrudService.update('donations', donationData);
+          setSuccessMessage('Donation updated successfully!');
+        } else {
+          await BaseCrudService.create('donations', donationData);
+        }
+      }
+
+      if (!editingId) {
+        setSuccessMessage(`Donation added successfully! Amount doubled: £${originalAmount} → £${doubledAmount}${formData.selectedTeamIds.length > 1 ? ` (split across ${formData.selectedTeamIds.length} teams)` : ''}`);
         
         // Add notification to store for popup display
         addNotification({
-          ...donationData,
+          _id: crypto.randomUUID(),
+          donorName: formData.donorName || 'Anonymous',
+          donorEmail: formData.donorEmail,
+          amount: doubledAmount,
+          originalAmount: originalAmount,
+          donationDate: new Date().toISOString(),
+          donorMessage: formData.donorMessage,
+          status: formData.status,
           pageName: pageName,
         });
       }
@@ -107,7 +135,7 @@ export default function DonationWidget({
       resetForm();
       await loadDonations();
 
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to save donation';
       setError(errorMsg);
@@ -121,9 +149,10 @@ export default function DonationWidget({
     setFormData({
       donorName: donation.donorName || '',
       donorEmail: donation.donorEmail || '',
-      amount: donation.amount?.toString() || '',
+      amount: donation.originalAmount?.toString() || donation.amount?.toString() || '',
       donorMessage: donation.donorMessage || '',
       status: donation.status || 'completed',
+      selectedTeamIds: donation.teamIds ? donation.teamIds.split(',').filter(id => id) : [],
     });
     setEditingId(donation._id);
     setShowForm(true);
@@ -152,6 +181,7 @@ export default function DonationWidget({
       amount: '',
       donorMessage: '',
       status: 'completed',
+      selectedTeamIds: [],
     });
     setEditingId(null);
     setShowForm(false);
@@ -275,16 +305,23 @@ export default function DonationWidget({
                     <label className="font-paragraph text-sm font-semibold text-primary">
                       Amount (£) *
                     </label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={formData.amount}
-                      onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                      placeholder="100.00"
-                      required
-                      className="border-primary/20"
-                    />
+                    <div className="space-y-1">
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.amount}
+                        onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                        placeholder="100.00"
+                        required
+                        className="border-primary/20"
+                      />
+                      {formData.amount && (
+                        <p className="text-xs text-secondary font-semibold">
+                          Will be doubled to: £{(parseFloat(formData.amount) * 2).toFixed(2)}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -301,6 +338,46 @@ export default function DonationWidget({
                     </select>
                   </div>
                 </div>
+
+                {teams.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
+                      Assign to Teams (Optional - select multiple to split donation)
+                    </label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto border border-primary/20 rounded-lg p-3 bg-primary/2">
+                      {teams.map((team) => (
+                        <label key={team._id} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.selectedTeamIds.includes(team._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  selectedTeamIds: [...prev.selectedTeamIds, team._id]
+                                }));
+                              } else {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  selectedTeamIds: prev.selectedTeamIds.filter(id => id !== team._id)
+                                }));
+                              }
+                            }}
+                            className="w-4 h-4 rounded border-primary/20 cursor-pointer"
+                          />
+                          <span className="font-paragraph text-sm text-primary">
+                            {team.teamName || 'Unnamed Team'}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    {formData.selectedTeamIds.length > 0 && (
+                      <p className="text-xs text-secondary font-semibold">
+                        Donation will be split across {formData.selectedTeamIds.length} team{formData.selectedTeamIds.length !== 1 ? 's' : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <label className="font-paragraph text-sm font-semibold text-primary">
@@ -412,9 +489,16 @@ export default function DonationWidget({
                     {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : ''}
                   </p>
                 </div>
-                <p className="font-heading text-2xl font-bold text-secondary">
-                  £{donation.amount?.toLocaleString()}
-                </p>
+                <div className="text-right">
+                  <p className="font-heading text-2xl font-bold text-secondary">
+                    £{donation.amount?.toLocaleString()}
+                  </p>
+                  {donation.originalAmount && donation.originalAmount !== donation.amount && (
+                    <p className="font-paragraph text-xs text-primary/60">
+                      (£{donation.originalAmount?.toLocaleString()} × 2)
+                    </p>
+                  )}
+                </div>
               </div>
 
               {donation.donorMessage && (
