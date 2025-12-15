@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DonationWidget from '@/components/DonationWidget';
 import { useDonationStore } from '@/stores/donationStore';
@@ -35,6 +35,8 @@ export default function HomePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [previousGoalAchieved, setPreviousGoalAchieved] = useState(false);
+  const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const { addNotification } = useDonationStore();
 
   useEffect(() => {
@@ -153,6 +155,46 @@ export default function HomePage() {
   const bonusProgressPercentage = bonusGoalAmount && mainGoalAchieved
     ? Math.min(((totalRaised - (campaign?.fundraisingGoal || 0)) / bonusGoalAmount) * 100, 100)
     : 0;
+
+  // Sort teams based on selected filter
+  const getSortedTeams = () => {
+    const teamsWithData = teams.map((team) => {
+      const teamDonations = donations.filter(d => d.teamId === team._id);
+      const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+      const teamProgress = team.fundraisingGoal 
+        ? Math.min((teamTotal / team.fundraisingGoal) * 100, 100)
+        : 0;
+      return { team, teamTotal, teamProgress };
+    });
+
+    switch (teamSortFilter) {
+      case 'highest':
+        return teamsWithData.sort((a, b) => b.teamTotal - a.teamTotal);
+      case 'lowest':
+        return teamsWithData.sort((a, b) => a.teamTotal - b.teamTotal);
+      case 'name':
+        return teamsWithData.sort((a, b) => (a.team.teamName || '').localeCompare(b.team.teamName || ''));
+      case 'progress':
+        return teamsWithData.sort((a, b) => b.teamProgress - a.teamProgress);
+      default:
+        return teamsWithData;
+    }
+  };
+
+  const getFilterLabel = () => {
+    switch (teamSortFilter) {
+      case 'highest':
+        return 'Sort: Highest Raised';
+      case 'lowest':
+        return 'Sort: Lowest Raised';
+      case 'name':
+        return 'Sort: By Name';
+      case 'progress':
+        return 'Sort: By Progress';
+      default:
+        return 'Sort Teams';
+    }
+  };
 
   if (loading) {
     return (
@@ -728,11 +770,86 @@ export default function HomePage() {
       </section>
       {/* Teams Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-5xl font-bold text-primary mb-4">
-            Fundraising <span className="text-secondary italic">Teams</span>
-          </h2>
-
+        <div className="mb-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+            <h2 className="font-heading text-5xl font-bold text-primary">
+              Fundraising <span className="text-secondary italic">Teams</span>
+            </h2>
+            
+            {/* Filter Dropdown */}
+            <div className="relative w-full md:w-64">
+              <button
+                onClick={() => setShowFilterMenu(!showFilterMenu)}
+                className="w-full px-4 py-3 bg-background border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
+              >
+                <span>{getFilterLabel()}</span>
+                <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {/* Dropdown Menu */}
+              {showFilterMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
+                >
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('highest');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors ${
+                      teamSortFilter === 'highest'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
+                    }`}
+                  >
+                    Highest Raised
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('lowest');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                      teamSortFilter === 'lowest'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
+                    }`}
+                  >
+                    Lowest Raised
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('name');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                      teamSortFilter === 'name'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
+                    }`}
+                  >
+                    By Name
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('progress');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                      teamSortFilter === 'progress'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
+                    }`}
+                  >
+                    By Progress
+                  </button>
+                </motion.div>
+              )}
+            </div>
+          </div>
         </div>
 
         {teams.length === 0 ? (
@@ -741,75 +858,67 @@ export default function HomePage() {
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {teams.map((team) => {
-              const teamDonations = donations.filter(d => d.teamId === team._id);
-              const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
-              const teamProgress = team.fundraisingGoal 
-                ? Math.min((teamTotal / team.fundraisingGoal) * 100, 100)
-                : 0;
-
-              return (
-                <motion.div
-                  key={team._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer"
-                >
-                  {team.teamLogo && (
-                    <div className="w-full h-40 rounded-lg overflow-hidden bg-background">
-                      <Image 
-                        src={team.teamLogo}
-                        alt={team.teamName || 'Team logo'}
-                        className="w-full h-full object-cover"
-                        width={400}
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-heading text-3xl font-bold text-primary">
-                      {team.teamName}
-                    </h3>
-
+            {getSortedTeams().map(({ team, teamTotal, teamProgress }) => (
+              <motion.div
+                key={team._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer"
+              >
+                {team.teamLogo && (
+                  <div className="w-full h-40 rounded-lg overflow-hidden bg-background">
+                    <Image 
+                      src={team.teamLogo}
+                      alt={team.teamName || 'Team logo'}
+                      className="w-full h-full object-cover"
+                      width={400}
+                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                )}
+                <div>
+                  <h3 className="font-heading text-3xl font-bold text-primary">
+                    {team.teamName}
+                  </h3>
 
-                    <div className="bg-background rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-primary/60">Raised</p>
-                      <p className="font-heading text-2xl font-bold text-secondary">
-                        £{teamTotal.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-baseline">
-                      <span className="font-paragraph text-sm text-primary/60">Goal</span>
-                      <span className="font-heading text-lg font-bold text-primary">
-                        £{team.fundraisingGoal?.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="w-full bg-primary/10 rounded-full h-4 overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${teamProgress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="bg-secondary h-full rounded-full"
-                      />
-                    </div>
-                    <p className="font-paragraph text-sm text-primary/70 text-right">
-                      {teamProgress.toFixed(1)}% complete
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+
+                  <div className="bg-background rounded-lg p-4">
+                    <p className="font-paragraph text-sm text-primary/60">Raised</p>
+                    <p className="font-heading text-2xl font-bold text-secondary">
+                      £{teamTotal.toLocaleString()}
                     </p>
                   </div>
-                  <Link to={`/team/${team._id}`}>
-                    <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full">
-                      View Team Details
-                    </Button>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-baseline">
+                    <span className="font-paragraph text-sm text-primary/60">Goal</span>
+                    <span className="font-heading text-lg font-bold text-primary">
+                      £{team.fundraisingGoal?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="w-full bg-primary/10 rounded-full h-4 overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${teamProgress}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="bg-secondary h-full rounded-full"
+                    />
+                  </div>
+                  <p className="font-paragraph text-sm text-primary/70 text-right">
+                    {teamProgress.toFixed(1)}% complete
+                  </p>
+                </div>
+                <Link to={`/team/${team._id}`}>
+                  <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full">
+                    View Team Details
+                  </Button>
+                </Link>
+              </motion.div>
+            ))}
           </div>
         )}
       </section>
