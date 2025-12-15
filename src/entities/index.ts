@@ -60,6 +60,8 @@ export interface Donations {
   donorEmail?: string;
   /** @wixFieldType number */
   amount?: number;
+  /** @wixFieldType number */
+  originalAmount?: number;
   /** @wixFieldType datetime */
   donationDate?: Date | string;
   /** @wixFieldType boolean */
@@ -68,8 +70,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number */
-  originalAmount?: number;
   /** @wixFieldType text */
   teamIds?: string;
 }

@@ -345,6 +345,29 @@ export default function DonationWidget({
                       Assign to Teams (Optional - select multiple to split donation)
                     </label>
                     <div className="space-y-2 max-h-48 overflow-y-auto border border-primary/20 rounded-lg p-3 bg-primary/2">
+                      <label className="flex items-center gap-2 cursor-pointer pb-2 border-b border-primary/10">
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedTeamIds.length === teams.length && teams.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData(prev => ({
+                                ...prev,
+                                selectedTeamIds: teams.map(t => t._id)
+                              }));
+                            } else {
+                              setFormData(prev => ({
+                                ...prev,
+                                selectedTeamIds: []
+                              }));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-primary/20 cursor-pointer"
+                        />
+                        <span className="font-paragraph text-sm font-semibold text-secondary">
+                          ✓ All Teams
+                        </span>
+                      </label>
                       {teams.map((team) => (
                         <label key={team._id} className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -373,7 +396,7 @@ export default function DonationWidget({
                     </div>
                     {formData.selectedTeamIds.length > 0 && (
                       <p className="text-xs text-secondary font-semibold">
-                        Donation will be split across {formData.selectedTeamIds.length} team{formData.selectedTeamIds.length !== 1 ? 's' : ''}
+                        Donation will be split across {formData.selectedTeamIds.length} team{formData.selectedTeamIds.length !== 1 ? 's' : ''} {formData.selectedTeamIds.length === teams.length ? '(All Teams)' : ''}
                       </p>
                     )}
                   </div>
