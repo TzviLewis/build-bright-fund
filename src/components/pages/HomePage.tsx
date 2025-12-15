@@ -37,6 +37,8 @@ export default function HomePage() {
   const [previousGoalAchieved, setPreviousGoalAchieved] = useState(false);
   const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [donorPage, setDonorPage] = useState(1);
+  const donorsPerPage = 12;
   const { addNotification } = useDonationStore();
 
   useEffect(() => {
@@ -927,40 +929,101 @@ export default function HomePage() {
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
             Our Generous <span className="text-secondary italic">Supporters</span>
           </h2>
-
+          <p className="font-paragraph text-lg text-primary/70">
+            {donations.length} {donations.length === 1 ? 'donor' : 'donors'} have made this campaign possible
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {donations.slice(0, 9).map((donation) => (
-            <motion.div
-              key={donation._id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-primary/5 rounded-lg p-6 space-y-3"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="font-heading text-xl font-bold text-primary">
-                    {donation.donorName || 'Anonymous'}
-                  </p>
-                  <p className="font-paragraph text-sm text-primary/60">
-                    {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : ''}
-                  </p>
+        {donations.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="font-paragraph text-lg text-primary/60">
+              Be the first to support this campaign!
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {donations
+                .slice((donorPage - 1) * donorsPerPage, donorPage * donorsPerPage)
+                .map((donation) => (
+                  <motion.div
+                    key={donation._id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-primary/5 rounded-lg p-6 space-y-3 border border-primary/10 hover:border-secondary/30 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-heading text-xl font-bold text-primary">
+                          {donation.donorName || 'Anonymous'}
+                        </p>
+                        <p className="font-paragraph text-sm text-primary/60">
+                          {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : ''}
+                        </p>
+                      </div>
+                      <p className="font-heading text-2xl font-bold text-secondary">
+                        £{donation.amount?.toLocaleString()}
+                      </p>
+                    </div>
+                    {donation.donorMessage && (
+                      <p className="font-paragraph text-base text-primary/70 italic">
+                        "{donation.donorMessage}"
+                      </p>
+                    )}
+                  </motion.div>
+                ))}
+            </div>
+
+            {/* Pagination */}
+            {Math.ceil(donations.length / donorsPerPage) > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-12">
+                <button
+                  onClick={() => setDonorPage(Math.max(1, donorPage - 1))}
+                  disabled={donorPage === 1}
+                  className="px-4 py-2 border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary hover:border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {Array.from(
+                    { length: Math.ceil(donations.length / donorsPerPage) },
+                    (_, i) => i + 1
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setDonorPage(page)}
+                      className={`w-10 h-10 rounded-lg font-paragraph font-semibold transition-colors ${
+                        donorPage === page
+                          ? 'bg-secondary text-secondary-foreground'
+                          : 'border-2 border-primary/20 text-primary hover:border-secondary'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
                 </div>
-                <p className="font-heading text-2xl font-bold text-secondary">
-                  £{donation.amount?.toLocaleString()}
-                </p>
+
+                <button
+                  onClick={() =>
+                    setDonorPage(
+                      Math.min(
+                        Math.ceil(donations.length / donorsPerPage),
+                        donorPage + 1
+                      )
+                    )
+                  }
+                  disabled={donorPage === Math.ceil(donations.length / donorsPerPage)}
+                  className="px-4 py-2 border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary hover:border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
               </div>
-              {donation.donorMessage && (
-                <p className="font-paragraph text-base text-primary/70 italic">
-                  "{donation.donorMessage}"
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
+            )}
+          </>
+        )}
       </section>
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
