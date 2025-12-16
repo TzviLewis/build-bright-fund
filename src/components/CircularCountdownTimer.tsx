@@ -12,7 +12,6 @@ interface TimeLeft {
   minutes: number;
   seconds: number;
   totalSeconds: number;
-  isExpired: boolean;
   hasStarted: boolean;
 }
 
@@ -23,7 +22,6 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
     minutes: 0,
     seconds: 0,
     totalSeconds: 0,
-    isExpired: false,
     hasStarted: false,
   });
 
@@ -53,22 +51,6 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
 
       const difference = targetDate - now;
 
-      // Only mark as expired if the campaign has started AND the end date has passed
-      const isExpired = campaignHasStarted && difference <= 0;
-
-      if (isExpired) {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          totalSeconds: 0,
-          isExpired: true,
-          hasStarted: campaignHasStarted,
-        });
-        return;
-      }
-
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((difference / 1000 / 60) % 60);
@@ -81,7 +63,6 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
         minutes,
         seconds,
         totalSeconds,
-        isExpired: false,
         hasStarted: campaignHasStarted,
       });
     };
@@ -114,28 +95,6 @@ export default function CircularCountdownTimer({ endDate, startDate }: CircularC
   };
 
   const progressPercentage = getProgressPercentage();
-
-  if (timeLeft.isExpired) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center justify-center"
-      >
-        <div className="relative w-64 h-64 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full bg-destructive/10 border-4 border-destructive"></div>
-          <div className="text-center z-10">
-            <p className="font-heading text-3xl font-bold text-destructive">
-              {timeLeft.hasStarted ? 'Campaign Ended' : 'Coming Soon'}
-            </p>
-            <p className="font-paragraph text-base text-destructive/80 mt-2">
-              {timeLeft.hasStarted ? 'Thank you for your support!' : 'Stay tuned!'}
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div
