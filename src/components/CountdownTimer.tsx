@@ -52,7 +52,10 @@ export default function CountdownTimer({ endDate, startDate }: CountdownTimerPro
 
       const difference = targetDate - now;
 
-      if (difference <= 0) {
+      // Only mark as expired if the campaign has started AND the end date has passed
+      const isExpired = campaignHasStarted && difference <= 0;
+
+      if (isExpired) {
         setTimeLeft({
           days: 0,
           hours: 0,
