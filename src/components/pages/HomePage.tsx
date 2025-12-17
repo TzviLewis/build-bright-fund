@@ -38,7 +38,7 @@ export default function HomePage() {
   const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [donorPage, setDonorPage] = useState(1);
-  const donorsPerPage = 12;
+  const donorsPerPage = 24;
   const { addNotification } = useDonationStore();
 
   useEffect(() => {
