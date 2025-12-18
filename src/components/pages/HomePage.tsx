@@ -68,7 +68,7 @@ export default function HomePage() {
         // Use the campaign's official start and end times from the database
         setCampaign(campaignItems[0]);
       }
-      setDonations(donationItems.filter(d => d.status === 'completed'));
+      setDonations(donationItems);
       setMatchers(matcherItems.filter(m => m.status === 'active'));
       setTeams(teamItems);
     } catch (error) {

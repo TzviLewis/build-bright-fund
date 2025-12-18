@@ -68,11 +68,11 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number - Original amount before doubling */
+  /** @wixFieldType number */
   originalAmount?: number;
-  /** @wixFieldType text - Comma-separated team IDs for multi-team donations */
+  /** @wixFieldType text */
   teamIds?: string;
-  /** @wixFieldType text - Page name where donation was made */
+  /** @wixFieldType text */
   pageName?: string;
 }
 
