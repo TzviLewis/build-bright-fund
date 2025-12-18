@@ -68,12 +68,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number */
-  originalAmount?: number;
-  /** @wixFieldType text */
-  teamIds?: string;
-  /** @wixFieldType text */
-  pageName?: string;
 }
 
 
