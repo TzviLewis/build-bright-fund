@@ -3,17 +3,21 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
-import { CampaignDetails, Donations, Teams } from '@/entities';
-import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { CampaignDetails, Donations, Teams, Matchers } from '@/entities';
+import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<CampaignDetails[]>([]);
   const [donations, setDonations] = useState<Donations[]>([]);
   const [teams, setTeams] = useState<Teams[]>([]);
+  const [matchers, setMatchers] = useState<Matchers[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -23,15 +27,17 @@ export default function CampaignsPage() {
     try {
       setLoading(true);
       setError(null);
-      const [campaignRes, donationsRes, teamsRes] = await Promise.all([
+      const [campaignRes, donationsRes, teamsRes, matchersRes] = await Promise.all([
         BaseCrudService.getAll<CampaignDetails>('campaigndetails'),
         BaseCrudService.getAll<Donations>('donations'),
         BaseCrudService.getAll<Teams>('teams'),
+        BaseCrudService.getAll<Matchers>('matchers'),
       ]);
 
       setCampaigns(campaignRes.items || []);
       setDonations(donationsRes.items || []);
       setTeams(teamsRes.items || []);
+      setMatchers(matchersRes.items?.filter(m => m.status === 'active') || []);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to load campaigns';
       setError(`Failed to load campaigns: ${errorMsg}`);
@@ -64,6 +70,46 @@ export default function CampaignsPage() {
     const end = new Date(campaign.campaignEndDate);
     const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
     return now > end && end >= twoWeeksAgo;
+  };
+
+  // Sort teams based on selected filter
+  const getSortedTeams = () => {
+    const teamsWithData = teams.map((team) => {
+      const teamDonations = donations.filter(d => d.teamId === team._id);
+      const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+      const teamProgress = team.fundraisingGoal 
+        ? Math.min((teamTotal / team.fundraisingGoal) * 100, 100)
+        : 0;
+      return { team, teamTotal, teamProgress };
+    });
+
+    switch (teamSortFilter) {
+      case 'highest':
+        return teamsWithData.sort((a, b) => b.teamTotal - a.teamTotal);
+      case 'lowest':
+        return teamsWithData.sort((a, b) => a.teamTotal - b.teamTotal);
+      case 'name':
+        return teamsWithData.sort((a, b) => (a.team.teamName || '').localeCompare(b.team.teamName || ''));
+      case 'progress':
+        return teamsWithData.sort((a, b) => b.teamProgress - a.teamProgress);
+      default:
+        return teamsWithData;
+    }
+  };
+
+  const getFilterLabel = () => {
+    switch (teamSortFilter) {
+      case 'highest':
+        return 'Sort: Highest Raised';
+      case 'lowest':
+        return 'Sort: Lowest Raised';
+      case 'name':
+        return 'Sort: By Name';
+      case 'progress':
+        return 'Sort: By Progress';
+      default:
+        return 'Sort Teams';
+    }
   };
 
   const liveCampaigns = campaigns.filter(c => isCampaignLive(c));
@@ -361,7 +407,7 @@ export default function CampaignsPage() {
 
         {/* Draft Campaigns Section */}
         {draftCampaigns.length > 0 && (
-          <section>
+          <section className="mb-20">
             <div className="mb-12">
               <div className="inline-block mb-4 px-4 py-2 bg-blue-100 rounded-full">
                 <p className="font-heading text-sm font-bold text-blue-700 uppercase tracking-wider">📋 Coming Soon</p>
@@ -446,6 +492,234 @@ export default function CampaignsPage() {
             </div>
           </section>
         )}
+
+        {/* Countdown Timer Section */}
+        {campaigns.length > 0 && campaigns[0]?.campaignEndDate && (
+          <section className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="font-heading text-4xl font-bold text-blue-900 mb-4">
+                Time is <span className="text-green-600 italic">Running Out</span>
+              </h2>
+            </div>
+            <div className="flex justify-center">
+              <CircularCountdownTimer endDate={campaigns[0].campaignEndDate} startDate={campaigns[0].campaignStartDate} />
+            </div>
+          </section>
+        )}
+
+        {/* Matchers Section */}
+        <section className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-4xl font-bold text-blue-900 mb-4">
+              Generous <span className="text-blue-600 italic">Matchers</span>
+            </h2>
+          </div>
+
+          {matchers.length === 0 ? (
+            <p className="font-paragraph text-lg text-blue-700 text-center py-8">
+              No matchers available yet. Check back soon!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {matchers.map((matcher) => (
+                <motion.div
+                  key={matcher._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-lg p-8 shadow-lg border-2 border-blue-200 space-y-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-heading text-2xl font-bold text-blue-900">
+                        {matcher.matcherName}
+                      </h3>
+                    </div>
+                  </div>
+                  {matcher.matchingAmount && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Matching Amount</p>
+                      <p className="font-heading text-2xl font-bold text-blue-900">
+                        £{matcher.matchingAmount.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {matcher.matchingPercentage && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Matching Percentage</p>
+                      <p className="font-heading text-2xl font-bold text-blue-900">
+                        {matcher.matchingPercentage}%
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Teams Section */}
+        <section className="mb-20">
+          <div className="mb-12">
+            <h2 className="font-heading text-4xl font-bold text-blue-900 mb-8">
+              Fundraising <span className="text-blue-600 italic">Teams</span>
+            </h2>
+
+            {/* Team Filter */}
+            <div className="relative mb-8">
+              <button
+                onClick={() => setShowFilterMenu(!showFilterMenu)}
+                className="w-full px-4 py-3 bg-white border-2 border-blue-200 rounded-lg font-paragraph font-semibold text-blue-900 flex items-center justify-between hover:border-blue-400 transition-colors"
+              >
+                <span>{getFilterLabel()}</span>
+                <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {/* Dropdown Menu */}
+              {showFilterMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-blue-200 rounded-lg shadow-lg z-10 overflow-hidden"
+                >
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('highest');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors ${
+                      teamSortFilter === 'highest'
+                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
+                        : 'text-blue-900 hover:bg-blue-50'
+                    }`}
+                  >
+                    Highest Raised
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('lowest');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                      teamSortFilter === 'lowest'
+                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
+                        : 'text-blue-900 hover:bg-blue-50'
+                    }`}
+                  >
+                    Lowest Raised
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('name');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                      teamSortFilter === 'name'
+                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
+                        : 'text-blue-900 hover:bg-blue-50'
+                    }`}
+                  >
+                    By Name
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTeamSortFilter('progress');
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                      teamSortFilter === 'progress'
+                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
+                        : 'text-blue-900 hover:bg-blue-50'
+                    }`}
+                  >
+                    By Progress
+                  </button>
+                </motion.div>
+              )}
+            </div>
+          </div>
+
+          {teams.length === 0 ? (
+            <p className="font-paragraph text-lg text-blue-700 text-center py-8">
+              No teams yet. Be the first to create one!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {getSortedTeams().map(({ team, teamTotal, teamProgress }) => (
+                <motion.div
+                  key={team._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-white rounded-lg p-8 space-y-6 border-2 border-blue-200 hover:border-blue-400 transition-colors cursor-pointer shadow-lg"
+                >
+                  {team.teamLogo && (
+                    <div className="w-full h-40 rounded-lg overflow-hidden bg-blue-50">
+                      <Image 
+                        src={team.teamLogo}
+                        alt={team.teamName || 'Team logo'}
+                        className="w-full h-full object-cover"
+                        width={400}
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-heading text-3xl font-bold text-blue-900">
+                      {team.teamName}
+                    </h3>
+                    {team.teamDescription && (
+                      <p className="font-paragraph text-blue-700 mt-2 line-clamp-2">
+                        {team.teamDescription}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Raised</p>
+                      <p className="font-heading text-2xl font-bold text-blue-900">
+                        £{teamTotal.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Members</p>
+                      <p className="font-heading text-2xl font-bold text-blue-900">
+                        {team.memberCount || 0}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-baseline">
+                      <span className="font-paragraph text-sm text-blue-700">Goal</span>
+                      <span className="font-heading text-lg font-bold text-blue-900">
+                        £{team.fundraisingGoal?.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="w-full bg-blue-100 rounded-full h-4 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${teamProgress}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                      />
+                    </div>
+                    <p className="font-paragraph text-sm text-blue-700 text-right">
+                      {teamProgress.toFixed(1)}% complete
+                    </p>
+                  </div>
+                  <Link to={`/team/${team._id}`}>
+                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold">
+                      View Team Details
+                    </Button>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* No Campaigns */}
         {campaigns.length === 0 && (
