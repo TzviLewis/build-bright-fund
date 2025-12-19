@@ -57,15 +57,11 @@ export interface Donations {
   /** @wixFieldType text */
   teamId?: string;
   /** @wixFieldType text */
-  teamIds?: string;
-  /** @wixFieldType text */
   donorName?: string;
   /** @wixFieldType text */
   donorEmail?: string;
   /** @wixFieldType number */
   amount?: number;
-  /** @wixFieldType number */
-  originalAmount?: number;
   /** @wixFieldType datetime */
   donationDate?: Date | string;
   /** @wixFieldType boolean */
@@ -74,8 +70,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType text */
-  pageName?: string;
 }
 
 
