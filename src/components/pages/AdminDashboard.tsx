@@ -799,6 +799,24 @@ export default function AdminDashboard() {
                 Manage Campaign Dates
               </Button>
             </Link>
+            <Link to="/admin/donations">
+              <Button className="bg-green-600 text-white hover:bg-green-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Manage Donations
+              </Button>
+            </Link>
+            <Link to="/admin/matchers">
+              <Button className="bg-orange-600 text-white hover:bg-orange-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Manage Matchers
+              </Button>
+            </Link>
+            <Link to="/admin/analytics">
+              <Button className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Analytics
+              </Button>
+            </Link>
             <Button
               onClick={() => setUI(prev => ({ ...prev, showVideoEditor: !prev.showVideoEditor }))}
               className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2"

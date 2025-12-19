@@ -12,7 +12,14 @@ import AdminCampaignDatesPage from '@/components/pages/AdminCampaignDatesPage';
 import CampaignsPage from '@/components/pages/CampaignsPage';
 import AdminCampaignsPage from '@/components/pages/AdminCampaignsPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
+import { TeamProtectedRoute } from '@/components/ui/team-protected-route';
 import DonationNotificationPopup from '@/components/DonationNotificationPopup';
+import TeamLoginPage from '@/components/pages/TeamLoginPage';
+import TeamDashboardPage from '@/components/pages/TeamDashboardPage';
+import CampaignDetailPage from '@/components/pages/CampaignDetailPage';
+import AdminDonationsPage from '@/components/pages/AdminDonationsPage';
+import AdminMatchersPage from '@/components/pages/AdminMatchersPage';
+import AdminAnalyticsPage from '@/components/pages/AdminAnalyticsPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -81,6 +88,46 @@ const router = createBrowserRouter([
           <AdminProtectedRoute>
             <AdminCampaignDatesPage />
           </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/donations",
+        element: (
+          <AdminProtectedRoute>
+            <AdminDonationsPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/matchers",
+        element: (
+          <AdminProtectedRoute>
+            <AdminMatchersPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/analytics",
+        element: (
+          <AdminProtectedRoute>
+            <AdminAnalyticsPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "campaign/:campaignId",
+        element: <CampaignDetailPage />,
+      },
+      {
+        path: "team-login",
+        element: <TeamLoginPage />,
+      },
+      {
+        path: "team-dashboard",
+        element: (
+          <TeamProtectedRoute>
+            <TeamDashboardPage />
+          </TeamProtectedRoute>
         ),
       },
       {
