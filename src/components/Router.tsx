@@ -33,6 +33,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <CampaignsPage />,
+      },
+      {
+        path: "home",
         element: <HomePage />,
       },
       {

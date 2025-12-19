@@ -209,7 +209,7 @@ export default function AdminDashboard() {
           campaignEndDate: campaign.campaignEndDate 
             ? new Date(campaign.campaignEndDate).toISOString().split('T')[0] 
             : '',
-          campaignStatus: campaign.campaignStatus || 'draft',
+          campaignStatus: campaign.status || 'draft',
         });
       }
     } catch (error) {
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
         campaignEndDate: campaignForm.campaignEndDate 
           ? new Date(campaignForm.campaignEndDate).toISOString() 
           : '',
-        campaignStatus: campaignForm.campaignStatus || 'draft',
+        status: campaignForm.campaignStatus || 'draft',
       };
 
       if (data.campaign?._id) {

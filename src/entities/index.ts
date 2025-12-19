@@ -13,6 +13,8 @@ export interface CampaignDetails {
   _updatedDate?: Date;
   /** @wixFieldType text */
   campaignTitle?: string;
+  /** @wixFieldType text */
+  status?: string;
   /** @wixFieldType url */
   homepageVideo?: string;
   /** @wixFieldType url */
@@ -41,10 +43,6 @@ export interface CampaignDetails {
   campaignEndTime?: any;
   /** @wixFieldType video */
   video?: string;
-  /** @wixFieldType text */
-  status?: string;
-  /** @wixFieldType text */
-  campaignStatus?: string;
 }
 
 

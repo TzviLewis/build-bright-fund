@@ -58,8 +58,17 @@ export default function CampaignsPage() {
     return now >= start && now <= end;
   };
 
+  const isCampaignEnded = (campaign: CampaignDetails) => {
+    if (!campaign.campaignStartDate || !campaign.campaignEndDate) return false;
+    const now = new Date();
+    const end = new Date(campaign.campaignEndDate);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    return now > end && end >= twoWeeksAgo;
+  };
+
   const liveCampaigns = campaigns.filter(c => isCampaignLive(c));
-  const draftCampaigns = campaigns.filter(c => !isCampaignLive(c));
+  const endedCampaigns = campaigns.filter(c => isCampaignEnded(c));
+  const draftCampaigns = campaigns.filter(c => !isCampaignLive(c) && !isCampaignEnded(c));
 
   if (loading) {
     return (
@@ -102,9 +111,9 @@ export default function CampaignsPage() {
                 Discover and support our active fundraising campaigns
               </p>
             </div>
-            <Link to="/">
+            <Link to="/home">
               <Button className="bg-white text-blue-900 hover:bg-blue-50 rounded-full px-8 py-3 font-semibold">
-                Back to Home
+                View Original Home
               </Button>
             </Link>
           </div>
@@ -113,7 +122,7 @@ export default function CampaignsPage() {
 
       <div className="max-w-[120rem] mx-auto px-8 py-16">
         {/* Live Campaigns Section */}
-        {liveCampaigns.length > 0 && (
+        {liveCampaigns.length > 0 ? (
           <section className="mb-20">
             <div className="mb-12">
               <div className="inline-block mb-4 px-4 py-2 bg-green-100 rounded-full">
@@ -211,6 +220,135 @@ export default function CampaignsPage() {
                           <ArrowRight className="w-4 h-4" />
                         </Button>
                       </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </section>
+        ) : (
+          <section className="mb-20">
+            <div className="text-center py-16 bg-white rounded-lg border-2 border-blue-200">
+              <AlertCircle className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+              <h2 className="font-heading text-3xl font-bold text-blue-900 mb-2">No Live Campaigns</h2>
+              <p className="font-paragraph text-lg text-blue-700">
+                Check back soon for exciting new campaigns!
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* Ended Campaigns Section */}
+        {endedCampaigns.length > 0 && (
+          <section className="mb-20">
+            <div className="mb-12">
+              <div className="inline-block mb-4 px-4 py-2 bg-blue-100 rounded-full">
+                <p className="font-heading text-sm font-bold text-blue-700 uppercase tracking-wider">✓ Recently Ended</p>
+              </div>
+              <h2 className="font-heading text-4xl font-bold text-blue-900">
+                Recently Completed <span className="text-blue-600 italic">Campaigns</span>
+              </h2>
+              <p className="font-paragraph text-lg text-blue-700 mt-2">
+                {endedCampaigns.length} campaign{endedCampaigns.length !== 1 ? 's' : ''} completed in the last 2 weeks
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {endedCampaigns.map((campaign, index) => {
+                const stats = getCampaignStats(campaign);
+                const endDate = campaign.campaignEndDate 
+                  ? new Date(campaign.campaignEndDate).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })
+                  : 'TBA';
+
+                return (
+                  <motion.div
+                    key={campaign._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border-2 border-blue-300"
+                  >
+                    {/* Campaign Image */}
+                    {campaign.mainCampaignImage && (
+                      <div className="relative h-64 overflow-hidden bg-blue-100">
+                        <Image
+                          src={campaign.mainCampaignImage}
+                          alt={campaign.campaignTitle || 'Campaign'}
+                          className="w-full h-full object-cover opacity-90"
+                          width={600}
+                        />
+                        <div className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full font-semibold text-sm">
+                          COMPLETED
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Campaign Content */}
+                    <div className="p-8 space-y-6">
+                      <div>
+                        <h3 className="font-heading text-3xl font-bold text-blue-900 mb-2">
+                          {campaign.campaignTitle}
+                        </h3>
+                        <p className="font-paragraph text-blue-700 line-clamp-2">
+                          {campaign.projectDescription}
+                        </p>
+                      </div>
+
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-blue-50 rounded-lg p-4 text-center">
+                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Raised</p>
+                          <p className="font-heading text-2xl font-bold text-blue-900">
+                            £{stats.totalRaised.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-4 text-center">
+                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Goal</p>
+                          <p className="font-heading text-2xl font-bold text-blue-900">
+                            £{campaign.fundraisingGoal?.toLocaleString() || '0'}
+                          </p>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-4 text-center">
+                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Donors</p>
+                          <p className="font-heading text-2xl font-bold text-blue-900">
+                            {stats.donorCount}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-paragraph text-sm text-blue-700">Final Progress</span>
+                          <span className="font-heading text-lg font-bold text-blue-600">
+                            {stats.progress.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.progress}%` }}
+                            transition={{ duration: 1.5, ease: 'easeOut' }}
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                          />
+                        </div>
+                      </div>
+
+                      {/* End Date */}
+                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Campaign Ended</p>
+                        <p className="font-heading text-lg font-bold text-blue-900">{endDate}</p>
+                      </div>
+
+                      {/* View Details Button */}
+                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
+                        View Campaign Details
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
                     </div>
                   </motion.div>
                 );
@@ -343,10 +481,10 @@ export default function CampaignsPage() {
               <h4 className="font-heading text-xl font-bold">Quick Links</h4>
               <nav className="flex flex-col gap-2">
                 <Link to="/" className="font-paragraph text-blue-100 hover:text-white transition-colors">
-                  Home
+                  Campaigns
                 </Link>
-                <Link to="/campaigns" className="font-paragraph text-blue-100 hover:text-white transition-colors">
-                  All Campaigns
+                <Link to="/home" className="font-paragraph text-blue-100 hover:text-white transition-colors">
+                  Original Home
                 </Link>
                 <Link to="/gallery" className="font-paragraph text-blue-100 hover:text-white transition-colors">
                   Gallery
