@@ -50,6 +50,8 @@ interface TeamFormState {
   teamDescription: string;
   memberCount: string;
   teamLogo: string;
+  teamId: string;
+  teamPassword: string;
 }
 
 interface GalleryFormState {
@@ -146,6 +148,8 @@ export default function AdminDashboard() {
     teamDescription: '',
     memberCount: '',
     teamLogo: '',
+    teamId: '',
+    teamPassword: '',
   });
 
   // Gallery Form State
@@ -507,6 +511,8 @@ export default function AdminDashboard() {
       teamDescription: team.teamDescription || '',
       memberCount: team.memberCount?.toString() || '',
       teamLogo: team.teamLogo || '',
+      teamId: team.teamId?.toString() || '',
+      teamPassword: team.teamPassword || '',
     });
     setUI(prev => ({ 
       ...prev, 
@@ -524,6 +530,8 @@ export default function AdminDashboard() {
       teamDescription: '',
       memberCount: '',
       teamLogo: '',
+      teamId: '',
+      teamPassword: '',
     });
     setUI(prev => ({ 
       ...prev, 
