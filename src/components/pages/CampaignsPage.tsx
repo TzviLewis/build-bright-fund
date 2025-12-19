@@ -345,10 +345,12 @@ export default function CampaignsPage() {
                       </div>
 
                       {/* View Details Button */}
-                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
-                        View Campaign Details
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
+                      <Link to={`/campaign/${campaign._id}`}>
+                        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
+                          View Campaign Details
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </motion.div>
                 );

@@ -57,6 +57,8 @@ export interface Donations {
   /** @wixFieldType text */
   teamId?: string;
   /** @wixFieldType text */
+  replies?: string;
+  /** @wixFieldType text */
   donorName?: string;
   /** @wixFieldType text */
   donorEmail?: string;
@@ -70,13 +72,11 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType text */
-  replies?: string;
-  /** @wixFieldType number - Original amount before doubling */
+  /** @wixFieldType number */
   originalAmount?: number;
-  /** @wixFieldType text - Comma-separated team IDs */
+  /** @wixFieldType text */
   teamIds?: string;
-  /** @wixFieldType text - Page name where donation was made */
+  /** @wixFieldType text */
   pageName?: string;
 }
 
@@ -139,6 +139,8 @@ export interface Teams {
   _updatedDate?: Date;
   /** @wixFieldType text */
   teamName?: string;
+  /** @wixFieldType text */
+  teamPassword?: string;
   /** @wixFieldType number */
   fundraisingGoal?: number;
   /** @wixFieldType text */
@@ -149,6 +151,4 @@ export interface Teams {
   teamLogo?: string;
   /** @wixFieldType number */
   teamId?: number;
-  /** @wixFieldType text */
-  teamPassword?: string;
 }
