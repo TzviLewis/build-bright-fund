@@ -255,8 +255,10 @@ export default function HomePage() {
     }
   };
 
-  // Check if campaign is live
-  const isCampaignLive = campaign?.campaignStatus === 'live';
+  // Check if campaign is live - campaign is live if it has started and not ended
+  const isCampaignLive = campaign && campaign.campaignStartDate && campaign.campaignEndDate
+    ? new Date() >= new Date(campaign.campaignStartDate) && new Date() <= new Date(campaign.campaignEndDate)
+    : false;
 
   if (loading) {
     return (

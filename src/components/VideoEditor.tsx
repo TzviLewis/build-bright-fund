@@ -96,9 +96,20 @@ export default function VideoEditor({ videoUrl, onSave, onClose }: VideoEditorPr
   const toggleFullscreen = () => {
     if (videoRef.current) {
       if (!isFullscreen) {
-        videoRef.current.requestFullscreen?.();
+        const elem = videoRef.current as any;
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        }
       } else {
-        document.exitFullscreen?.();
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
       }
       setIsFullscreen(!isFullscreen);
     }
