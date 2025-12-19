@@ -9,7 +9,7 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -165,6 +165,37 @@ export default function AdminDashboard() {
 
   // Team donations filter state
   const [selectedTeamForDonations, setSelectedTeamForDonations] = useState<string>('');
+
+  // Helper function to generate team ID
+  const generateTeamId = () => {
+    const id = Math.random().toString(36).substring(2, 10).toUpperCase();
+    setTeamForm(prev => ({ ...prev, teamId: id }));
+  };
+
+  // Helper function to generate team password
+  const generateTeamPassword = () => {
+    const password = Math.random().toString(36).substring(2, 12);
+    setTeamForm(prev => ({ ...prev, teamPassword: password }));
+  };
+
+  // Helper function to copy to clipboard
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `${label} copied to clipboard!` 
+      }));
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 2000);
+    }).catch(err => {
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to copy ${label}` 
+      }));
+      console.error('Error copying to clipboard:', err);
+    });
+  };
 
   // Load data on mount
   useEffect(() => {
@@ -1988,6 +2019,70 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Team ID *
+                        </label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            value={teamForm.teamId}
+                            readOnly
+                            placeholder="Auto-generated"
+                            className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 bg-blue-50"
+                          />
+                          <Button
+                            type="button"
+                            onClick={generateTeamId}
+                            variant="outline"
+                            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                          >
+                            Generate
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => copyToClipboard(teamForm.teamId, 'Team ID')}
+                            variant="outline"
+                            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="font-paragraph text-sm font-semibold text-blue-900">
+                          Team Password *
+                        </label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            value={teamForm.teamPassword}
+                            readOnly
+                            placeholder="Auto-generated"
+                            className="border-blue-200 focus:border-blue-600 focus:ring-blue-500 bg-blue-50"
+                          />
+                          <Button
+                            type="button"
+                            onClick={generateTeamPassword}
+                            variant="outline"
+                            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                          >
+                            Generate
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => copyToClipboard(teamForm.teamPassword, 'Password')}
+                            variant="outline"
+                            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <label className="font-paragraph text-sm font-semibold text-blue-900">
                         Team Description *
@@ -2077,6 +2172,17 @@ export default function AdminDashboard() {
                             <div className="bg-white rounded p-2">
                               <p className="font-paragraph text-xs text-blue-600/60">Raised</p>
                               <p className="font-heading font-bold text-blue-900">£{(teamTotal / 1000).toFixed(1)}k</p>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded p-3 border border-blue-200 space-y-2">
+                            <p className="font-paragraph text-xs text-blue-600/60 font-semibold">CREDENTIALS</p>
+                            <div className="space-y-1">
+                              <p className="font-paragraph text-sm text-blue-900">
+                                <span className="font-semibold">ID:</span> {team.teamId}
+                              </p>
+                              <p className="font-paragraph text-sm text-blue-900">
+                                <span className="font-semibold">Password:</span> {team.teamPassword}
+                              </p>
                             </div>
                           </div>
                           <div className="flex gap-2">

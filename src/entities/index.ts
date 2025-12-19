@@ -57,6 +57,8 @@ export interface Donations {
   /** @wixFieldType text */
   teamId?: string;
   /** @wixFieldType text */
+  teamIds?: string;
+  /** @wixFieldType text */
   replies?: string;
   /** @wixFieldType text */
   donorName?: string;
@@ -64,6 +66,8 @@ export interface Donations {
   donorEmail?: string;
   /** @wixFieldType number */
   amount?: number;
+  /** @wixFieldType number */
+  originalAmount?: number;
   /** @wixFieldType datetime */
   donationDate?: Date | string;
   /** @wixFieldType boolean */
@@ -72,11 +76,7 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number - Original amount before doubling */
-  originalAmount?: number;
-  /** @wixFieldType text - Comma-separated team IDs */
-  teamIds?: string;
-  /** @wixFieldType text - Page name where donation was made */
+  /** @wixFieldType text */
   pageName?: string;
 }
 
