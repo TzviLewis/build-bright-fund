@@ -41,6 +41,8 @@ export interface CampaignDetails {
   campaignEndTime?: any;
   /** @wixFieldType video */
   video?: string;
+  /** @wixFieldType text */
+  campaignStatus?: string;
 }
 
 
@@ -68,6 +70,12 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
+  /** @wixFieldType number */
+  originalAmount?: number;
+  /** @wixFieldType text */
+  teamIds?: string;
+  /** @wixFieldType text */
+  pageName?: string;
 }
 
 

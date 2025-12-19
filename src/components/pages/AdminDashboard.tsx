@@ -9,7 +9,7 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -30,6 +30,7 @@ interface FormState {
   videos: string;
   campaignStartDate: string;
   campaignEndDate: string;
+  campaignStatus: string;
   uploadedVideoFile?: File;
 }
 
@@ -122,6 +123,7 @@ export default function AdminDashboard() {
     videos: '',
     campaignStartDate: '',
     campaignEndDate: '',
+    campaignStatus: 'draft',
   });
 
   // Matcher Form State
@@ -204,6 +206,7 @@ export default function AdminDashboard() {
           campaignEndDate: campaign.campaignEndDate 
             ? new Date(campaign.campaignEndDate).toISOString().split('T')[0] 
             : '',
+          campaignStatus: campaign.campaignStatus || 'draft',
         });
       }
     } catch (error) {
@@ -253,6 +256,7 @@ export default function AdminDashboard() {
         campaignEndDate: campaignForm.campaignEndDate 
           ? new Date(campaignForm.campaignEndDate).toISOString() 
           : '',
+        campaignStatus: campaignForm.campaignStatus || 'draft',
       };
 
       if (data.campaign?._id) {
@@ -786,6 +790,20 @@ export default function AdminDashboard() {
                 Manage Campaign Dates
               </Button>
             </Link>
+            <Button 
+              onClick={() => {
+                const newStatus = data.campaign?.campaignStatus === 'live' ? 'draft' : 'live';
+                setCampaignForm(prev => ({ ...prev, campaignStatus: newStatus }));
+              }}
+              className={`rounded-lg px-6 py-2 font-semibold flex items-center gap-2 transition-colors ${
+                campaignForm.campaignStatus === 'live'
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-orange-600 text-white hover:bg-orange-700'
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              {campaignForm.campaignStatus === 'live' ? 'Campaign Live' : 'Go Live'}
+            </Button>
           </div>
         </div>
 

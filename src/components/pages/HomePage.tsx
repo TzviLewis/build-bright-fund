@@ -37,6 +37,17 @@ export default function HomePage() {
   const [previousGoalAchieved, setPreviousGoalAchieved] = useState(false);
   const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [showCreateTeamForm, setShowCreateTeamForm] = useState(false);
+  const [teamFormData, setTeamFormData] = useState({
+    teamName: '',
+    fundraisingGoal: '',
+    teamDescription: '',
+    memberCount: '',
+    teamLogo: '',
+  });
+  const [teamSubmitting, setTeamSubmitting] = useState(false);
+  const [teamSubmitSuccess, setTeamSubmitSuccess] = useState(false);
+  const [teamSubmitError, setTeamSubmitError] = useState<string | null>(null);
   const { addNotification } = useDonationStore();
 
   useEffect(() => {
@@ -141,6 +152,54 @@ export default function HomePage() {
       setSubmitError(errorMsg);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleCreateTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTeamSubmitting(true);
+    setTeamSubmitError(null);
+    setTeamSubmitSuccess(false);
+
+    try {
+      // Validation
+      if (!teamFormData.teamName || !teamFormData.fundraisingGoal || 
+          !teamFormData.teamDescription || !teamFormData.memberCount) {
+        setTeamSubmitError('All fields are required');
+        setTeamSubmitting(false);
+        return;
+      }
+
+      const newTeam: Teams = {
+        _id: crypto.randomUUID(),
+        teamName: teamFormData.teamName,
+        fundraisingGoal: parseFloat(teamFormData.fundraisingGoal),
+        teamDescription: teamFormData.teamDescription,
+        memberCount: parseInt(teamFormData.memberCount),
+        teamLogo: teamFormData.teamLogo || undefined,
+      };
+
+      await BaseCrudService.create('teams', newTeam);
+
+      setTeamSubmitSuccess(true);
+      setTeamFormData({
+        teamName: '',
+        fundraisingGoal: '',
+        teamDescription: '',
+        memberCount: '',
+        teamLogo: '',
+      });
+      setShowCreateTeamForm(false);
+
+      await loadData();
+
+      setTimeout(() => setTeamSubmitSuccess(false), 5000);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to create team. Please try again.';
+      console.error('Error creating team:', error);
+      setTeamSubmitError(errorMsg);
+    } finally {
+      setTeamSubmitting(false);
     }
   };
 
@@ -776,80 +835,262 @@ export default function HomePage() {
               Fundraising <span className="text-secondary italic">Teams</span>
             </h2>
             
-            {/* Filter Dropdown */}
-            <div className="relative w-full md:w-64">
-              <button
-                onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className="w-full px-4 py-3 bg-background border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
-              >
-                <span>{getFilterLabel()}</span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {/* Dropdown Menu */}
-              {showFilterMenu && (
+            {/* Create Team Button */}
+            <Button
+              onClick={() => setShowCreateTeamForm(!showCreateTeamForm)}
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-3 font-semibold"
+            >
+              {showCreateTeamForm ? 'Cancel' : '+ Create Team'}
+            </Button>
+          </div>
+
+          {/* Create Team Form */}
+          {showCreateTeamForm && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-primary/5 rounded-lg p-8 border-2 border-secondary/30 mb-12"
+            >
+              <h3 className="font-heading text-3xl font-bold text-primary mb-6">
+                Create a New Team
+              </h3>
+
+              {teamSubmitSuccess && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
+                  className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
                 >
+                  <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-paragraph font-semibold text-secondary">
+                      Team Created Successfully!
+                    </p>
+                    <p className="font-paragraph text-sm text-secondary/80 mt-1">
+                      Your team is now ready to start fundraising. Share it with your supporters!
+                    </p>
+                  </div>
                   <button
-                    onClick={() => {
-                      setTeamSortFilter('highest');
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors ${
-                      teamSortFilter === 'highest'
-                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
-                        : 'text-primary hover:bg-primary/5'
-                    }`}
+                    onClick={() => setTeamSubmitSuccess(false)}
+                    className="text-secondary hover:text-secondary/70 flex-shrink-0"
                   >
-                    Highest Raised
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTeamSortFilter('lowest');
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
-                      teamSortFilter === 'lowest'
-                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
-                        : 'text-primary hover:bg-primary/5'
-                    }`}
-                  >
-                    Lowest Raised
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTeamSortFilter('name');
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
-                      teamSortFilter === 'name'
-                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
-                        : 'text-primary hover:bg-primary/5'
-                    }`}
-                  >
-                    By Name
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTeamSortFilter('progress');
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
-                      teamSortFilter === 'progress'
-                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
-                        : 'text-primary hover:bg-primary/5'
-                    }`}
-                  >
-                    By Progress
+                    <X className="w-5 h-5" />
                   </button>
                 </motion.div>
               )}
-            </div>
-          </div>
+
+              {teamSubmitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                >
+                  <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-paragraph font-semibold text-destructive">
+                      Unable to Create Team
+                    </p>
+                    <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                      {teamSubmitError}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setTeamSubmitError(null)}
+                    className="text-destructive hover:text-destructive/70 flex-shrink-0"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              )}
+
+              <form onSubmit={handleCreateTeam} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Team Name *
+                    </label>
+                    <Input
+                      type="text"
+                      value={teamFormData.teamName}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, teamName: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="e.g., The Builders"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Fundraising Goal (£) *
+                    </label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      value={teamFormData.fundraisingGoal}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, fundraisingGoal: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="5000"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-paragraph text-base font-semibold text-primary">
+                    Team Description *
+                  </label>
+                  <Textarea
+                    value={teamFormData.teamDescription}
+                    onChange={(e) => setTeamFormData(prev => ({ ...prev, teamDescription: e.target.value }))}
+                    required
+                    className="border-primary/20 focus:border-secondary min-h-[100px]"
+                    placeholder="Tell us about your team and why you're fundraising..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Number of Members *
+                    </label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={teamFormData.memberCount}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, memberCount: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="5"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Team Logo URL (Optional)
+                    </label>
+                    <Input
+                      type="text"
+                      value={teamFormData.teamLogo}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, teamLogo: e.target.value }))}
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="https://example.com/logo.jpg"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    type="submit"
+                    disabled={teamSubmitting}
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-3 font-semibold transition-all disabled:opacity-70"
+                  >
+                    {teamSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-secondary-foreground border-t-transparent rounded-full animate-spin" />
+                        Creating...
+                      </span>
+                    ) : (
+                      'Create Team'
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateTeamForm(false);
+                      setTeamFormData({
+                        teamName: '',
+                        fundraisingGoal: '',
+                        teamDescription: '',
+                        memberCount: '',
+                        teamLogo: '',
+                      });
+                      setTeamSubmitError(null);
+                    }}
+                    variant="outline"
+                    className="border-primary text-primary hover:bg-primary/5 rounded-full px-8 py-3 font-semibold"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Team Filter and List */}
+        <div className="relative mb-8">
+          <button
+            onClick={() => setShowFilterMenu(!showFilterMenu)}
+            className="w-full px-4 py-3 bg-background border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
+          >
+            <span>{getFilterLabel()}</span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {/* Dropdown Menu */}
+          {showFilterMenu && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
+            >
+              <button
+                onClick={() => {
+                  setTeamSortFilter('highest');
+                  setShowFilterMenu(false);
+                }}
+                className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors ${
+                  teamSortFilter === 'highest'
+                    ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                    : 'text-primary hover:bg-primary/5'
+                }`}
+              >
+                Highest Raised
+              </button>
+              <button
+                onClick={() => {
+                  setTeamSortFilter('lowest');
+                  setShowFilterMenu(false);
+                }}
+                className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                  teamSortFilter === 'lowest'
+                    ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                    : 'text-primary hover:bg-primary/5'
+                }`}
+              >
+                Lowest Raised
+              </button>
+              <button
+                onClick={() => {
+                  setTeamSortFilter('name');
+                  setShowFilterMenu(false);
+                }}
+                className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                  teamSortFilter === 'name'
+                    ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                    : 'text-primary hover:bg-primary/5'
+                }`}
+              >
+                By Name
+              </button>
+              <button
+                onClick={() => {
+                  setTeamSortFilter('progress');
+                  setShowFilterMenu(false);
+                }}
+                className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
+                  teamSortFilter === 'progress'
+                    ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                    : 'text-primary hover:bg-primary/5'
+                }`}
+              >
+                By Progress
+              </button>
+            </motion.div>
+          )}
         </div>
 
         {teams.length === 0 ? (
