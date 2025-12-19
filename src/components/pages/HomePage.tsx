@@ -255,6 +255,9 @@ export default function HomePage() {
     }
   };
 
+  // Check if campaign is live
+  const isCampaignLive = campaign?.campaignStatus === 'live';
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -283,6 +286,219 @@ export default function HomePage() {
             Refresh Page
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // If campaign is not live, show only team creation form
+  if (!isCampaignLive) {
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="bg-background border-b border-primary/10 shadow-sm">
+          <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
+            <h1 className="font-heading text-2xl font-bold text-primary">Campaign Coming Soon</h1>
+            <Link to="/admin-login">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold">
+                Admin
+              </Button>
+            </Link>
+          </div>
+        </header>
+
+        {/* Coming Soon Section */}
+        <section className="w-full min-h-[calc(100vh-80px)] flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 py-20">
+          <div className="max-w-[120rem] mx-auto px-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Message */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                className="space-y-8"
+              >
+                <div className="space-y-4">
+                  <div className="inline-block px-4 py-2 bg-secondary/20 rounded-full mb-4">
+                    <p className="font-heading text-sm font-bold text-secondary uppercase tracking-wider">🚀 Coming Soon</p>
+                  </div>
+                  <h1 className="font-heading text-6xl lg:text-7xl font-bold leading-tight text-primary">
+                    Our Campaign is <span className="text-secondary italic">Coming Soon</span>
+                  </h1>
+                  <p className="font-paragraph text-xl text-primary/70 leading-relaxed">
+                    We're preparing something amazing! In the meantime, create your team and get ready to make a difference. Your team will be featured prominently when the campaign goes live.
+                  </p>
+                </div>
+
+                <div className="space-y-4 pt-4">
+                  <p className="font-paragraph text-base text-primary/60">
+                    ✓ Create your team now<br/>
+                    ✓ Invite your supporters<br/>
+                    ✓ Get ready to fundraise
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Right: Team Creation Form */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-white rounded-lg p-10 shadow-2xl border-2 border-secondary/20"
+              >
+                <h2 className="font-heading text-3xl font-bold text-primary mb-8">
+                  Create Your Team
+                </h2>
+
+                {teamSubmitSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+                  >
+                    <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-paragraph font-semibold text-secondary">
+                        Team Created Successfully!
+                      </p>
+                      <p className="font-paragraph text-sm text-secondary/80 mt-1">
+                        Your team is ready. Check back when the campaign goes live!
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setTeamSubmitSuccess(false)}
+                      className="text-secondary hover:text-secondary/70 flex-shrink-0"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {teamSubmitError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                  >
+                    <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-paragraph font-semibold text-destructive">
+                        Unable to Create Team
+                      </p>
+                      <p className="font-paragraph text-sm text-destructive/80 mt-1">
+                        {teamSubmitError}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setTeamSubmitError(null)}
+                      className="text-destructive hover:text-destructive/70 flex-shrink-0"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </motion.div>
+                )}
+
+                <form onSubmit={handleCreateTeam} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Team Name *
+                    </label>
+                    <Input
+                      type="text"
+                      value={teamFormData.teamName}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, teamName: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="e.g., The Builders"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Fundraising Goal (£) *
+                    </label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      value={teamFormData.fundraisingGoal}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, fundraisingGoal: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary"
+                      placeholder="5000"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-base font-semibold text-primary">
+                      Team Description *
+                    </label>
+                    <Textarea
+                      value={teamFormData.teamDescription}
+                      onChange={(e) => setTeamFormData(prev => ({ ...prev, teamDescription: e.target.value }))}
+                      required
+                      className="border-primary/20 focus:border-secondary min-h-[100px]"
+                      placeholder="Tell us about your team..."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-base font-semibold text-primary">
+                        Members *
+                      </label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={teamFormData.memberCount}
+                        onChange={(e) => setTeamFormData(prev => ({ ...prev, memberCount: e.target.value }))}
+                        required
+                        className="border-primary/20 focus:border-secondary"
+                        placeholder="5"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-base font-semibold text-primary">
+                        Logo URL (Optional)
+                      </label>
+                      <Input
+                        type="text"
+                        value={teamFormData.teamLogo}
+                        onChange={(e) => setTeamFormData(prev => ({ ...prev, teamLogo: e.target.value }))}
+                        className="border-primary/20 focus:border-secondary"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={teamSubmitting}
+                    className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full py-3 font-semibold transition-all disabled:opacity-70"
+                  >
+                    {teamSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-secondary-foreground border-t-transparent rounded-full animate-spin" />
+                        Creating...
+                      </span>
+                    ) : (
+                      'Create Team'
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-primary text-primary-foreground py-12 border-t border-primary/20">
+          <div className="max-w-[120rem] mx-auto px-8 text-center">
+            <p className="font-paragraph text-sm text-primary-foreground/70">
+              © {new Date().getFullYear()} Campaign. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </div>
     );
   }

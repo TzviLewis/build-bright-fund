@@ -9,12 +9,13 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
 import VideoPlayer from '@/components/VideoPlayer';
+import VideoEditor from '@/components/VideoEditor';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
 interface FormState {
@@ -74,6 +75,7 @@ interface UIState {
   editingTeamId: string | null;
   editingGalleryImageId: string | null;
   uploadProgress: number;
+  showVideoEditor: boolean;
 }
 
 interface DataState {
@@ -98,6 +100,7 @@ export default function AdminDashboard() {
     editingTeamId: null,
     editingGalleryImageId: null,
     uploadProgress: 0,
+    showVideoEditor: false,
   });
 
   // Data State
@@ -804,6 +807,13 @@ export default function AdminDashboard() {
               <Zap className="w-4 h-4" />
               {campaignForm.campaignStatus === 'live' ? 'Campaign Live' : 'Go Live'}
             </Button>
+            <Button
+              onClick={() => setUI(prev => ({ ...prev, showVideoEditor: !prev.showVideoEditor }))}
+              className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2"
+            >
+              <Film className="w-4 h-4" />
+              {ui.showVideoEditor ? 'Close Editor' : 'Video Editor'}
+            </Button>
           </div>
         </div>
 
@@ -856,6 +866,43 @@ export default function AdminDashboard() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Video Editor Section */}
+        {ui.showVideoEditor && campaignForm.videos && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-12 p-8 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300 rounded-lg shadow-lg"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl font-bold text-purple-900 flex items-center gap-2">
+                <Film className="w-6 h-6" />
+                Professional Video Editor
+              </h2>
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showVideoEditor: false }))}
+                variant="outline"
+                className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
+              >
+                Close
+              </Button>
+            </div>
+            <VideoEditor
+              videoUrl={campaignForm.videos}
+              onClose={() => setUI(prev => ({ ...prev, showVideoEditor: false }))}
+              onSave={(editedData) => {
+                setUI(prev => ({
+                  ...prev,
+                  successMessage: `Video "${editedData.title}" edited successfully!`,
+                }));
+                setTimeout(() => {
+                  setUI(prev => ({ ...prev, successMessage: null }));
+                }, 3000);
+              }}
+            />
+          </motion.div>
+        )}
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
