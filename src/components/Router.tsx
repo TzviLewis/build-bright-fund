@@ -9,6 +9,8 @@ import TeamPage from '@/components/pages/TeamPage';
 import GalleryPage from '@/components/pages/GalleryPage';
 import UpdateCampaignVideo from '@/components/pages/UpdateCampaignVideo';
 import AdminCampaignDatesPage from '@/components/pages/AdminCampaignDatesPage';
+import CampaignsPage from '@/components/pages/CampaignsPage';
+import AdminCampaignsPage from '@/components/pages/AdminCampaignsPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import DonationNotificationPopup from '@/components/DonationNotificationPopup';
 
@@ -50,12 +52,24 @@ const router = createBrowserRouter([
         element: <TeamPage />,
       },
       {
+        path: "campaigns",
+        element: <CampaignsPage />,
+      },
+      {
         path: "gallery",
         element: <GalleryPage />,
       },
       {
         path: "update-video",
         element: <UpdateCampaignVideo />,
+      },
+      {
+        path: "admin/campaigns",
+        element: (
+          <AdminProtectedRoute>
+            <AdminCampaignsPage />
+          </AdminProtectedRoute>
+        ),
       },
       {
         path: "admin/campaign-dates",

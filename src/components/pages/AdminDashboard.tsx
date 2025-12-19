@@ -787,26 +787,18 @@ export default function AdminDashboard() {
         <div className="mb-12 p-6 bg-blue-50 border-2 border-blue-200 rounded-lg shadow-md">
           <h3 className="font-heading text-xl font-bold text-blue-900 mb-4">Quick Actions</h3>
           <div className="flex flex-wrap gap-4">
+            <Link to="/admin/campaigns">
+              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                Manage Campaigns
+              </Button>
+            </Link>
             <Link to="/admin/campaign-dates">
               <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 Manage Campaign Dates
               </Button>
             </Link>
-            <Button 
-              onClick={() => {
-                const newStatus = data.campaign?.campaignStatus === 'live' ? 'draft' : 'live';
-                setCampaignForm(prev => ({ ...prev, campaignStatus: newStatus }));
-              }}
-              className={`rounded-lg px-6 py-2 font-semibold flex items-center gap-2 transition-colors ${
-                campaignForm.campaignStatus === 'live'
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-orange-600 text-white hover:bg-orange-700'
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              {campaignForm.campaignStatus === 'live' ? 'Campaign Live' : 'Go Live'}
-            </Button>
             <Button
               onClick={() => setUI(prev => ({ ...prev, showVideoEditor: !prev.showVideoEditor }))}
               className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2"
