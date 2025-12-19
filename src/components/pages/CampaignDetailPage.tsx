@@ -4,16 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BaseCrudService } from '@/integrations';
-import { CampaignDetails } from '@/entities';
-import { ArrowLeft, AlertCircle, Loader2, Play } from 'lucide-react';
+import { CampaignDetails, Donations, Teams, Matchers } from '@/entities';
+import { ArrowLeft, AlertCircle, Loader2, Play, Users, TrendingUp, DollarSign } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { motion } from 'framer-motion';
 import VideoPlayer from '@/components/VideoPlayer';
+import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 
 export default function CampaignDetailPage() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
+  const [donations, setDonations] = useState<Donations[]>([]);
+  const [teams, setTeams] = useState<Teams[]>([]);
+  const [matchers, setMatchers] = useState<Matchers[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -29,8 +33,17 @@ export default function CampaignDetailPage() {
         return;
       }
 
-      const data = await BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId);
-      setCampaign(data);
+      const [campaignData, donationsRes, teamsRes, matchersRes] = await Promise.all([
+        BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId),
+        BaseCrudService.getAll<Donations>('donations'),
+        BaseCrudService.getAll<Teams>('teams'),
+        BaseCrudService.getAll<Matchers>('matchers'),
+      ]);
+
+      setCampaign(campaignData);
+      setDonations(donationsRes.items || []);
+      setTeams(teamsRes.items || []);
+      setMatchers(matchersRes.items?.filter(m => m.status === 'active') || []);
     } catch (err) {
       setError('Failed to load campaign details');
       console.error(err);
@@ -71,6 +84,9 @@ export default function CampaignDetailPage() {
   const progressPercentage = campaign.fundraisingGoal
     ? Math.min((campaign.fundraisingGoal * 0.5) / campaign.fundraisingGoal * 100, 100)
     : 0;
+
+  const totalDonations = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const totalTeamMembers = teams.reduce((sum, t) => sum + (t.memberCount || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -113,6 +129,18 @@ export default function CampaignDetailPage() {
               <h1 className="text-4xl font-bold mb-2">{campaign.campaignTitle}</h1>
               <p className="text-lg opacity-90">{campaign.projectDescription}</p>
             </div>
+          )}
+
+          {/* Countdown Timer */}
+          {campaign.campaignEndDate && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Campaign Countdown</CardTitle>
+              </CardHeader>
+              <CardContent className="flex justify-center py-8">
+                <CircularCountdownTimer endDate={campaign.campaignEndDate} />
+              </CardContent>
+            </Card>
           )}
 
           {/* Campaign Video */}
@@ -228,7 +256,117 @@ export default function CampaignDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Call to Action */}
+          {/* Matchers Section */}
+          {matchers.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp size={20} />
+                  Generous Matchers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {matchers.map((matcher) => (
+                    <motion.div
+                      key={matcher._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <h3 className="font-semibold text-lg mb-2">{matcher.matcherName}</h3>
+                      <div className="space-y-2">
+                        {matcher.matchingAmount && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Matching Amount:</span>
+                            <span className="font-semibold text-primary">
+                              ${matcher.matchingAmount.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                        {matcher.matchingPercentage && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Matching %:</span>
+                            <span className="font-semibold text-secondary">
+                              {matcher.matchingPercentage}%
+                            </span>
+                          </div>
+                        )}
+                        {matcher.matchingLimit && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Limit:</span>
+                            <span className="font-semibold">
+                              ${matcher.matchingLimit.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Teams Section */}
+          {teams.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users size={20} />
+                  Fundraising Teams ({teams.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {teams.map((team) => (
+                    <motion.div
+                      key={team._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/team/${team._id}`)}
+                    >
+                      {team.teamLogo && (
+                        <div className="mb-3 h-20 rounded overflow-hidden">
+                          <Image
+                            src={team.teamLogo}
+                            alt={team.teamName || 'Team'}
+                            className="w-full h-full object-cover"
+                            width={200}
+                          />
+                        </div>
+                      )}
+                      <h3 className="font-semibold text-lg mb-2">{team.teamName}</h3>
+                      {team.teamDescription && (
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          {team.teamDescription}
+                        </p>
+                      )}
+                      <div className="space-y-2">
+                        {team.fundraisingGoal && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Goal:</span>
+                            <span className="font-semibold text-primary">
+                              ${team.fundraisingGoal.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                        {team.memberCount && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Members:</span>
+                            <span className="font-semibold">{team.memberCount}</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* ... keep existing code (Call to Action section) ... */}
           <div className="bg-gradient-to-r from-primary to-secondary rounded-lg p-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to Make a Difference?</h2>
             <p className="text-lg opacity-90 mb-6">
