@@ -454,10 +454,11 @@ export default function AdminDashboard() {
     e.preventDefault();
     
     if (!teamForm.teamName || !teamForm.teamGoal || 
-        !teamForm.teamDescription || !teamForm.memberCount) {
+        !teamForm.teamDescription || !teamForm.memberCount ||
+        !teamForm.teamId || !teamForm.teamPassword) {
       setUI(prev => ({ 
         ...prev, 
-        error: 'All team fields are required' 
+        error: 'All team fields including ID and Password are required' 
       }));
       return;
     }
@@ -472,6 +473,8 @@ export default function AdminDashboard() {
         teamDescription: teamForm.teamDescription,
         memberCount: parseInt(teamForm.memberCount),
         teamLogo: teamForm.teamLogo,
+        teamId: parseInt(teamForm.teamId),
+        teamPassword: teamForm.teamPassword,
       };
 
       if (ui.editingTeamId) {
