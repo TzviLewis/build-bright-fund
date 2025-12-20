@@ -3,9 +3,15 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { BaseCrudService } from '@/integrations';
 import { Teams, Donations } from '@/entities';
-import { ArrowLeft, Heart, Users, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Heart, Users, TrendingUp, MessageCircle, Calendar, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
+
+interface DonationReply {
+  id: string;
+  message: string;
+  timestamp: string;
+}
 
 export default function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -35,6 +41,16 @@ export default function TeamPage() {
       console.error('Error loading team data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getReplies = (donationId: string): DonationReply[] => {
+    const donation = donations.find(d => d._id === donationId);
+    if (!donation || !donation.replies) return [];
+    try {
+      return JSON.parse(donation.replies);
+    } catch {
+      return [];
     }
   };
 
@@ -206,36 +222,93 @@ export default function TeamPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {donations.map((donation, index) => (
-              <motion.div
-                key={donation._id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-primary/5 rounded-lg p-6 space-y-3 border-2 border-primary/10 hover:border-secondary/30 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-heading text-xl font-bold text-primary">
-                      {donation.donorName || 'Anonymous Supporter'}
-                    </p>
-                    <p className="font-paragraph text-sm text-primary/60">
-                      {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : ''}
+          <div className="space-y-6">
+            {donations.map((donation, index) => {
+              const replies = getReplies(donation._id);
+              return (
+                <motion.div
+                  key={donation._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="bg-white rounded-lg border-2 border-primary/10 hover:border-secondary/30 transition-all shadow-md hover:shadow-lg overflow-hidden"
+                >
+                  {/* Donation Header */}
+                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 border-b border-primary/10">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                            <Heart className="w-6 h-6 text-secondary" />
+                          </div>
+                          <div>
+                            <p className="font-heading text-xl font-bold text-primary">
+                              {donation.donorName || 'Anonymous Supporter'}
+                            </p>
+                            <p className="font-paragraph text-sm text-primary/60 flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {donation.donationDate ? new Date(donation.donationDate).toLocaleDateString() : ''}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-heading text-3xl font-bold text-secondary">
+                          £{donation.amount?.toLocaleString()}
+                        </p>
+                        <p className="font-paragraph text-xs text-primary/60 mt-1">Donation Amount</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Donation Message */}
+                  {donation.donorMessage && (
+                    <div className="px-6 py-4 bg-primary/5 border-b border-primary/10">
+                      <p className="font-paragraph text-base text-primary/80 italic border-l-4 border-secondary pl-4">
+                        "{donation.donorMessage}"
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Replies Section */}
+                  {replies.length > 0 && (
+                    <div className="px-6 py-4 bg-secondary/5 border-b border-secondary/10">
+                      <div className="flex items-center gap-2 mb-4">
+                        <MessageCircle className="w-5 h-5 text-secondary" />
+                        <p className="font-heading font-bold text-secondary">Team Response{replies.length > 1 ? 's' : ''}</p>
+                      </div>
+                      <div className="space-y-3">
+                        {replies.map((reply) => (
+                          <div key={reply.id} className="bg-white rounded-lg p-4 border border-secondary/20">
+                            <p className="font-paragraph text-base text-primary/80 mb-2">{reply.message}</p>
+                            <p className="font-paragraph text-xs text-primary/50 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(reply.timestamp).toLocaleDateString()}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Footer Stats */}
+                  <div className="px-6 py-4 bg-gradient-to-r from-primary/5 to-transparent flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {replies.length > 0 && (
+                        <div className="flex items-center gap-2 text-secondary">
+                          <Award className="w-4 h-4" />
+                          <span className="font-paragraph text-sm font-semibold">{replies.length} Response{replies.length > 1 ? 's' : ''}</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="font-paragraph text-xs text-primary/60">
+                      {donation.isAnonymous ? 'Anonymous Donation' : 'Named Donation'}
                     </p>
                   </div>
-                  <p className="font-heading text-2xl font-bold text-secondary">
-                    £{donation.amount?.toLocaleString()}
-                  </p>
-                </div>
-                {donation.donorMessage && (
-                  <p className="font-paragraph text-base text-primary/70 italic border-l-4 border-secondary pl-4">
-                    "{donation.donorMessage}"
-                  </p>
-                )}
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </section>
