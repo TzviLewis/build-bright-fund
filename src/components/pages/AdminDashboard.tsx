@@ -9,7 +9,7 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -790,34 +790,33 @@ export default function AdminDashboard() {
   // Loading state
   if (ui.loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="font-heading text-lg text-blue-900">Loading dashboard...</p>
+          <Loader2 className="w-12 h-12 text-secondary animate-spin mx-auto mb-4" />
+          <p className="font-heading text-lg text-primary">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-blue-600 shadow-lg">
-        <div className="max-w-[120rem] mx-auto px-8 py-8">
+      <header className="bg-primary text-primary-foreground border-b border-secondary/20 shadow-sm sticky top-0 z-50">
+        <div className="max-w-[120rem] mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="font-heading text-4xl font-bold">Admin Dashboard</h1>
-              <p className="font-paragraph text-base text-blue-100 mt-2">
-                Campaign management & analytics
+              <p className="font-paragraph text-base text-primary-foreground/80 mt-2">
+                Campaign management, analytics & control center
               </p>
             </div>
             <Link to="/">
               <Button 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-900 rounded-lg px-6 py-2 font-semibold"
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+                Back to Campaign
               </Button>
             </Link>
           </div>
@@ -825,48 +824,130 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-12">
-        {/* Quick Actions */}
-        <div className="mb-12 p-6 bg-blue-50 border-2 border-blue-200 rounded-lg shadow-md">
-          <h3 className="font-heading text-xl font-bold text-blue-900 mb-4">Quick Actions</h3>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/admin/campaigns">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
-                <Zap className="w-4 h-4" />
-                Manage Campaigns
-              </Button>
+        {/* Quick Navigation Grid */}
+        <div className="mb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Link to="/admin/campaigns" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Zap className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Manage Campaigns</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Edit campaign details</p>
+                  </div>
+                </div>
+              </div>
             </Link>
-            <Link to="/admin/campaign-dates">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Manage Campaign Dates
-              </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <Link to="/admin/campaign-dates" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Calendar className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Campaign Dates</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Set start & end dates</p>
+                  </div>
+                </div>
+              </div>
             </Link>
-            <Link to="/admin/donations">
-              <Button className="bg-green-600 text-white hover:bg-green-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Manage Donations
-              </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <Link to="/admin/donations" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Donations</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">View all donations</p>
+                  </div>
+                </div>
+              </div>
             </Link>
-            <Link to="/admin/matchers">
-              <Button className="bg-orange-600 text-white hover:bg-orange-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Manage Matchers
-              </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Link to="/admin/matchers" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Users className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Matchers</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Manage matching funds</p>
+                  </div>
+                </div>
+              </div>
             </Link>
-            <Link to="/admin/analytics">
-              <Button className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Analytics
-              </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <Link to="/admin/analytics" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Analytics</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Campaign insights</p>
+                  </div>
+                </div>
+              </div>
             </Link>
-            <Button
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+          >
+            <button 
               onClick={() => setUI(prev => ({ ...prev, showVideoEditor: !prev.showVideoEditor }))}
-              className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg px-6 py-2 font-semibold flex items-center gap-2"
+              className="block w-full h-full"
             >
-              <Film className="w-4 h-4" />
-              {ui.showVideoEditor ? 'Close Editor' : 'Video Editor'}
-            </Button>
-          </div>
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Film className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">Video Editor</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Edit campaign video</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </motion.div>
         </div>
 
         {/* Global Alerts */}
@@ -876,17 +957,17 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-6 p-4 bg-green-50 border-2 border-green-400 rounded-lg flex items-start gap-3"
+              className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg flex items-start gap-3"
             >
-              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-paragraph font-semibold text-green-700">
+                <p className="font-paragraph font-semibold text-secondary">
                   {ui.successMessage}
                 </p>
               </div>
               <button
                 onClick={() => setUI(prev => ({ ...prev, successMessage: null }))}
-                className="text-green-600 hover:text-green-700 flex-shrink-0"
+                className="text-secondary hover:text-secondary/70 flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -898,20 +979,20 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-6 p-4 bg-red-50 border-2 border-red-400 rounded-lg flex items-start gap-3"
+              className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg flex items-start gap-3"
             >
-              <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-paragraph font-semibold text-red-700">
+                <p className="font-paragraph font-semibold text-destructive">
                   Error
                 </p>
-                <p className="font-paragraph text-sm text-red-600/80 mt-1">
+                <p className="font-paragraph text-sm text-destructive/80 mt-1">
                   {ui.error}
                 </p>
               </div>
               <button
                 onClick={() => setUI(prev => ({ ...prev, error: null }))}
-                className="text-red-600 hover:text-red-700 flex-shrink-0"
+                className="text-destructive hover:text-destructive/70 flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
