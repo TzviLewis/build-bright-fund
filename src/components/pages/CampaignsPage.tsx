@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Teams, Matchers } from '@/entities';
-import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2, ChevronDown } from 'lucide-react';
+import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2, ChevronDown, Zap, Target, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 
@@ -118,10 +118,10 @@ export default function CampaignsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="font-heading text-lg text-blue-900">Loading campaigns...</p>
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="font-heading text-lg text-primary">Loading campaigns...</p>
         </div>
       </div>
     );
@@ -129,14 +129,14 @@ export default function CampaignsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center px-8">
+      <div className="min-h-screen bg-background flex items-center justify-center px-8">
         <div className="max-w-md text-center">
-          <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-          <h1 className="font-heading text-3xl font-bold text-blue-900 mb-4">Error Loading Campaigns</h1>
-          <p className="font-paragraph text-lg text-blue-700 mb-6">{error}</p>
+          <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+          <h1 className="font-heading text-3xl font-bold text-primary mb-4">Error Loading Campaigns</h1>
+          <p className="font-paragraph text-lg text-primary/70 mb-6">{error}</p>
           <Button 
             onClick={loadData}
-            className="bg-blue-600 text-white hover:bg-blue-700 rounded-full px-8 py-3"
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-3"
           >
             Try Again
           </Button>
@@ -146,38 +146,95 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-blue-600 shadow-lg">
-        <div className="max-w-[120rem] mx-auto px-8 py-12">
+      <header className="bg-background border-b border-primary/10 shadow-sm sticky top-0 z-50">
+        <div className="max-w-[120rem] mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="font-heading text-5xl font-bold mb-2">Our Campaigns</h1>
-              <p className="font-paragraph text-xl text-blue-100">
-                Discover and support our active fundraising campaigns
+              <h1 className="font-heading text-3xl font-bold text-primary">Active Campaigns</h1>
+              <p className="font-paragraph text-sm text-primary/60 mt-1">
+                Discover meaningful causes to support
               </p>
             </div>
-            <Link to="/home">
-              <Button className="bg-white text-blue-900 hover:bg-blue-50 rounded-full px-8 py-3 font-semibold">
-                View Original Home
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/home">
+                <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold">
+                  Main Campaign
+                </Button>
+              </Link>
+              <Link to="/admin-login">
+                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5 rounded-full px-6 py-2 font-semibold">
+                  Admin
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-16">
+        {/* Stats Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20"
+        >
+          <div className="bg-white rounded-lg p-6 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Active Campaigns</p>
+                <p className="font-heading text-3xl font-bold text-primary mt-2">{liveCampaigns.length}</p>
+              </div>
+              <Zap className="w-10 h-10 text-secondary/30" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Total Raised</p>
+                <p className="font-heading text-3xl font-bold text-secondary mt-2">
+                  £{donations.filter(d => d.status === 'completed').reduce((sum, d) => sum + (d.amount || 0), 0).toLocaleString()}
+                </p>
+              </div>
+              <DollarSign className="w-10 h-10 text-secondary/30" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Donors</p>
+                <p className="font-heading text-3xl font-bold text-primary mt-2">{donations.length}</p>
+              </div>
+              <Heart className="w-10 h-10 text-secondary/30" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Teams</p>
+                <p className="font-heading text-3xl font-bold text-primary mt-2">{teams.length}</p>
+              </div>
+              <Users className="w-10 h-10 text-secondary/30" />
+            </div>
+          </div>
+        </motion.div>
+
         {/* Live Campaigns Section */}
         {liveCampaigns.length > 0 ? (
           <section className="mb-20">
             <div className="mb-12">
-              <div className="inline-block mb-4 px-4 py-2 bg-green-100 rounded-full">
-                <p className="font-heading text-sm font-bold text-green-700 uppercase tracking-wider">🔴 Live Now</p>
+              <div className="inline-block mb-4 px-4 py-2 bg-secondary/20 rounded-full">
+                <p className="font-heading text-sm font-bold text-secondary uppercase tracking-wider">🔴 Live Now</p>
               </div>
-              <h2 className="font-heading text-4xl font-bold text-blue-900">
-                Active <span className="text-green-600 italic">Campaigns</span>
+              <h2 className="font-heading text-4xl font-bold text-primary">
+                Featured <span className="text-secondary italic">Campaigns</span>
               </h2>
-              <p className="font-paragraph text-lg text-blue-700 mt-2">
+              <p className="font-paragraph text-lg text-primary/70 mt-2">
                 {liveCampaigns.length} campaign{liveCampaigns.length !== 1 ? 's' : ''} currently accepting donations
               </p>
             </div>
@@ -191,18 +248,18 @@ export default function CampaignsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-shadow border-2 border-green-200"
+                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-secondary/20 group"
                   >
                     {/* Campaign Image */}
                     {campaign.mainCampaignImage && (
-                      <div className="relative h-64 overflow-hidden bg-blue-100">
+                      <div className="relative h-64 overflow-hidden bg-primary/5">
                         <Image
                           src={campaign.mainCampaignImage}
                           alt={campaign.campaignTitle || 'Campaign'}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           width={600}
                         />
-                        <div className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-full font-semibold text-sm">
+                        <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
                           LIVE
                         </div>
                       </div>
@@ -211,31 +268,31 @@ export default function CampaignsPage() {
                     {/* Campaign Content */}
                     <div className="p-8 space-y-6">
                       <div>
-                        <h3 className="font-heading text-3xl font-bold text-blue-900 mb-2">
+                        <h3 className="font-heading text-3xl font-bold text-primary mb-2">
                           {campaign.campaignTitle}
                         </h3>
-                        <p className="font-paragraph text-blue-700 line-clamp-2">
+                        <p className="font-paragraph text-primary/70 line-clamp-2">
                           {campaign.projectDescription}
                         </p>
                       </div>
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Raised</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Raised</p>
+                          <p className="font-heading text-2xl font-bold text-secondary">
                             £{stats.totalRaised.toLocaleString()}
                           </p>
                         </div>
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Goal</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Goal</p>
+                          <p className="font-heading text-2xl font-bold text-primary">
                             £{campaign.fundraisingGoal?.toLocaleString() || '0'}
                           </p>
                         </div>
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Donors</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Donors</p>
+                          <p className="font-heading text-2xl font-bold text-primary">
                             {stats.donorCount}
                           </p>
                         </div>
@@ -244,24 +301,24 @@ export default function CampaignsPage() {
                       {/* Progress Bar */}
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="font-paragraph text-sm text-blue-700">Progress</span>
-                          <span className="font-heading text-lg font-bold text-green-600">
+                          <span className="font-paragraph text-sm text-primary/70">Progress</span>
+                          <span className="font-heading text-lg font-bold text-secondary">
                             {stats.progress.toFixed(1)}%
                           </span>
                         </div>
-                        <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-primary/10 rounded-full h-3 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${stats.progress}%` }}
                             transition={{ duration: 1.5, ease: 'easeOut' }}
-                            className="bg-gradient-to-r from-green-500 to-green-600 h-full rounded-full"
+                            className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
                           />
                         </div>
                       </div>
 
                       {/* CTA Button */}
                       <Link to={`/?campaign=${campaign._id}`}>
-                        <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
+                        <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition-all">
                           Support This Campaign
                           <ArrowRight className="w-4 h-4" />
                         </Button>
@@ -274,10 +331,10 @@ export default function CampaignsPage() {
           </section>
         ) : (
           <section className="mb-20">
-            <div className="text-center py-16 bg-white rounded-lg border-2 border-blue-200">
-              <AlertCircle className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-              <h2 className="font-heading text-3xl font-bold text-blue-900 mb-2">No Live Campaigns</h2>
-              <p className="font-paragraph text-lg text-blue-700">
+            <div className="text-center py-16 bg-white rounded-lg border border-primary/10">
+              <AlertCircle className="w-16 h-16 text-primary/30 mx-auto mb-4" />
+              <h2 className="font-heading text-3xl font-bold text-primary mb-2">No Live Campaigns</h2>
+              <p className="font-paragraph text-lg text-primary/60">
                 Check back soon for exciting new campaigns!
               </p>
             </div>
@@ -288,13 +345,13 @@ export default function CampaignsPage() {
         {endedCampaigns.length > 0 && (
           <section className="mb-20">
             <div className="mb-12">
-              <div className="inline-block mb-4 px-4 py-2 bg-blue-100 rounded-full">
-                <p className="font-heading text-sm font-bold text-blue-700 uppercase tracking-wider">✓ Recently Ended</p>
+              <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
+                <p className="font-heading text-sm font-bold text-primary uppercase tracking-wider">✓ Recently Ended</p>
               </div>
-              <h2 className="font-heading text-4xl font-bold text-blue-900">
-                Recently Completed <span className="text-blue-600 italic">Campaigns</span>
+              <h2 className="font-heading text-4xl font-bold text-primary">
+                Recently Completed <span className="text-secondary italic">Campaigns</span>
               </h2>
-              <p className="font-paragraph text-lg text-blue-700 mt-2">
+              <p className="font-paragraph text-lg text-primary/70 mt-2">
                 {endedCampaigns.length} campaign{endedCampaigns.length !== 1 ? 's' : ''} completed in the last 2 weeks
               </p>
             </div>
@@ -316,18 +373,18 @@ export default function CampaignsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border-2 border-blue-300"
+                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all border border-primary/10 group"
                   >
                     {/* Campaign Image */}
                     {campaign.mainCampaignImage && (
-                      <div className="relative h-64 overflow-hidden bg-blue-100">
+                      <div className="relative h-64 overflow-hidden bg-primary/5">
                         <Image
                           src={campaign.mainCampaignImage}
                           alt={campaign.campaignTitle || 'Campaign'}
-                          className="w-full h-full object-cover opacity-90"
+                          className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
                           width={600}
                         />
-                        <div className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full font-semibold text-sm">
+                        <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
                           COMPLETED
                         </div>
                       </div>
@@ -336,31 +393,31 @@ export default function CampaignsPage() {
                     {/* Campaign Content */}
                     <div className="p-8 space-y-6">
                       <div>
-                        <h3 className="font-heading text-3xl font-bold text-blue-900 mb-2">
+                        <h3 className="font-heading text-3xl font-bold text-primary mb-2">
                           {campaign.campaignTitle}
                         </h3>
-                        <p className="font-paragraph text-blue-700 line-clamp-2">
+                        <p className="font-paragraph text-primary/70 line-clamp-2">
                           {campaign.projectDescription}
                         </p>
                       </div>
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Raised</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Raised</p>
+                          <p className="font-heading text-2xl font-bold text-secondary">
                             £{stats.totalRaised.toLocaleString()}
                           </p>
                         </div>
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Goal</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Goal</p>
+                          <p className="font-heading text-2xl font-bold text-primary">
                             £{campaign.fundraisingGoal?.toLocaleString() || '0'}
                           </p>
                         </div>
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Donors</p>
-                          <p className="font-heading text-2xl font-bold text-blue-900">
+                        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/10">
+                          <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Donors</p>
+                          <p className="font-heading text-2xl font-bold text-primary">
                             {stats.donorCount}
                           </p>
                         </div>
@@ -369,30 +426,30 @@ export default function CampaignsPage() {
                       {/* Progress Bar */}
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="font-paragraph text-sm text-blue-700">Final Progress</span>
-                          <span className="font-heading text-lg font-bold text-blue-600">
+                          <span className="font-paragraph text-sm text-primary/70">Final Progress</span>
+                          <span className="font-heading text-lg font-bold text-primary">
                             {stats.progress.toFixed(1)}%
                           </span>
                         </div>
-                        <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-primary/10 rounded-full h-3 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${stats.progress}%` }}
                             transition={{ duration: 1.5, ease: 'easeOut' }}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                            className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full"
                           />
                         </div>
                       </div>
 
                       {/* End Date */}
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <p className="font-paragraph text-xs text-blue-600 uppercase tracking-wider mb-1">Campaign Ended</p>
-                        <p className="font-heading text-lg font-bold text-blue-900">{endDate}</p>
+                      <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                        <p className="font-paragraph text-xs text-primary/60 uppercase tracking-wider mb-1">Campaign Ended</p>
+                        <p className="font-heading text-lg font-bold text-primary">{endDate}</p>
                       </div>
 
                       {/* View Details Button */}
                       <Link to={`/campaign/${campaign._id}`}>
-                        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
                           View Campaign Details
                           <ArrowRight className="w-4 h-4" />
                         </Button>
@@ -409,13 +466,13 @@ export default function CampaignsPage() {
         {draftCampaigns.length > 0 && (
           <section className="mb-20">
             <div className="mb-12">
-              <div className="inline-block mb-4 px-4 py-2 bg-blue-100 rounded-full">
-                <p className="font-heading text-sm font-bold text-blue-700 uppercase tracking-wider">📋 Coming Soon</p>
+              <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
+                <p className="font-heading text-sm font-bold text-primary uppercase tracking-wider">📋 Coming Soon</p>
               </div>
-              <h2 className="font-heading text-4xl font-bold text-blue-900">
-                Upcoming <span className="text-blue-600 italic">Campaigns</span>
+              <h2 className="font-heading text-4xl font-bold text-primary">
+                Upcoming <span className="text-secondary italic">Campaigns</span>
               </h2>
-              <p className="font-paragraph text-lg text-blue-700 mt-2">
+              <p className="font-paragraph text-lg text-primary/70 mt-2">
                 {draftCampaigns.length} campaign{draftCampaigns.length !== 1 ? 's' : ''} launching soon
               </p>
             </div>
@@ -437,11 +494,11 @@ export default function CampaignsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-blue-200"
+                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all border border-primary/10"
                   >
                     {/* Campaign Image */}
                     {campaign.mainCampaignImage && (
-                      <div className="relative h-48 overflow-hidden bg-blue-100">
+                      <div className="relative h-48 overflow-hidden bg-primary/5">
                         <Image
                           src={campaign.mainCampaignImage}
                           alt={campaign.campaignTitle || 'Campaign'}
@@ -460,29 +517,29 @@ export default function CampaignsPage() {
                     {/* Campaign Content */}
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="font-heading text-xl font-bold text-blue-900 mb-1">
+                        <h3 className="font-heading text-xl font-bold text-primary mb-1">
                           {campaign.campaignTitle}
                         </h3>
-                        <p className="font-paragraph text-sm text-blue-700 line-clamp-2">
+                        <p className="font-paragraph text-sm text-primary/70 line-clamp-2">
                           {campaign.projectDescription}
                         </p>
                       </div>
 
                       {/* Goal Info */}
-                      <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <DollarSign className="w-5 h-5 text-blue-600" />
-                            <span className="font-paragraph text-sm text-blue-700">Goal:</span>
+                            <DollarSign className="w-5 h-5 text-secondary" />
+                            <span className="font-paragraph text-sm text-primary/70">Goal:</span>
                           </div>
-                          <span className="font-heading font-bold text-blue-900">
+                          <span className="font-heading font-bold text-primary">
                             £{campaign.fundraisingGoal?.toLocaleString() || '0'}
                           </span>
                         </div>
                       </div>
 
                       {/* Notify Button */}
-                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-2 font-semibold">
+                      <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-2 font-semibold">
                         Notify Me
                       </Button>
                     </div>
@@ -497,8 +554,8 @@ export default function CampaignsPage() {
         {campaigns.length > 0 && campaigns[0]?.campaignEndDate && (
           <section className="mb-20">
             <div className="text-center mb-12">
-              <h2 className="font-heading text-4xl font-bold text-blue-900 mb-4">
-                Time is <span className="text-green-600 italic">Running Out</span>
+              <h2 className="font-heading text-4xl font-bold text-primary mb-4">
+                Time is <span className="text-secondary italic">Running Out</span>
               </h2>
             </div>
             <div className="flex justify-center">
@@ -510,13 +567,13 @@ export default function CampaignsPage() {
         {/* Matchers Section */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="font-heading text-4xl font-bold text-blue-900 mb-4">
-              Generous <span className="text-blue-600 italic">Matchers</span>
+            <h2 className="font-heading text-4xl font-bold text-primary mb-4">
+              Generous <span className="text-secondary italic">Matchers</span>
             </h2>
           </div>
 
           {matchers.length === 0 ? (
-            <p className="font-paragraph text-lg text-blue-700 text-center py-8">
+            <p className="font-paragraph text-lg text-primary/60 text-center py-8">
               No matchers available yet. Check back soon!
             </p>
           ) : (
@@ -528,27 +585,27 @@ export default function CampaignsPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4 }}
-                  className="bg-white rounded-lg p-8 shadow-lg border-2 border-blue-200 space-y-4"
+                  className="bg-white rounded-lg p-8 shadow-lg border border-secondary/20 space-y-4"
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-heading text-2xl font-bold text-blue-900">
+                      <h3 className="font-heading text-2xl font-bold text-primary">
                         {matcher.matcherName}
                       </h3>
                     </div>
                   </div>
                   {matcher.matchingAmount && (
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Matching Amount</p>
-                      <p className="font-heading text-2xl font-bold text-blue-900">
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Matching Amount</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
                         £{matcher.matchingAmount.toLocaleString()}
                       </p>
                     </div>
                   )}
                   {matcher.matchingPercentage && (
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Matching Percentage</p>
-                      <p className="font-heading text-2xl font-bold text-blue-900">
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Matching Percentage</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
                         {matcher.matchingPercentage}%
                       </p>
                     </div>
@@ -562,15 +619,15 @@ export default function CampaignsPage() {
         {/* Teams Section */}
         <section className="mb-20">
           <div className="mb-12">
-            <h2 className="font-heading text-4xl font-bold text-blue-900 mb-8">
-              Fundraising <span className="text-blue-600 italic">Teams</span>
+            <h2 className="font-heading text-4xl font-bold text-primary mb-8">
+              Fundraising <span className="text-secondary italic">Teams</span>
             </h2>
 
             {/* Team Filter */}
             <div className="relative mb-8">
               <button
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className="w-full px-4 py-3 bg-white border-2 border-blue-200 rounded-lg font-paragraph font-semibold text-blue-900 flex items-center justify-between hover:border-blue-400 transition-colors"
+                className="w-full px-4 py-3 bg-white border border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
               >
                 <span>{getFilterLabel()}</span>
                 <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
@@ -582,7 +639,7 @@ export default function CampaignsPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-blue-200 rounded-lg shadow-lg z-10 overflow-hidden"
+                  className="absolute top-full left-0 right-0 mt-2 bg-white border border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
                 >
                   <button
                     onClick={() => {
@@ -591,8 +648,8 @@ export default function CampaignsPage() {
                     }}
                     className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors ${
                       teamSortFilter === 'highest'
-                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
-                        : 'text-blue-900 hover:bg-blue-50'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
                     }`}
                   >
                     Highest Raised
@@ -602,10 +659,10 @@ export default function CampaignsPage() {
                       setTeamSortFilter('lowest');
                       setShowFilterMenu(false);
                     }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
                       teamSortFilter === 'lowest'
-                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
-                        : 'text-blue-900 hover:bg-blue-50'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
                     }`}
                   >
                     Lowest Raised
@@ -615,10 +672,10 @@ export default function CampaignsPage() {
                       setTeamSortFilter('name');
                       setShowFilterMenu(false);
                     }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
                       teamSortFilter === 'name'
-                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
-                        : 'text-blue-900 hover:bg-blue-50'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
                     }`}
                   >
                     By Name
@@ -628,10 +685,10 @@ export default function CampaignsPage() {
                       setTeamSortFilter('progress');
                       setShowFilterMenu(false);
                     }}
-                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-blue-200 ${
+                    className={`w-full px-4 py-3 text-left font-paragraph font-semibold transition-colors border-t border-primary/10 ${
                       teamSortFilter === 'progress'
-                        ? 'bg-blue-100 text-blue-900 border-l-4 border-blue-600'
-                        : 'text-blue-900 hover:bg-blue-50'
+                        ? 'bg-secondary/10 text-secondary border-l-4 border-secondary'
+                        : 'text-primary hover:bg-primary/5'
                     }`}
                   >
                     By Progress
@@ -642,7 +699,7 @@ export default function CampaignsPage() {
           </div>
 
           {teams.length === 0 ? (
-            <p className="font-paragraph text-lg text-blue-700 text-center py-8">
+            <p className="font-paragraph text-lg text-primary/60 text-center py-8">
               No teams yet. Be the first to create one!
             </p>
           ) : (
@@ -654,10 +711,10 @@ export default function CampaignsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
-                  className="bg-white rounded-lg p-8 space-y-6 border-2 border-blue-200 hover:border-blue-400 transition-colors cursor-pointer shadow-lg"
+                  className="bg-white rounded-lg p-8 space-y-6 border border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer shadow-lg"
                 >
                   {team.teamLogo && (
-                    <div className="w-full h-40 rounded-lg overflow-hidden bg-blue-50">
+                    <div className="w-full h-40 rounded-lg overflow-hidden bg-primary/5">
                       <Image 
                         src={team.teamLogo}
                         alt={team.teamName || 'Team logo'}
@@ -667,51 +724,51 @@ export default function CampaignsPage() {
                     </div>
                   )}
                   <div>
-                    <h3 className="font-heading text-3xl font-bold text-blue-900">
+                    <h3 className="font-heading text-3xl font-bold text-primary">
                       {team.teamName}
                     </h3>
                     {team.teamDescription && (
-                      <p className="font-paragraph text-blue-700 mt-2 line-clamp-2">
+                      <p className="font-paragraph text-primary/70 mt-2 line-clamp-2">
                         {team.teamDescription}
                       </p>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Raised</p>
-                      <p className="font-heading text-2xl font-bold text-blue-900">
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Raised</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
                         £{teamTotal.toLocaleString()}
                       </p>
                     </div>
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="font-paragraph text-sm text-blue-600 uppercase tracking-wider mb-1">Members</p>
-                      <p className="font-heading text-2xl font-bold text-blue-900">
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Members</p>
+                      <p className="font-heading text-2xl font-bold text-primary">
                         {team.memberCount || 0}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-baseline">
-                      <span className="font-paragraph text-sm text-blue-700">Goal</span>
-                      <span className="font-heading text-lg font-bold text-blue-900">
+                      <span className="font-paragraph text-sm text-primary/70">Goal</span>
+                      <span className="font-heading text-lg font-bold text-primary">
                         £{team.fundraisingGoal?.toLocaleString()}
                       </span>
                     </div>
-                    <div className="w-full bg-blue-100 rounded-full h-4 overflow-hidden">
+                    <div className="w-full bg-primary/10 rounded-full h-4 overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         whileInView={{ width: `${teamProgress}%` }}
                         viewport={{ once: true }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                        className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
                       />
                     </div>
-                    <p className="font-paragraph text-sm text-blue-700 text-right">
+                    <p className="font-paragraph text-sm text-primary/70 text-right">
                       {teamProgress.toFixed(1)}% complete
                     </p>
                   </div>
                   <Link to={`/team/${team._id}`}>
-                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-lg py-3 font-semibold">
+                    <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-3 font-semibold">
                       View Team Details
                     </Button>
                   </Link>
@@ -728,13 +785,13 @@ export default function CampaignsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-20"
           >
-            <AlertCircle className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-            <h2 className="font-heading text-3xl font-bold text-blue-900 mb-2">No Campaigns Yet</h2>
-            <p className="font-paragraph text-lg text-blue-700 mb-8">
+            <AlertCircle className="w-16 h-16 text-primary/30 mx-auto mb-4" />
+            <h2 className="font-heading text-3xl font-bold text-primary mb-2">No Campaigns Yet</h2>
+            <p className="font-paragraph text-lg text-primary/60 mb-8">
               Check back soon for exciting new campaigns!
             </p>
             <Link to="/admin-login">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-full px-8 py-3 font-semibold">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-3 font-semibold">
                 Admin Dashboard
               </Button>
             </Link>
@@ -743,12 +800,12 @@ export default function CampaignsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-blue-900 text-white py-12 border-t-4 border-blue-700 mt-20">
+      <footer className="bg-primary text-primary-foreground py-12 border-t border-primary/20 mt-20">
         <div className="max-w-[120rem] mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
             <div className="space-y-4">
               <h3 className="font-heading text-2xl font-bold">Crowdfunding Platform</h3>
-              <p className="font-paragraph text-blue-100">
+              <p className="font-paragraph text-primary-foreground/80">
                 Supporting meaningful causes through community fundraising.
               </p>
             </div>
@@ -756,13 +813,13 @@ export default function CampaignsPage() {
             <div className="space-y-4">
               <h4 className="font-heading text-xl font-bold">Quick Links</h4>
               <nav className="flex flex-col gap-2">
-                <Link to="/" className="font-paragraph text-blue-100 hover:text-white transition-colors">
+                <Link to="/" className="font-paragraph text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Campaigns
                 </Link>
-                <Link to="/home" className="font-paragraph text-blue-100 hover:text-white transition-colors">
+                <Link to="/home" className="font-paragraph text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Original Home
                 </Link>
-                <Link to="/gallery" className="font-paragraph text-blue-100 hover:text-white transition-colors">
+                <Link to="/gallery" className="font-paragraph text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Gallery
                 </Link>
               </nav>
@@ -770,14 +827,14 @@ export default function CampaignsPage() {
 
             <div className="space-y-4">
               <h4 className="font-heading text-xl font-bold">Support</h4>
-              <p className="font-paragraph text-blue-100">
+              <p className="font-paragraph text-primary-foreground/80">
                 Have questions? Contact us for more information about our campaigns.
               </p>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-blue-700 text-center">
-            <p className="font-paragraph text-sm text-blue-100">
+          <div className="pt-8 border-t border-primary-foreground/20 text-center">
+            <p className="font-paragraph text-sm text-primary-foreground/70">
               © {new Date().getFullYear()} Crowdfunding Platform. All rights reserved.
             </p>
           </div>
