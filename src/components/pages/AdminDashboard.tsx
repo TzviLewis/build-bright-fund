@@ -168,7 +168,7 @@ export default function AdminDashboard() {
 
   // Helper function to generate team ID
   const generateTeamId = () => {
-    const id = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const id = Math.floor(Math.random() * 1000000).toString();
     setTeamForm(prev => ({ ...prev, teamId: id }));
   };
 
