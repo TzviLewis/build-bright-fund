@@ -7,15 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams } from '@/entities';
-import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X, ChevronDown } from 'lucide-react';
+import { ArrowRight, Heart, Users, Target, TrendingUp, Award, Zap, AlertCircle, CheckCircle, X, ChevronDown, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import DonationWidget from '@/components/DonationWidget';
 import { useDonationStore } from '@/stores/donationStore';
-import CountdownTimer from '@/components/CountdownTimer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 import ConfettiAnimation from '@/components/ConfettiAnimation';
-import VideoPlayer from '@/components/VideoPlayer';
-import FilesFilePlayer from '@/components/FilesFilePlayer';
 
 export default function HomePage() {
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
@@ -55,14 +51,12 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    // Check if goal was just achieved
     const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const mainGoalAchieved = campaign?.fundraisingGoal && totalRaised >= campaign.fundraisingGoal;
     
     if (mainGoalAchieved && !previousGoalAchieved) {
       setShowConfetti(true);
       setPreviousGoalAchieved(true);
-      // Auto-hide confetti after animation
       setTimeout(() => setShowConfetti(false), 3500);
     }
   }, [donations, campaign, previousGoalAchieved]);
@@ -76,7 +70,6 @@ export default function HomePage() {
       const { items: teamItems } = await BaseCrudService.getAll<Teams>('teams');
       
       if (campaignItems.length > 0) {
-        // Use the campaign's official start and end times from the database
         setCampaign(campaignItems[0]);
       }
       setDonations(donationItems);
@@ -98,14 +91,13 @@ export default function HomePage() {
     setSubmitError(null);
 
     try {
-      // Validation
       if (!donorEmail) {
         setSubmitError('Email address is required');
         setSubmitting(false);
         return;
       }
       if (!amount || parseFloat(amount) <= 0) {
-        setSubmitError('Please enter a valid donation amount greater than $0');
+        setSubmitError('Please enter a valid donation amount greater than £0');
         setSubmitting(false);
         return;
       }
@@ -129,7 +121,6 @@ export default function HomePage() {
 
       await BaseCrudService.create('donations', donationData);
 
-      // Add notification to store for popup display
       addNotification({
         ...donationData,
         pageName: 'Home Page',
@@ -162,7 +153,6 @@ export default function HomePage() {
     setTeamSubmitSuccess(false);
 
     try {
-      // Validation
       if (!teamFormData.teamName || !teamFormData.fundraisingGoal || 
           !teamFormData.teamDescription || !teamFormData.memberCount) {
         setTeamSubmitError('All fields are required');
@@ -215,7 +205,6 @@ export default function HomePage() {
     ? Math.min(((totalRaised - (campaign?.fundraisingGoal || 0)) / bonusGoalAmount) * 100, 100)
     : 0;
 
-  // Sort teams based on selected filter
   const getSortedTeams = () => {
     const teamsWithData = teams.map((team) => {
       const teamDonations = donations.filter(d => d.teamId === team._id);
@@ -255,7 +244,6 @@ export default function HomePage() {
     }
   };
 
-  // Check if campaign is live - campaign is live if it has started and not ended
   const isCampaignLive = campaign && campaign.campaignStartDate && campaign.campaignEndDate
     ? new Date() >= new Date(campaign.campaignStartDate) && new Date() <= new Date(campaign.campaignEndDate)
     : false;
@@ -263,7 +251,10 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary font-heading text-2xl">Loading...</div>
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="font-heading text-lg text-primary">Loading campaign...</p>
+        </div>
       </div>
     );
   }
@@ -292,7 +283,6 @@ export default function HomePage() {
     );
   }
 
-  // If campaign is not live, show only team creation form
   if (!isCampaignLive) {
     return (
       <div className="min-h-screen bg-background">
@@ -345,7 +335,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="bg-white rounded-lg p-10 shadow-2xl border-2 border-secondary/20"
+                className="bg-white rounded-lg p-10 shadow-2xl border border-secondary/20"
               >
                 <h2 className="font-heading text-3xl font-bold text-primary mb-8">
                   Create Your Team
@@ -355,7 +345,7 @@ export default function HomePage() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+                    className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg flex items-start gap-3"
                   >
                     <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
@@ -379,7 +369,7 @@ export default function HomePage() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                    className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg flex items-start gap-3"
                   >
                     <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
@@ -505,77 +495,41 @@ export default function HomePage() {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-background">
       {showConfetti && <ConfettiAnimation />}
+      
       {/* Header */}
-      <header className="bg-background border-b border-primary/10 shadow-sm">
-        <div className="max-w-[120rem] mx-auto px-8 py-6 flex justify-between items-center">
-
-          <nav className="flex items-center gap-8">
-            <a href="#campaign" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
-              Campaign
-            </a>
-            <a href="#donate" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
-              Donate
-            </a>
-            <a href="#progress" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
-              Progress
-            </a>
-            <Link to="/gallery">
-              <a className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
-                Gallery
+      <header className="bg-background border-b border-primary/10 shadow-sm sticky top-0 z-50">
+        <div className="max-w-[120rem] mx-auto px-8 py-6">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              <a href="#campaign" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
+                Campaign
               </a>
-            </Link>
-            <Link to="/admin-login">
-
+              <a href="#donate" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
+                Donate
+              </a>
+              <a href="#progress" className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
+                Progress
+              </a>
+              <Link to="/gallery">
+                <span className="font-paragraph text-base text-primary hover:text-secondary transition-colors">
+                  Gallery
+                </span>
+              </Link>
+            </div>
+            <Link to="/campaigns">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold">
+                All Campaigns
+              </Button>
             </Link>
           </nav>
         </div>
       </header>
-      {/* Campaign Media Hero Section */}
-      <section className="w-full bg-primary/5 py-16">
-        <div className="max-w-[120rem] mx-auto px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 gap-x-[99px] gap-y-0">
-            {/* Campaign Video - Using files.fm embed */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="rounded-lg overflow-hidden shadow-xl"
-            >
-              <div style={{ position: 'relative', width: '100%', height: '0px', paddingBottom: '56.250%' }}>
-              <iframe 
-                allow="fullscreen" 
-                allowFullScreen 
-                height="100%" 
-                src="https://streamable.com/e/ljo4xs?loop=0&muted=1" 
-                width="100%" 
-                style={{ border: 'none', width: '100%', height: '100%', position: 'absolute', left: '0px', top: '0px', overflow: 'hidden' }}
-              />
-            </div>
-            </motion.div>
 
-            {/* Campaign GIF */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="rounded-lg overflow-hidden shadow-xl"
-            >
-              <Image
-                src="https://static.wixstatic.com/media/28ba1c_84aeec8c1182455781efd0126900d053~mv2.jpeg"
-                className="w-full h-80 object-cover"
-                width={600}
-                originWidth={1724}
-                originHeight={966} />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-      {/* Hero Section - Inspired by reference image */}
-      <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
+      {/* Hero Section */}
+      <section id="campaign" className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text Content */}
           <motion.div 
@@ -585,11 +539,18 @@ export default function HomePage() {
             className="space-y-8"
           >
             <div className="space-y-4">
+              <div className="inline-block px-4 py-2 bg-secondary/20 rounded-full mb-4">
+                <p className="font-heading text-sm font-bold text-secondary uppercase tracking-wider">🎯 Featured Campaign</p>
+              </div>
               <h1 className="font-heading text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="text-primary block">{campaign?.campaignTitle || 'Building Our Future'}</span>
                 <span className="text-secondary block italic">Together</span>
               </h1>
             </div>
+
+            <p className="font-paragraph text-xl text-primary/70 leading-relaxed max-w-xl">
+              {campaign?.projectDescription || 'Join us in supporting a meaningful cause. Your contribution makes a real difference.'}
+            </p>
 
             <div className="flex items-center gap-4 pt-4">
               <a href="#donate">
@@ -600,9 +561,15 @@ export default function HomePage() {
                   DONATE NOW
                 </Button>
               </a>
-              <a href="#campaign">
-
-              </a>
+              <Link to="/campaigns">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/5 rounded-full px-8 py-6 text-lg font-semibold"
+                >
+                  View All Campaigns
+                </Button>
+              </Link>
             </div>
           </motion.div>
 
@@ -616,20 +583,20 @@ export default function HomePage() {
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image 
                 src={campaign?.mainCampaignImage || 'https://static.wixstatic.com/media/28ba1c_c73226414fee4a59bdb7266466a978bb~mv2.png?originWidth=768&originHeight=576'}
-                alt="New school building vision"
+                alt="Campaign vision"
                 className="w-full h-[600px] object-cover"
                 width={800}
               />
               {/* Accent Circle */}
-              <div className="absolute bottom-8 left-8 bg-secondary rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
+              <div className="absolute bottom-8 right-8 bg-secondary rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
                 <ArrowRight className="w-8 h-8 text-secondary-foreground" />
               </div>
             </div>
           </motion.div>
         </div>
       </section>
-      {/* Three Column Features - Inspired by reference image */}
-      {/* Campaign Details */}
+
+      {/* Campaign Details Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <motion.div 
@@ -642,12 +609,10 @@ export default function HomePage() {
             <h2 className="font-heading text-5xl font-bold text-primary leading-tight">
               The Vision for <span className="text-secondary italic">Tomorrow</span>
             </h2>
-            <div className="prose prose-lg max-w-none">
-
-            </div>
+            
             {campaign?.campaignStartDate && campaign?.campaignEndDate && (
               <div className="pt-6 space-y-4 border-t border-primary/10">
-                <h3 className="font-heading text-2xl font-bold text-primary">{"Campaign"}</h3>
+                <h3 className="font-heading text-2xl font-bold text-primary">Campaign Timeline</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider">Start Date</p>
@@ -685,7 +650,7 @@ export default function HomePage() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="bg-primary/5 rounded-lg p-10 space-y-6"
+            className="bg-primary/5 rounded-lg p-10 space-y-6 border border-primary/10"
           >
             <div className="flex items-center gap-3">
               <TrendingUp className="w-10 h-10 text-secondary" />
@@ -719,7 +684,8 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-      {/* Bonus Goal Section - Only show if main goal is achieved */}
+
+      {/* Bonus Goal Section */}
       {mainGoalAchieved && bonusGoalAmount > 0 && (
         <section className="w-full bg-gradient-to-r from-secondary/10 to-secondary/5 py-20 border-t-4 border-secondary">
           <div className="max-w-[120rem] mx-auto px-8">
@@ -809,6 +775,7 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
       {/* Countdown Timer Section */}
       {campaign?.campaignEndDate && (
         <section className="w-full bg-gradient-to-r from-primary/5 to-secondary/5 py-20">
@@ -817,7 +784,6 @@ export default function HomePage() {
               <h2 className="font-heading text-4xl font-bold text-primary mb-4">
                 Time is <span className="text-secondary italic">Running Out</span>
               </h2>
-
             </div>
             <div className="flex justify-center">
               <CircularCountdownTimer endDate={campaign.campaignEndDate} startDate={campaign.campaignStartDate} />
@@ -825,6 +791,7 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
       {/* Donation Form */}
       <section id="donate" className="w-full bg-primary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
@@ -839,7 +806,6 @@ export default function HomePage() {
               <h2 className="font-heading text-5xl font-bold text-primary-foreground mb-4">
                 Make Your <span className="italic text-secondary">Contribution</span>
               </h2>
-
             </div>
 
             <div className="bg-background rounded-lg p-10 shadow-2xl">
@@ -848,7 +814,7 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+                  className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg flex items-start gap-3"
                 >
                   <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -873,7 +839,7 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                  className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg flex items-start gap-3"
                 >
                   <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -1004,6 +970,7 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
       {/* Matchers Section */}
       <section className="w-full bg-secondary/10 py-20">
         <div className="max-w-[120rem] mx-auto px-8">
@@ -1011,7 +978,6 @@ export default function HomePage() {
             <h2 className="font-heading text-5xl font-bold text-primary mb-4">
               Generous <span className="text-secondary italic">Matchers</span>
             </h2>
-
           </div>
 
           {matchers.length === 0 ? (
@@ -1027,24 +993,39 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4 }}
-                  className="bg-background rounded-lg p-8 shadow-lg border-2 border-secondary/20 space-y-4"
+                  className="bg-background rounded-lg p-8 shadow-lg border border-secondary/20 space-y-4"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="font-heading text-2xl font-bold text-primary">
                         {matcher.matcherName}
                       </h3>
-
                     </div>
-
                   </div>
 
+                  {matcher.matchingAmount && (
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Matching Amount</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
+                        £{matcher.matchingAmount.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {matcher.matchingPercentage && (
+                    <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                      <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Matching Percentage</p>
+                      <p className="font-heading text-2xl font-bold text-secondary">
+                        {matcher.matchingPercentage}%
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
           )}
         </div>
       </section>
+
       {/* Teams Section */}
       <section className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="mb-12">
@@ -1068,7 +1049,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-primary/5 rounded-lg p-8 border-2 border-secondary/30 mb-12"
+              className="bg-primary/5 rounded-lg p-8 border border-secondary/30 mb-12"
             >
               <h3 className="font-heading text-3xl font-bold text-primary mb-6">
                 Create a New Team
@@ -1078,7 +1059,7 @@ export default function HomePage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-secondary/10 border-2 border-secondary rounded-lg flex items-start gap-3"
+                  className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg flex items-start gap-3"
                 >
                   <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -1102,7 +1083,7 @@ export default function HomePage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-destructive/10 border-2 border-destructive rounded-lg flex items-start gap-3"
+                  className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg flex items-start gap-3"
                 >
                   <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -1241,7 +1222,7 @@ export default function HomePage() {
         <div className="relative mb-8">
           <button
             onClick={() => setShowFilterMenu(!showFilterMenu)}
-            className="w-full px-4 py-3 bg-background border-2 border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
+            className="w-full px-4 py-3 bg-white border border-primary/20 rounded-lg font-paragraph font-semibold text-primary flex items-center justify-between hover:border-secondary transition-colors"
           >
             <span>{getFilterLabel()}</span>
             <ChevronDown className={`w-5 h-5 transition-transform ${showFilterMenu ? 'rotate-180' : ''}`} />
@@ -1253,7 +1234,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
+              className="absolute top-full left-0 right-0 mt-2 bg-white border border-primary/20 rounded-lg shadow-lg z-10 overflow-hidden"
             >
               <button
                 onClick={() => {
@@ -1324,7 +1305,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="bg-primary/5 rounded-lg p-8 space-y-6 border-2 border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer"
+                className="bg-primary/5 rounded-lg p-8 space-y-6 border border-primary/10 hover:border-secondary/30 transition-colors cursor-pointer"
               >
                 {team.teamLogo && (
                   <div className="w-full h-40 rounded-lg overflow-hidden bg-background">
@@ -1340,14 +1321,23 @@ export default function HomePage() {
                   <h3 className="font-heading text-3xl font-bold text-primary">
                     {team.teamName}
                   </h3>
-
+                  {team.teamDescription && (
+                    <p className="font-paragraph text-primary/70 mt-2 line-clamp-2">
+                      {team.teamDescription}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-
-                  <div className="bg-background rounded-lg p-4">
-                    <p className="font-paragraph text-sm text-primary/60">Raised</p>
+                  <div className="bg-background rounded-lg p-4 border border-primary/10">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Raised</p>
                     <p className="font-heading text-2xl font-bold text-secondary">
                       £{teamTotal.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="bg-background rounded-lg p-4 border border-primary/10">
+                    <p className="font-paragraph text-sm text-primary/60 uppercase tracking-wider mb-1">Members</p>
+                    <p className="font-heading text-2xl font-bold text-primary">
+                      {team.memberCount || 0}
                     </p>
                   </div>
                 </div>
@@ -1381,6 +1371,8 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Supporters Section */}
       <section id="progress" className="w-full max-w-[120rem] mx-auto px-8 py-20">
         <div className="text-center mb-12">
           <h2 className="font-heading text-5xl font-bold text-primary mb-4">
@@ -1431,13 +1423,16 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 border-t border-primary/20">
         <div className="max-w-[120rem] mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="space-y-4">
               <h3 className="font-heading text-2xl font-bold">SCHOOL CAMPAIGN</h3>
-
+              <p className="font-paragraph text-primary-foreground/80">
+                Supporting meaningful causes through community fundraising.
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -1457,7 +1452,9 @@ export default function HomePage() {
 
             <div className="space-y-4">
               <h4 className="font-heading text-xl font-bold">Support</h4>
-
+              <p className="font-paragraph text-primary-foreground/80">
+                Have questions? Contact us for more information about our campaigns.
+              </p>
             </div>
           </div>
 
