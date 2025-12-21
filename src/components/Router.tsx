@@ -9,7 +9,7 @@ import TeamPage from '@/components/pages/TeamPage';
 import GalleryPage from '@/components/pages/GalleryPage';
 import UpdateCampaignVideo from '@/components/pages/UpdateCampaignVideo';
 import AdminCampaignDatesPage from '@/components/pages/AdminCampaignDatesPage';
-import CampaignsPage from '@/components/pages/CampaignsPage';
+import CampaignsPage from '@/components/pages/CampaignsPageNew';
 import AdminCampaignsPage from '@/components/pages/AdminCampaignsPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import { TeamProtectedRoute } from '@/components/ui/team-protected-route';
