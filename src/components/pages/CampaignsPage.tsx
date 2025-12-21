@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Teams, Matchers } from '@/entities';
-import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2, ChevronDown, Zap, Target, Heart } from 'lucide-react';
+import { ArrowRight, Calendar, DollarSign, Users, TrendingUp, AlertCircle, Loader2, ChevronDown, Zap, Target, Heart, Sparkles, TrendingUpIcon, Brain, Bell, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
+import { aiService, type CampaignInsight, type CampaignAlert, type CampaignRecommendation } from '@/services/aiService';
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<CampaignDetails[]>([]);
@@ -18,6 +19,14 @@ export default function CampaignsPage() {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [teamSortFilter, setTeamSortFilter] = useState<'highest' | 'lowest' | 'name' | 'progress'>('highest');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  
+  // AI-powered features
+  const [campaignInsights, setCampaignInsights] = useState<Map<string, CampaignInsight>>(new Map());
+  const [recommendations, setRecommendations] = useState<CampaignRecommendation[]>([]);
+  const [alerts, setAlerts] = useState<CampaignAlert[]>([]);
+  const [trendingCampaigns, setTrendingCampaigns] = useState<CampaignDetails[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<CampaignDetails[]>([]);
 
   useEffect(() => {
     loadData();
@@ -34,10 +43,35 @@ export default function CampaignsPage() {
         BaseCrudService.getAll<Matchers>('matchers'),
       ]);
 
-      setCampaigns(campaignRes.items || []);
-      setDonations(donationsRes.items || []);
-      setTeams(teamsRes.items || []);
-      setMatchers(matchersRes.items?.filter(m => m.status === 'active') || []);
+      const campaignsData = campaignRes.items || [];
+      const donationsData = donationsRes.items || [];
+      const teamsData = teamsRes.items || [];
+      const matchersData = matchersRes.items?.filter(m => m.status === 'active') || [];
+
+      setCampaigns(campaignsData);
+      setDonations(donationsData);
+      setTeams(teamsData);
+      setMatchers(matchersData);
+
+      // Generate AI insights for all campaigns
+      const insightsMap = new Map<string, CampaignInsight>();
+      campaignsData.forEach(campaign => {
+        const insight = aiService.analyzeCampaignPerformance(campaign, donationsData, teamsData);
+        insightsMap.set(campaign._id, insight);
+      });
+      setCampaignInsights(insightsMap);
+
+      // Generate recommendations
+      const recs = aiService.generateRecommendations(campaignsData, donationsData);
+      setRecommendations(recs);
+
+      // Generate alerts
+      const campaignAlerts = aiService.generateAlerts(campaignsData, donationsData);
+      setAlerts(campaignAlerts);
+
+      // Get trending campaigns
+      const trending = aiService.getTrendingCampaigns(campaignsData, donationsData, 3);
+      setTrendingCampaigns(trending);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to load campaigns';
       setError(`Failed to load campaigns: ${errorMsg}`);
@@ -54,6 +88,20 @@ export default function CampaignsPage() {
       ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
       : 0;
     return { totalRaised, progress, donorCount: campaignDonations.length };
+  };
+
+  // Handle search
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      const results = aiService.searchCampaigns(campaigns, query);
+      const matchedCampaigns = results.map(result => 
+        campaigns.find(c => c._id === result.campaignId)
+      ).filter(Boolean) as CampaignDetails[];
+      setSearchResults(matchedCampaigns);
+    } else {
+      setSearchResults([]);
+    }
   };
 
   const isCampaignLive = (campaign: CampaignDetails) => {
@@ -174,6 +222,194 @@ export default function CampaignsPage() {
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-16">
+        {/* AI-Powered Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <div className="relative">
+            <div className="flex items-center gap-3 bg-white rounded-lg border border-secondary/30 px-4 py-3 shadow-md hover:shadow-lg transition-shadow">
+              <Search className="w-5 h-5 text-secondary" />
+              <input
+                type="text"
+                placeholder="Search campaigns by title, description, or goal..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="flex-1 outline-none font-paragraph text-primary placeholder-primary/40"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => handleSearch('')}
+                  className="text-primary/60 hover:text-primary transition-colors"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            
+            {/* Search Results */}
+            {searchQuery && searchResults.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg border border-secondary/20 shadow-lg z-20 max-h-96 overflow-y-auto"
+              >
+                {searchResults.map((campaign) => (
+                  <Link
+                    key={campaign._id}
+                    to={`/?campaign=${campaign._id}`}
+                    className="block px-4 py-3 hover:bg-secondary/5 border-b border-primary/10 last:border-b-0 transition-colors"
+                  >
+                    <p className="font-heading font-semibold text-primary">{campaign.campaignTitle}</p>
+                    <p className="font-paragraph text-sm text-primary/60 line-clamp-1">{campaign.projectDescription}</p>
+                  </Link>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* AI Alerts Section */}
+        {alerts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-16"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Bell className="w-5 h-5 text-secondary" />
+              <h3 className="font-heading text-lg font-bold text-primary">Smart Alerts</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {alerts.slice(0, 6).map((alert, index) => (
+                <motion.div
+                  key={`${alert.campaignId}-${alert.type}`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`rounded-lg p-4 border-l-4 ${
+                    alert.priority === 'high'
+                      ? 'bg-red-50 border-red-500'
+                      : alert.priority === 'medium'
+                      ? 'bg-yellow-50 border-yellow-500'
+                      : 'bg-blue-50 border-blue-500'
+                  }`}
+                >
+                  <p className="font-paragraph text-sm text-primary font-semibold">{alert.message}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Trending Campaigns Section */}
+        {trendingCampaigns.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-20"
+          >
+            <div className="flex items-center gap-2 mb-8">
+              <TrendingUpIcon className="w-5 h-5 text-secondary" />
+              <h2 className="font-heading text-3xl font-bold text-primary">Trending <span className="text-secondary italic">Now</span></h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {trendingCampaigns.map((campaign, index) => {
+                const stats = getCampaignStats(campaign);
+                return (
+                  <motion.div
+                    key={campaign._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-lg overflow-hidden border border-secondary/30 hover:border-secondary/60 transition-all shadow-md hover:shadow-lg"
+                  >
+                    {campaign.mainCampaignImage && (
+                      <div className="h-40 overflow-hidden">
+                        <Image
+                          src={campaign.mainCampaignImage}
+                          alt={campaign.campaignTitle || 'Campaign'}
+                          className="w-full h-full object-cover"
+                          width={400}
+                        />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="w-4 h-4 text-secondary" />
+                        <span className="font-heading text-xs font-bold text-secondary uppercase">Trending</span>
+                      </div>
+                      <h3 className="font-heading text-lg font-bold text-primary mb-2">{campaign.campaignTitle}</h3>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between items-center">
+                          <span className="font-paragraph text-xs text-primary/60">Progress</span>
+                          <span className="font-heading text-sm font-bold text-secondary">{stats.progress.toFixed(0)}%</span>
+                        </div>
+                        <div className="w-full bg-primary/10 rounded-full h-2">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.progress}%` }}
+                            transition={{ duration: 1.5 }}
+                            className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
+                          />
+                        </div>
+                      </div>
+                      <Link to={`/?campaign=${campaign._id}`}>
+                        <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-2 font-semibold text-sm">
+                          Support Now
+                        </Button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* AI Recommendations Section */}
+        {recommendations.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-20"
+          >
+            <div className="flex items-center gap-2 mb-8">
+              <Brain className="w-5 h-5 text-secondary" />
+              <h2 className="font-heading text-3xl font-bold text-primary">AI <span className="text-secondary italic">Recommendations</span></h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {recommendations.slice(0, 4).map((rec, index) => (
+                <motion.div
+                  key={rec.campaignId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 transition-all shadow-md hover:shadow-lg"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="font-heading text-xl font-bold text-primary flex-1">{rec.campaignTitle}</h3>
+                    <div className="bg-secondary/20 rounded-full px-3 py-1 ml-2">
+                      <span className="font-heading text-sm font-bold text-secondary">{rec.matchPercentage.toFixed(0)}%</span>
+                    </div>
+                  </div>
+                  <p className="font-paragraph text-sm text-primary/70 mb-4">{rec.reason}</p>
+                  <Link to={`/?campaign=${rec.campaignId}`}>
+                    <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-2 font-semibold text-sm">
+                      View Campaign
+                    </Button>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
