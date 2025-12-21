@@ -5,11 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Select } from '@/components/ui/select';
 import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles,
+  Download, BarChart3, Settings, Mail
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -78,6 +81,9 @@ interface UIState {
   editingGalleryImageId: string | null;
   uploadProgress: number;
   showVideoEditor: boolean;
+  showExportModal: boolean;
+  showAnalyticsModal: boolean;
+  showBulkActions: boolean;
 }
 
 interface DataState {
@@ -103,6 +109,9 @@ export default function AdminDashboard() {
     editingGalleryImageId: null,
     uploadProgress: 0,
     showVideoEditor: false,
+    showExportModal: false,
+    showAnalyticsModal: false,
+    showBulkActions: false,
   });
 
   // Data State
@@ -195,6 +204,76 @@ export default function AdminDashboard() {
       }));
       console.error('Error copying to clipboard:', err);
     });
+  };
+
+  // Export data as CSV
+  const handleExportData = (dataType: 'donations' | 'teams' | 'matchers') => {
+    let csvContent = '';
+    let filename = '';
+
+    if (dataType === 'donations') {
+      csvContent = 'Donor Name,Email,Amount,Date,Team,Status,Message\n';
+      data.donations.forEach(d => {
+        const team = data.teams.find(t => t._id === d.teamId);
+        csvContent += `"${d.donorName || 'Anonymous'}","${d.donorEmail}","${d.amount}","${d.donationDate}","${team?.teamName || 'Individual'}","${d.status}","${d.donorMessage || ''}"\n`;
+      });
+      filename = 'donations.csv';
+    } else if (dataType === 'teams') {
+      csvContent = 'Team Name,Members,Goal,Description\n';
+      data.teams.forEach(t => {
+        csvContent += `"${t.teamName}","${t.memberCount}","${t.fundraisingGoal}","${t.teamDescription}"\n`;
+      });
+      filename = 'teams.csv';
+    } else if (dataType === 'matchers') {
+      csvContent = 'Matcher Name,Amount,Percentage,Status,Email\n';
+      data.matchers.forEach(m => {
+        csvContent += `"${m.matcherName}","${m.matchingAmount}","${m.matchingPercentage}%","${m.status}","${m.contactEmail}"\n`;
+      });
+      filename = 'matchers.csv';
+    }
+
+    const element = document.createElement('a');
+    element.setAttribute('href', `data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`);
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+
+    setUI(prev => ({ 
+      ...prev, 
+      successMessage: `${dataType} exported successfully!` 
+    }));
+    setTimeout(() => {
+      setUI(prev => ({ ...prev, successMessage: null }));
+    }, 3000);
+  };
+
+  // Calculate advanced analytics
+  const getAnalytics = () => {
+    const totalDonations = data.donations.length;
+    const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const averageDonation = totalDonations > 0 ? totalRaised / totalDonations : 0;
+    const completedDonations = data.donations.filter(d => d.status === 'completed').length;
+    const completionRate = totalDonations > 0 ? (completedDonations / totalDonations) * 100 : 0;
+    const topDonor = data.donations.length > 0 
+      ? data.donations.reduce((max, d) => (d.amount || 0) > (max.amount || 0) ? d : max)
+      : null;
+    const totalTeams = data.teams.length;
+    const totalMatchers = data.matchers.length;
+    const activeMatchers = data.matchers.filter(m => m.status === 'active').length;
+
+    return {
+      totalDonations,
+      totalRaised,
+      averageDonation,
+      completedDonations,
+      completionRate,
+      topDonor,
+      totalTeams,
+      totalMatchers,
+      activeMatchers,
+    };
   };
 
   // Load data on mount
@@ -826,6 +905,7 @@ export default function AdminDashboard() {
       <div className="max-w-[120rem] mx-auto px-8 py-12">
         {/* Quick Navigation Grid */}
         <div className="mb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* ... keep existing code ... */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -967,7 +1047,209 @@ export default function AdminDashboard() {
           </motion.div>
         </div>
 
-        {/* Global Alerts */}
+        {/* Admin Tools Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-8 border-2 border-purple-200"
+        >
+          <h2 className="font-heading text-2xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-purple-600" />
+            Admin Tools & Features
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Export Data Tool */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-lg p-4 border border-purple-200 cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => setUI(prev => ({ ...prev, showExportModal: !prev.showExportModal }))}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Download className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">Export Data</h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60">
+                Download donations, teams, or matchers as CSV
+              </p>
+            </motion.div>
+
+            {/* Analytics Tool */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-lg p-4 border border-blue-200 cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => setUI(prev => ({ ...prev, showAnalyticsModal: !prev.showAnalyticsModal }))}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <BarChart3 className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">Analytics</h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60">
+                View detailed campaign statistics
+              </p>
+            </motion.div>
+
+            {/* Bulk Actions Tool */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-lg p-4 border border-green-200 cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => setUI(prev => ({ ...prev, showBulkActions: !prev.showBulkActions }))}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Zap className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">Bulk Actions</h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60">
+                Manage multiple items at once
+              </p>
+            </motion.div>
+
+            {/* Settings Tool */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-lg p-4 border border-orange-200 cursor-pointer hover:shadow-lg transition-all"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Settings className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">Settings</h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60">
+                Configure dashboard preferences
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Export Modal */}
+          {ui.showExportModal && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-6 bg-white rounded-lg border-2 border-purple-300 space-y-4"
+            >
+              <h3 className="font-heading text-lg font-bold text-primary">Export Data</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button
+                  onClick={() => handleExportData('donations')}
+                  className="bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Donations ({data.donations.length})
+                </Button>
+                <Button
+                  onClick={() => handleExportData('teams')}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Teams ({data.teams.length})
+                </Button>
+                <Button
+                  onClick={() => handleExportData('matchers')}
+                  className="bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Matchers ({data.matchers.length})
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Analytics Modal */}
+          {ui.showAnalyticsModal && (() => {
+            const analytics = getAnalytics();
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-6 bg-white rounded-lg border-2 border-blue-300 space-y-6"
+              >
+                <h3 className="font-heading text-lg font-bold text-primary">Campaign Analytics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <p className="font-paragraph text-xs text-blue-600/60 mb-1">Total Donations</p>
+                    <p className="font-heading text-2xl font-bold text-blue-900">{analytics.totalDonations}</p>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <p className="font-paragraph text-xs text-green-600/60 mb-1">Total Raised</p>
+                    <p className="font-heading text-2xl font-bold text-green-900">£{analytics.totalRaised.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <p className="font-paragraph text-xs text-purple-600/60 mb-1">Average Donation</p>
+                    <p className="font-heading text-2xl font-bold text-purple-900">£{analytics.averageDonation.toFixed(2)}</p>
+                  </div>
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <p className="font-paragraph text-xs text-orange-600/60 mb-1">Completion Rate</p>
+                    <p className="font-heading text-2xl font-bold text-orange-900">{analytics.completionRate.toFixed(1)}%</p>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                    <p className="font-paragraph text-xs text-indigo-600/60 mb-1">Teams</p>
+                    <p className="font-heading text-2xl font-bold text-indigo-900">{analytics.totalTeams}</p>
+                  </div>
+                  <div className="bg-pink-50 rounded-lg p-4 border border-pink-200">
+                    <p className="font-paragraph text-xs text-pink-600/60 mb-1">Active Matchers</p>
+                    <p className="font-heading text-2xl font-bold text-pink-900">{analytics.activeMatchers}/{analytics.totalMatchers}</p>
+                  </div>
+                  <div className="bg-cyan-50 rounded-lg p-4 border border-cyan-200">
+                    <p className="font-paragraph text-xs text-cyan-600/60 mb-1">Completed</p>
+                    <p className="font-heading text-2xl font-bold text-cyan-900">{analytics.completedDonations}</p>
+                  </div>
+                  {analytics.topDonor && (
+                    <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                      <p className="font-paragraph text-xs text-yellow-600/60 mb-1">Top Donor</p>
+                      <p className="font-heading text-sm font-bold text-yellow-900 truncate">{analytics.topDonor.donorName || 'Anonymous'}</p>
+                      <p className="font-paragraph text-xs text-yellow-700">£{analytics.topDonor.amount?.toLocaleString()}</p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })()}
+
+          {/* Bulk Actions Modal */}
+          {ui.showBulkActions && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-6 bg-white rounded-lg border-2 border-green-300 space-y-4"
+            >
+              <h3 className="font-heading text-lg font-bold text-primary">Bulk Actions</h3>
+              <div className="space-y-3">
+                <Button
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 justify-start"
+                  disabled
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Mark All Donations as Completed
+                </Button>
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 justify-start"
+                  disabled
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send Email to All Donors
+                </Button>
+                <Button
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 justify-start"
+                  disabled
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Activate All Teams
+                </Button>
+                <p className="font-paragraph text-sm text-primary/60 italic">
+                  💡 Bulk actions coming soon! These features will allow you to manage multiple items efficiently.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
         <AnimatePresence>
           {ui.successMessage && (
             <motion.div
