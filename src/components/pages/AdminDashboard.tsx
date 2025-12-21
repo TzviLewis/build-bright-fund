@@ -931,10 +931,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.5 }}
           >
-            <button 
-              onClick={() => setUI(prev => ({ ...prev, showVideoEditor: !prev.showVideoEditor }))}
-              className="block w-full h-full"
-            >
+            <Link to="/admin/video-editor" className="block h-full">
               <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-secondary/10 rounded-lg">
@@ -946,7 +943,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-            </button>
+            </Link>
           </motion.div>
         </div>
 

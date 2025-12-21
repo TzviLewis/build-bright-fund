@@ -20,6 +20,7 @@ import CampaignDetailPage from '@/components/pages/CampaignDetailPage';
 import AdminDonationsPage from '@/components/pages/AdminDonationsPage';
 import AdminMatchersPage from '@/components/pages/AdminMatchersPage';
 import AdminAnalyticsPage from '@/components/pages/AdminAnalyticsPage';
+import VideoEditorPage from '@/components/pages/VideoEditorPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -111,6 +112,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <AdminAnalyticsPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/video-editor",
+        element: (
+          <AdminProtectedRoute>
+            <VideoEditorPage />
           </AdminProtectedRoute>
         ),
       },
