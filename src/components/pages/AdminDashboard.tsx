@@ -276,6 +276,124 @@ export default function AdminDashboard() {
     };
   };
 
+  // Bulk action: Mark all donations as completed
+  const handleMarkAllDonationsCompleted = async () => {
+    if (!confirm('Are you sure you want to mark all donations as completed? This action cannot be undone.')) return;
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+      
+      const updatePromises = data.donations.map(donation => 
+        BaseCrudService.update('donations', {
+          ...donation,
+          status: 'completed'
+        })
+      );
+
+      await Promise.all(updatePromises);
+
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `Successfully marked ${data.donations.length} donations as completed!` 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error updating donations';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to mark donations as completed: ${errorMsg}` 
+      }));
+      console.error('Error marking donations as completed:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
+  // Bulk action: Activate all teams
+  const handleActivateAllTeams = async () => {
+    if (!confirm('Are you sure you want to activate all teams? This action cannot be undone.')) return;
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+      
+      const updatePromises = data.teams.map(team => 
+        BaseCrudService.update('teams', {
+          ...team,
+          status: 'active'
+        })
+      );
+
+      await Promise.all(updatePromises);
+
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `Successfully activated ${data.teams.length} teams!` 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error updating teams';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to activate teams: ${errorMsg}` 
+      }));
+      console.error('Error activating teams:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
+  // Bulk action: Send email to all donors
+  const handleSendEmailToDonors = async () => {
+    if (!confirm(`Are you sure you want to send an email to all ${data.donations.length} donors?`)) return;
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+      
+      // Collect all unique donor emails
+      const donorEmails = [...new Set(data.donations.map(d => d.donorEmail).filter(Boolean))];
+      
+      // Create a mailto link with all emails
+      const emailSubject = encodeURIComponent('Thank You for Your Donation!');
+      const emailBody = encodeURIComponent('Thank you for your generous donation to our campaign. Your support means the world to us!');
+      
+      // For bulk emails, we'll show a summary instead of opening mailto
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `Email ready to send to ${donorEmails.length} donors. Copy the list below to your email service.` 
+      }));
+
+      // Copy emails to clipboard
+      navigator.clipboard.writeText(donorEmails.join(', ')).then(() => {
+        setUI(prev => ({ 
+          ...prev, 
+          successMessage: `${donorEmails.length} donor emails copied to clipboard!` 
+        }));
+        setTimeout(() => {
+          setUI(prev => ({ ...prev, successMessage: null }));
+        }, 3000);
+      });
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error preparing emails';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to prepare emails: ${errorMsg}` 
+      }));
+      console.error('Error preparing emails:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
   // Load data on mount
   useEffect(() => {
     loadAllData();
