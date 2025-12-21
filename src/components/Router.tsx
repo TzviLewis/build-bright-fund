@@ -21,6 +21,7 @@ import AdminDonationsPage from '@/components/pages/AdminDonationsPage';
 import AdminMatchersPage from '@/components/pages/AdminMatchersPage';
 import AdminAnalyticsPage from '@/components/pages/AdminAnalyticsPage';
 import VideoEditorPage from '@/components/pages/VideoEditorPage';
+import AIWebsiteEditorPage from '@/components/pages/AIWebsiteEditorPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -120,6 +121,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <VideoEditorPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/ai-editor",
+        element: (
+          <AdminProtectedRoute>
+            <AIWebsiteEditorPage />
           </AdminProtectedRoute>
         ),
       },

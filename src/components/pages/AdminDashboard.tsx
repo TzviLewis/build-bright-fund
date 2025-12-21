@@ -9,7 +9,7 @@ import { BaseCrudService } from '@/integrations';
 import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/entities';
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
-  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target
+  Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -940,6 +940,26 @@ export default function AdminDashboard() {
                   <div>
                     <h3 className="font-heading text-lg font-bold text-primary">Video Editor</h3>
                     <p className="font-paragraph text-sm text-primary/60 mt-1">Edit campaign video</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+          >
+            <Link to="/admin/ai-editor" className="block h-full">
+              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Sparkles className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">AI Editor</h3>
+                    <p className="font-paragraph text-sm text-primary/60 mt-1">Ask AI to edit your site</p>
                   </div>
                 </div>
               </div>
