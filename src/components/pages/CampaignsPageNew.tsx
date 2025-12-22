@@ -311,7 +311,6 @@ export default function CampaignsPage() {
           </div>
         </div>
       </header>
-
       <div className="max-w-[120rem] mx-auto px-8 py-16">
         {/* Tab Navigation */}
         <motion.div
@@ -507,52 +506,7 @@ export default function CampaignsPage() {
                             />
                           </div>
                         )}
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-secondary" />
-                              <span className="font-heading text-xs font-bold text-secondary uppercase">Trending</span>
-                            </div>
-                            <button
-                              onClick={() => {
-                                if (isFavorite(campaign._id)) {
-                                  removeFavorite(campaign._id);
-                                } else {
-                                  addFavorite(campaign._id);
-                                }
-                              }}
-                              className="transition-transform hover:scale-110"
-                            >
-                              <Heart
-                                className={`w-5 h-5 ${
-                                  isFavorite(campaign._id)
-                                    ? 'fill-red-500 text-red-500'
-                                    : 'text-gray-300'
-                                }`}
-                              />
-                            </button>
-                          </div>
-                          <h3 className="font-heading text-lg font-bold text-primary mb-2">{campaign.campaignTitle}</h3>
-                          <div className="space-y-2 mb-4">
-                            <div className="flex justify-between items-center">
-                              <span className="font-paragraph text-xs text-primary/60">Progress</span>
-                              <span className="font-heading text-sm font-bold text-secondary">{stats.progress.toFixed(0)}%</span>
-                            </div>
-                            <div className="w-full bg-primary/10 rounded-full h-2">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${stats.progress}%` }}
-                                transition={{ duration: 1.5 }}
-                                className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
-                              />
-                            </div>
-                          </div>
-                          <Link to={`/?campaign=${campaign._id}`}>
-                            <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-2 font-semibold text-sm">
-                              Support Now
-                            </Button>
-                          </Link>
-                        </div>
+
                       </motion.div>
                     );
                   })}
@@ -1274,7 +1228,6 @@ export default function CampaignsPage() {
           </motion.div>
         )}
       </div>
-
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12 border-t border-primary/20 mt-20">
         <div className="max-w-[120rem] mx-auto px-8">
