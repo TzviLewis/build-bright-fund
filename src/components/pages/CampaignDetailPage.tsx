@@ -979,6 +979,9 @@ export default function CampaignDetailPage() {
             </div>
           </div>
         </footer>
+
+        {/* Live Chat Widget */}
+        <LiveChat campaignId={campaignId} />
       </motion.div>
     </div>
   );
