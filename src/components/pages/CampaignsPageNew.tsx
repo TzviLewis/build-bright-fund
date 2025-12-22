@@ -14,6 +14,7 @@ import CampaignComparisonTool from '@/components/CampaignComparisonTool';
 import Leaderboards from '@/components/Leaderboards';
 import ImpactTracker from '@/components/ImpactTracker';
 import CampaignReviews from '@/components/CampaignReviews';
+import LiveChat from '@/components/LiveChat';
 import { useFilterStore } from '@/stores/filterStore';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 

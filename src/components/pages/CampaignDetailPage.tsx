@@ -10,6 +10,8 @@ import { Image } from '@/components/ui/image';
 import { motion } from 'framer-motion';
 import VideoPlayer from '@/components/VideoPlayer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
+import LiveChat from '@/components/LiveChat';
+import DonationTiersSelector from '@/components/DonationTiersSelector';
 
 export default function CampaignDetailPage() {
   const { campaignId } = useParams<{ campaignId: string }>();
@@ -756,19 +758,26 @@ export default function CampaignDetailPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="sticky top-[100px] space-y-6"
               >
-                {/* Donation CTA */}
-                <div className="bg-gradient-to-br from-secondary to-secondary/80 rounded-xl p-6 text-secondary-foreground shadow-lg hover:shadow-xl transition-all duration-300">
-                  <h3 className="font-heading text-2xl font-bold mb-2">Make an Impact</h3>
-                  <p className="font-paragraph text-sm text-secondary-foreground/90 mb-4">
-                    Your donation helps us reach our goal and make a real difference.
-                  </p>
-                  <Button
-                    onClick={() => navigate('/')}
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold py-3"
-                  >
-                    Donate Now
-                  </Button>
-                </div>
+                {/* Donation Tiers Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="bg-white rounded-xl border border-primary/10 shadow-lg p-6 hover:shadow-xl transition-all duration-300"
+                >
+                  <h3 className="font-heading text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <DollarSign className="w-6 h-6 text-secondary" />
+                    Support This Campaign
+                  </h3>
+                  <DonationTiersSelector 
+                    campaignId={campaignId}
+                    onDonationComplete={() => {
+                      // Reload campaign data to show updated donation count
+                      loadCampaign();
+                    }}
+                  />
+                </motion.div>
 
                 {/* Share Section */}
                 <div className="bg-white rounded-xl border border-primary/10 shadow-lg p-6 hover:shadow-xl transition-all duration-300">
