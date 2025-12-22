@@ -873,7 +873,7 @@ export default function CampaignsPage() {
 
                           {/* View Details Button */}
                           <Link to={`/campaign/${campaign._id}`}>
-                            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2">
+                            <Button className="w-full bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/70 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
                               View Campaign Details
                               <ArrowRight className="w-4 h-4" />
                             </Button>
