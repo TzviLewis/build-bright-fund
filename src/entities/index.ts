@@ -14,6 +14,8 @@ export interface CampaignDetails {
   /** @wixFieldType text */
   campaignTitle?: string;
   /** @wixFieldType text */
+  donationTiers?: string;
+  /** @wixFieldType text */
   status?: string;
   /** @wixFieldType url */
   homepageVideo?: string;
@@ -72,12 +74,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number */
-  originalAmount?: number;
-  /** @wixFieldType text */
-  teamIds?: string;
-  /** @wixFieldType text */
-  pageName?: string;
 }
 
 
@@ -195,48 +191,4 @@ export interface Teams {
   teamLogo?: string;
   /** @wixFieldType number */
   teamId?: number;
-}
-
-
-/**
- * Collection ID: livechatmessages
- * Interface for LiveChatMessages
- */
-export interface LiveChatMessages {
-  _id: string;
-  _createdDate?: Date;
-  _updatedDate?: Date;
-  /** @wixFieldType text */
-  chatSessionId?: string;
-  /** @wixFieldType text */
-  senderId?: string;
-  /** @wixFieldType text */
-  receiverId?: string;
-  /** @wixFieldType text */
-  messageContent?: string;
-  /** @wixFieldType datetime */
-  timestamp?: Date | string;
-  /** @wixFieldType boolean */
-  isRead?: boolean;
-}
-
-
-/**
- * Collection ID: donationtiers
- * Interface for DonationTiers
- */
-export interface DonationTiers {
-  _id: string;
-  _createdDate?: Date;
-  _updatedDate?: Date;
-  /** @wixFieldType text */
-  tierName?: string;
-  /** @wixFieldType number */
-  amount?: number;
-  /** @wixFieldType text */
-  description?: string;
-  /** @wixFieldType boolean */
-  isRecommended?: boolean;
-  /** @wixFieldType number */
-  sortOrder?: number;
 }
