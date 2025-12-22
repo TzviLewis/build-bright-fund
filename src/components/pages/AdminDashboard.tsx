@@ -1341,29 +1341,62 @@ export default function AdminDashboard() {
               <h3 className="font-heading text-lg font-bold text-primary">Bulk Actions</h3>
               <div className="space-y-3">
                 <Button
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 justify-start"
-                  disabled
+                  onClick={handleMarkAllDonationsCompleted}
+                  disabled={ui.saving || data.donations.length === 0}
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Mark All Donations as Completed
+                  {ui.saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Mark All Donations as Completed ({data.donations.length})
+                    </>
+                  )}
                 </Button>
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 justify-start"
-                  disabled
+                  onClick={handleSendEmailToDonors}
+                  disabled={ui.saving || data.donations.length === 0}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Send Email to All Donors
+                  {ui.saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Send Email to All Donors ({data.donations.length})
+                    </>
+                  )}
                 </Button>
                 <Button
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 justify-start"
-                  disabled
+                  onClick={handleActivateAllTeams}
+                  disabled={ui.saving || data.teams.length === 0}
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Users className="w-4 h-4 mr-2" />
-                  Activate All Teams
+                  {ui.saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4 mr-2" />
+                      Activate All Teams ({data.teams.length})
+                    </>
+                  )}
                 </Button>
-                <p className="font-paragraph text-sm text-primary/60 italic">
-                  💡 Bulk actions coming soon! These features will allow you to manage multiple items efficiently.
-                </p>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-2">
+                  <p className="font-paragraph text-sm font-semibold text-green-900">✨ Bulk Actions Enabled</p>
+                  <p className="font-paragraph text-xs text-green-800">
+                    These actions allow you to efficiently manage multiple items at once. Confirmations are required before execution.
+                  </p>
+                </div>
               </div>
             </motion.div>
           )}
