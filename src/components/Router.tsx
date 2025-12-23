@@ -22,6 +22,8 @@ import AdminMatchersPage from '@/components/pages/AdminMatchersPage';
 import AdminAnalyticsPage from '@/components/pages/AdminAnalyticsPage';
 import VideoEditorPage from '@/components/pages/VideoEditorPage';
 import AIWebsiteEditorPage from '@/components/pages/AIWebsiteEditorPage';
+import DonorProfilePage from '@/components/pages/DonorProfilePage';
+import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -146,6 +148,14 @@ const router = createBrowserRouter([
           <TeamProtectedRoute>
             <TeamDashboardPage />
           </TeamProtectedRoute>
+        ),
+      },
+      {
+        path: "donor-profile",
+        element: (
+          <MemberProtectedRoute>
+            <DonorProfilePage />
+          </MemberProtectedRoute>
         ),
       },
       {
