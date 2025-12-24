@@ -74,12 +74,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType number - Original amount before doubling */
-  originalAmount?: number;
-  /** @wixFieldType text - Comma-separated team IDs for multi-team donations */
-  teamIds?: string;
-  /** @wixFieldType text - Page name where donation was made */
-  pageName?: string;
 }
 
 
