@@ -46,9 +46,14 @@ export default function CampaignDetailPage() {
       ]);
 
       setCampaign(campaignData);
-      setDonations(donationsRes.items?.filter(d => d.campaignId === campaignId) || []);
-      setTeams(teamsRes.items?.filter(t => t.campaignId === campaignId) || []);
-      setMatchers(matchersRes.items?.filter(m => m.campaignId === campaignId && m.status === 'active') || []);
+      // Filter donations and teams by campaignId if available, otherwise show all
+      const allDonations = donationsRes.items || [];
+      const allTeams = teamsRes.items || [];
+      const allMatchers = matchersRes.items || [];
+      
+      setDonations(allDonations.filter(d => !d.campaignId || d.campaignId === campaignId));
+      setTeams(allTeams.filter(t => !t.campaignId || t.campaignId === campaignId));
+      setMatchers(allMatchers.filter(m => (!m.campaignId || m.campaignId === campaignId) && m.status === 'active'));
     } catch (err) {
       setError('Failed to load campaign details');
       console.error(err);
