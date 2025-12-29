@@ -12,13 +12,14 @@ import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/en
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
   Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles,
-  Download, BarChart3, Settings, Mail
+  Download, BarChart3, Settings, Mail, Send
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import DonationWidget from '@/components/DonationWidget';
 import VideoPlayer from '@/components/VideoPlayer';
 import VideoEditor from '@/components/VideoEditor';
+import TeamEmailSender from '@/components/TeamEmailSender';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
 interface FormState {
@@ -84,6 +85,8 @@ interface UIState {
   showExportModal: boolean;
   showAnalyticsModal: boolean;
   showBulkActions: boolean;
+  showEmailSender: boolean;
+  selectedTeamForEmail: Teams | null;
 }
 
 interface DataState {
@@ -112,6 +115,8 @@ export default function AdminDashboard() {
     showExportModal: false,
     showAnalyticsModal: false,
     showBulkActions: false,
+    showEmailSender: false,
+    selectedTeamForEmail: null,
   });
 
   // Data State
@@ -2721,6 +2726,18 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex gap-2">
                             <Button
+                              onClick={() => setUI(prev => ({ 
+                                ...prev, 
+                                showEmailSender: true,
+                                selectedTeamForEmail: team
+                              }))}
+                              variant="outline"
+                              className="flex-1 border-green-600 text-green-600 hover:bg-green-600 hover:text-white rounded-lg"
+                            >
+                              <Send className="w-4 h-4 mr-2" />
+                              Email
+                            </Button>
+                            <Button
                               onClick={() => handleEditTeam(team)}
                               variant="outline"
                               className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
@@ -2861,6 +2878,29 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Email Sender Modal */}
+      <AnimatePresence>
+        {ui.showEmailSender && ui.selectedTeamForEmail && (
+          <TeamEmailSender
+            team={ui.selectedTeamForEmail}
+            onClose={() => setUI(prev => ({ 
+              ...prev, 
+              showEmailSender: false,
+              selectedTeamForEmail: null
+            }))}
+            onSuccess={() => {
+              setUI(prev => ({ 
+                ...prev, 
+                successMessage: 'Email sent successfully!'
+              }));
+              setTimeout(() => {
+                setUI(prev => ({ ...prev, successMessage: null }));
+              }, 3000);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
