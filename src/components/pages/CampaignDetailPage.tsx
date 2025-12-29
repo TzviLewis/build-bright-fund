@@ -772,6 +772,7 @@ export default function CampaignDetailPage() {
                   </h3>
                   <DonationTiersSelector 
                     campaignId={campaignId}
+                    campaignVideoUrl={campaign?.campaignVideo}
                     onDonationComplete={() => {
                       // Reload campaign data to show updated donation count
                       loadCampaign();

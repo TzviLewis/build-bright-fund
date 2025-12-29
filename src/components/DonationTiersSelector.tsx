@@ -2,22 +2,27 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BaseCrudService } from '@/integrations';
-import { DonationTiers, Donations } from '@/entities';
+import { DonationTiers, Donations, CampaignDetails } from '@/entities';
 import { DollarSign, Plus, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useDonationStore } from '@/stores/donationStore';
 
 interface DonationTiersSelectorProps {
   campaignId?: string;
   onDonationComplete?: (donation: Donations) => void;
   showCustomAmount?: boolean;
+  campaignVideoUrl?: string;
 }
 
 export default function DonationTiersSelector({
   campaignId,
   onDonationComplete,
   showCustomAmount = true,
+  campaignVideoUrl,
 }: DonationTiersSelectorProps) {
+  const { addNotification } = useDonationStore();
   const [tiers, setTiers] = useState<DonationTiers[]>([]);
+  const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState('');
   const [donorName, setDonorName] = useState('');
@@ -30,15 +35,20 @@ export default function DonationTiersSelector({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    loadTiers();
-  }, []);
+    loadData();
+  }, [campaignId]);
 
-  const loadTiers = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const { items } = await BaseCrudService.getAll<DonationTiers>('donationtiers');
-      const sortedTiers = (items || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      const [tiersRes, campaignRes] = await Promise.all([
+        BaseCrudService.getAll<DonationTiers>('donationtiers'),
+        campaignId ? BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId) : Promise.resolve(null),
+      ]);
+      
+      const sortedTiers = (tiersRes.items || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
       setTiers(sortedTiers);
+      setCampaign(campaignRes);
       
       // Auto-select recommended tier
       const recommended = sortedTiers.find(t => t.isRecommended);
@@ -46,7 +56,7 @@ export default function DonationTiersSelector({
         setSelectedTierId(recommended._id);
       }
     } catch (err) {
-      console.error('Error loading donation tiers:', err);
+      console.error('Error loading data:', err);
       setError('Failed to load donation options');
     } finally {
       setLoading(false);
@@ -103,6 +113,13 @@ export default function DonationTiersSelector({
       setDonorEmail('');
       setDonorMessage('');
       setIsAnonymous(false);
+
+      // Add notification with video URL if available
+      const videoUrl = campaignVideoUrl || campaign?.campaignVideo;
+      addNotification({
+        ...donation,
+        videoUrl,
+      });
 
       onDonationComplete?.(donation);
 

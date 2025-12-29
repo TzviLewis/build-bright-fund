@@ -23,6 +23,7 @@ interface GoLiveFormState {
   mainCampaignImage: string;
   campaignStartDate: string;
   campaignEndDate: string;
+  customDonationAmounts?: string;
 }
 
 interface UIState {
@@ -57,6 +58,7 @@ export default function AdminCampaignsPage() {
     mainCampaignImage: '',
     campaignStartDate: '',
     campaignEndDate: '',
+    customDonationAmounts: '',
   });
 
   useEffect(() => {
@@ -111,6 +113,7 @@ export default function AdminCampaignsPage() {
         mainCampaignImage: goLiveForm.mainCampaignImage || '',
         campaignStartDate: new Date(goLiveForm.campaignStartDate).toISOString(),
         campaignEndDate: new Date(goLiveForm.campaignEndDate).toISOString(),
+        donationTiers: goLiveForm.customDonationAmounts || '',
         status: 'live',
       };
 
@@ -162,6 +165,7 @@ export default function AdminCampaignsPage() {
       campaignEndDate: campaign.campaignEndDate 
         ? new Date(campaign.campaignEndDate).toISOString().split('T')[0]
         : '',
+      customDonationAmounts: campaign.donationTiers || '',
     });
     setUI(prev => ({ 
       ...prev, 
@@ -208,6 +212,7 @@ export default function AdminCampaignsPage() {
       mainCampaignImage: '',
       campaignStartDate: '',
       campaignEndDate: '',
+      customDonationAmounts: '',
     });
     setUI(prev => ({ 
       ...prev, 
@@ -449,6 +454,19 @@ export default function AdminCampaignsPage() {
                   placeholder="https://example.com/image.jpg"
                   className="border-green-300 focus:border-green-600"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-paragraph text-sm font-semibold text-green-900">
+                  Custom Donation Amounts (JSON)
+                </label>
+                <Textarea
+                  value={goLiveForm.customDonationAmounts}
+                  onChange={(e) => setGoLiveForm(prev => ({ ...prev, customDonationAmounts: e.target.value }))}
+                  placeholder='e.g., [{"amount": 25, "name": "Supporter"}, {"amount": 50, "name": "Contributor"}]'
+                  className="border-green-300 focus:border-green-600 min-h-[80px] font-mono text-sm"
+                />
+                <p className="text-xs text-green-700">Optional: Define custom donation tiers specific to this campaign</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,24 +1,72 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDonationStore } from '@/stores/donationStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Play } from 'lucide-react';
 
 export default function DonationNotificationPopup() {
   const { notifications, removeNotification } = useDonationStore();
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (notifications.length === 0) return;
 
     const latestNotification = notifications[notifications.length - 1];
-    const timer = setTimeout(() => {
-      removeNotification(latestNotification._id);
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    
+    // If there's a video, show it immediately
+    if (latestNotification.videoUrl) {
+      setVideoUrl(latestNotification.videoUrl);
+      setShowVideo(true);
+      // Auto-close video after 10 seconds
+      const videoTimer = setTimeout(() => {
+        setShowVideo(false);
+        setVideoUrl(null);
+      }, 10000);
+      return () => clearTimeout(videoTimer);
+    } else {
+      // Otherwise show notification for 5 seconds
+      const timer = setTimeout(() => {
+        removeNotification(latestNotification._id);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
   }, [notifications, removeNotification]);
 
   return (
     <AnimatePresence>
+      {/* Video Popup */}
+      {showVideo && videoUrl && (
+        <motion.div
+          key="video-popup"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        >
+          <div className="relative w-full max-w-2xl">
+            <button
+              onClick={() => {
+                setShowVideo(false);
+                setVideoUrl(null);
+              }}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X size={32} />
+            </button>
+            <div className="bg-black rounded-lg overflow-hidden shadow-2xl">
+              <video
+                src={videoUrl}
+                autoPlay
+                controls
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Donation Notification Cards */}
       {notifications.map((notification) => (
         <motion.div
           key={notification._id}
@@ -26,7 +74,7 @@ export default function DonationNotificationPopup() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
-          className="fixed right-6 top-1/2 -translate-y-1/2 z-50 w-96 max-w-[calc(100vw-2rem)]"
+          className="fixed right-6 top-1/2 -translate-y-1/2 z-40 w-96 max-w-[calc(100vw-2rem)]"
         >
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
             {/* Header */}
@@ -76,6 +124,19 @@ export default function DonationNotificationPopup() {
                     "{notification.donorMessage}"
                   </p>
                 </div>
+              )}
+
+              {notification.videoUrl && (
+                <button
+                  onClick={() => {
+                    setVideoUrl(notification.videoUrl || null);
+                    setShowVideo(true);
+                  }}
+                  className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors font-semibold text-sm"
+                >
+                  <Play size={16} />
+                  Watch Video
+                </button>
               )}
             </div>
 

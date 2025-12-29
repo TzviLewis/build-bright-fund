@@ -4,6 +4,7 @@ import { Donations } from '@/entities';
 interface DonationNotification extends Donations {
   pageName?: string;
   originalAmount?: number;
+  videoUrl?: string;
 }
 
 interface DonationStore {
