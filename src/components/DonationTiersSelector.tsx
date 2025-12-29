@@ -94,6 +94,7 @@ export default function DonationTiersSelector({
 
       const donation: Donations = {
         _id: crypto.randomUUID(),
+        campaignId: campaignId || undefined,
         donorName: isAnonymous ? 'Anonymous' : donorName || 'Donor',
         donorEmail: isAnonymous ? '' : donorEmail,
         amount,

@@ -46,9 +46,9 @@ export default function CampaignDetailPage() {
       ]);
 
       setCampaign(campaignData);
-      setDonations(donationsRes.items || []);
-      setTeams(teamsRes.items || []);
-      setMatchers(matchersRes.items?.filter(m => m.status === 'active') || []);
+      setDonations(donationsRes.items?.filter(d => d.campaignId === campaignId) || []);
+      setTeams(teamsRes.items?.filter(t => t.campaignId === campaignId) || []);
+      setMatchers(matchersRes.items?.filter(m => m.campaignId === campaignId && m.status === 'active') || []);
     } catch (err) {
       setError('Failed to load campaign details');
       console.error(err);

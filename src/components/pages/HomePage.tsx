@@ -109,6 +109,7 @@ export default function HomePage() {
 
       const donationData: Donations = {
         _id: crypto.randomUUID(),
+        campaignId: campaign?._id,
         donorName: isAnonymous ? 'Anonymous' : donorName,
         donorEmail,
         amount: parseFloat(amount),
