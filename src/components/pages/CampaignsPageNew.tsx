@@ -443,7 +443,6 @@ export default function CampaignsPage() {
                 </motion.div>
               )}
             </motion.div>
-
             {/* AI Alerts Section */}
             {alerts.length > 0 && (
               <motion.div
@@ -477,7 +476,6 @@ export default function CampaignsPage() {
                 </div>
               </motion.div>
             )}
-
             {/* Trending Campaigns Section */}
             {trendingCampaigns.length > 0 && (
               <motion.div
@@ -518,7 +516,6 @@ export default function CampaignsPage() {
                 </div>
               </motion.div>
             )}
-
             {/* AI Recommendations Section */}
             {recommendations.length > 0 && (
               <motion.div
@@ -557,7 +554,6 @@ export default function CampaignsPage() {
                 </div>
               </motion.div>
             )}
-
             {/* Stats Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -607,7 +603,6 @@ export default function CampaignsPage() {
                 </div>
               </div>
             </motion.div>
-
             {/* Live Campaigns Section */}
             {liveCampaigns.length > 0 ? (
               <section className="mb-20">
@@ -724,7 +719,6 @@ export default function CampaignsPage() {
                 </div>
               </section>
             )}
-
             {/* Ended Campaigns Section */}
             {endedCampaigns.length > 0 && (
               <section className="mb-20">
@@ -845,7 +839,6 @@ export default function CampaignsPage() {
                 </div>
               </section>
             )}
-
             {/* Draft Campaigns Section */}
             {draftCampaigns.length > 0 && (
               <section className="mb-20">
@@ -933,27 +926,12 @@ export default function CampaignsPage() {
                 </div>
               </section>
             )}
-
             {/* Countdown Timer Section */}
-            {campaigns.length > 0 && campaigns[0]?.campaignEndDate && (
-              <section className="mb-20">
-                <div className="text-center mb-12">
-                  <h2 className="font-heading text-4xl font-bold text-primary mb-4">
-                    Time is <span className="text-secondary italic">Running Out</span>
-                  </h2>
-                </div>
-                <div className="flex justify-center">
-                  <CircularCountdownTimer endDate={campaigns[0].campaignEndDate} startDate={campaigns[0].campaignStartDate} />
-                </div>
-              </section>
-            )}
 
             {/* Matchers Section */}
             <section className="mb-20">
               <div className="text-center mb-12">
-                <h2 className="font-heading text-4xl font-bold text-primary mb-4">
-                  Generous <span className="text-secondary italic">Matchers</span>
-                </h2>
+
               </div>
 
               {matchers.length === 0 ? (
@@ -999,7 +977,6 @@ export default function CampaignsPage() {
                 </div>
               )}
             </section>
-
             {/* Teams Section */}
             <section className="mb-20">
               <div className="mb-12">
@@ -1161,7 +1138,6 @@ export default function CampaignsPage() {
                 </div>
               )}
             </section>
-
             {/* No Campaigns */}
             {campaigns.length === 0 && (
               <motion.div
