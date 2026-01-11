@@ -25,14 +25,16 @@ import AIWebsiteEditorPage from '@/components/pages/AIWebsiteEditorPage';
 import DonorProfilePage from '@/components/pages/DonorProfilePage';
 import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 import DiagnosticPanel from '@/components/DiagnosticPanel';
+import BreadcrumbNav from '@/components/BreadcrumbNav';
 
-// Layout component that includes ScrollToTop
+// Layout component that includes ScrollToTop and Breadcrumbs
 function Layout() {
   return (
     <>
       <ScrollToTop />
       <DonationNotificationPopup />
       <DiagnosticPanel />
+      <BreadcrumbNav />
       <Outlet />
     </>
   );
