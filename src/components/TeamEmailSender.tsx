@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { AlertCircle, CheckCircle, Mail, Loader2, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { AlertCircle, CheckCircle, Mail, Loader2, X, Info, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Teams } from '@/entities';
 
 interface TeamEmailSenderProps {
@@ -18,6 +18,7 @@ export default function TeamEmailSender({ team, onClose, onSuccess }: TeamEmailS
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +114,21 @@ Campaign Administration Team
 
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Handle specific error cases
+        if (errorData.error === 'MISSING_CONFIG') {
+          throw new Error(
+            'Email service is not configured. Please contact the administrator to set up email sending with Resend API.'
+          );
+        }
+        
         throw new Error(errorData.message || 'Failed to send email');
+      }
+
+      const responseData = await response.json();
+      
+      if (!responseData.success) {
+        throw new Error(responseData.message || 'Failed to send email');
       }
 
       setSuccess(true);
@@ -167,7 +182,19 @@ Campaign Administration Team
               className="p-4 bg-red-50 border-2 border-red-300 rounded-lg flex items-start gap-3"
             >
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="font-paragraph text-sm text-red-700">{error}</p>
+              <div className="flex-1">
+                <p className="font-paragraph text-sm text-red-700 font-semibold">Error</p>
+                <p className="font-paragraph text-sm text-red-700 mt-1">{error}</p>
+                {error.includes('not configured') && (
+                  <button
+                    onClick={() => setShowHelp(true)}
+                    className="mt-2 text-red-600 hover:text-red-800 font-semibold text-sm flex items-center gap-1"
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                    How to fix this?
+                  </button>
+                )}
+              </div>
             </motion.div>
           )}
 
@@ -183,6 +210,46 @@ Campaign Administration Team
               </p>
             </motion.div>
           )}
+
+          {/* Help Section */}
+          <AnimatePresence>
+            {showHelp && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg space-y-3"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-paragraph font-semibold text-blue-900">Email Service Setup Required</p>
+                      <p className="font-paragraph text-sm text-blue-800 mt-1">
+                        To send emails, you need to configure the Resend email service:
+                      </p>
+                      <ol className="font-paragraph text-sm text-blue-800 mt-2 ml-4 space-y-1 list-decimal">
+                        <li>Sign up at <a href="https://resend.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-900">resend.com</a></li>
+                        <li>Get your API key from the dashboard</li>
+                        <li>Set <code className="bg-blue-100 px-2 py-1 rounded">RESEND_API_KEY</code> environment variable</li>
+                        <li>Optionally set <code className="bg-blue-100 px-2 py-1 rounded">SENDER_EMAIL</code></li>
+                        <li>Restart your application</li>
+                      </ol>
+                      <p className="font-paragraph text-xs text-blue-700 mt-3">
+                        See <code className="bg-blue-100 px-2 py-1 rounded">EMAIL_SETUP_GUIDE.md</code> for detailed instructions.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowHelp(false)}
+                    className="text-blue-600 hover:text-blue-800 flex-shrink-0"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleSendEmail} className="space-y-6">
             {/* Team Info Preview */}
