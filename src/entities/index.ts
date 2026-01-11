@@ -59,6 +59,8 @@ export interface Donations {
   /** @wixFieldType text */
   teamId?: string;
   /** @wixFieldType text */
+  teamIds?: string;
+  /** @wixFieldType text */
   campaignId?: string;
   /** @wixFieldType text */
   replies?: string;
@@ -78,8 +80,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType text */
-  teamIds?: string;
   /** @wixFieldType text */
   pageName?: string;
   /** @wixFieldType url */
@@ -165,6 +165,8 @@ export interface Matchers {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
+  campaignId?: string;
+  /** @wixFieldType text */
   matcherName?: string;
   /** @wixFieldType number */
   matchingAmount?: number;
@@ -176,8 +178,6 @@ export interface Matchers {
   contactEmail?: string;
   /** @wixFieldType number */
   matchingLimit?: number;
-  /** @wixFieldType text */
-  campaignId?: string;
 }
 
 
@@ -189,6 +189,8 @@ export interface Teams {
   _id: string;
   _createdDate?: Date;
   _updatedDate?: Date;
+  /** @wixFieldType text */
+  campaignId?: string;
   /** @wixFieldType text */
   teamName?: string;
   /** @wixFieldType text */
@@ -203,6 +205,4 @@ export interface Teams {
   teamLogo?: string;
   /** @wixFieldType number */
   teamId?: number;
-  /** @wixFieldType text */
-  campaignId?: string;
 }

@@ -1,269 +1,317 @@
-import React, { useState } from 'react';
-import { useFilterStore } from '@/stores/filterStore';
+import { useState } from 'react';
+import { ChevronDown, X, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
-import { Card } from '@/components/ui/card';
-import { ChevronDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface AdvancedFiltersProps {
-  onClose?: () => void;
+export interface FilterOption {
+  id: string;
+  label: string;
+  value: string;
 }
 
-export default function AdvancedFilters({ onClose }: AdvancedFiltersProps) {
-  const {
-    searchQuery,
-    sortBy,
-    statusFilter,
-    minGoal,
-    maxGoal,
-    dateRange,
-    setSearchQuery,
-    setSortBy,
-    setStatusFilter,
-    setGoalRange,
-    setDateRange,
-    resetFilters,
-  } = useFilterStore();
+export interface FilterConfig {
+  id: string;
+  label: string;
+  type: 'checkbox' | 'radio' | 'range' | 'select';
+  options?: FilterOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+}
 
-  const [expandedSections, setExpandedSections] = useState({
-    search: true,
-    sort: false,
-    status: false,
-    goal: false,
-    date: false,
-  });
+export interface AppliedFilters {
+  [key: string]: string | string[] | number | number[];
+}
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
+interface AdvancedFiltersProps {
+  filters: FilterConfig[];
+  onFiltersChange: (filters: AppliedFilters) => void;
+  onReset?: () => void;
+}
+
+export default function AdvancedFilters({
+  filters,
+  onFiltersChange,
+  onReset,
+}: AdvancedFiltersProps) {
+  const [appliedFilters, setAppliedFilters] = useState<AppliedFilters>({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState<Set<string>>(new Set());
+
+  const toggleFilter = (filterId: string) => {
+    const newExpanded = new Set(expandedFilters);
+    if (newExpanded.has(filterId)) {
+      newExpanded.delete(filterId);
+    } else {
+      newExpanded.add(filterId);
+    }
+    setExpandedFilters(newExpanded);
   };
 
-  const statusOptions = ['Active', 'Upcoming', 'Completed', 'Paused'];
-  const sortOptions = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'oldest', label: 'Oldest First' },
-    { value: 'mostFunded', label: 'Most Funded' },
-    { value: 'leastFunded', label: 'Least Funded' },
-    { value: 'endingSoon', label: 'Ending Soon' },
-    { value: 'mostPopular', label: 'Most Popular' },
-  ];
-  const dateOptions = [
-    { value: 'all', label: 'All Time' },
-    { value: 'thisWeek', label: 'This Week' },
-    { value: 'thisMonth', label: 'This Month' },
-    { value: 'thisQuarter', label: 'This Quarter' },
-  ];
-
-  const handleStatusToggle = (status: string) => {
-    setStatusFilter(
-      statusFilter.includes(status)
-        ? statusFilter.filter((s) => s !== status)
-        : [...statusFilter, status]
-    );
+  const handleFilterChange = (filterId: string, value: string | number | string[] | number[]) => {
+    const newFilters = { ...appliedFilters, [filterId]: value };
+    setAppliedFilters(newFilters);
+    onFiltersChange(newFilters);
   };
 
-  const activeFiltersCount = [
-    searchQuery ? 1 : 0,
-    sortBy !== 'newest' ? 1 : 0,
-    statusFilter.length,
-    minGoal > 0 || maxGoal < 1000000 ? 1 : 0,
-    dateRange !== 'all' ? 1 : 0,
-  ].reduce((a, b) => a + b, 0);
+  const handleRemoveFilter = (filterId: string) => {
+    const newFilters = { ...appliedFilters };
+    delete newFilters[filterId];
+    setAppliedFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
+  const handleReset = () => {
+    setAppliedFilters({});
+    setExpandedFilters(new Set());
+    onFiltersChange({});
+    onReset?.();
+  };
+
+  const activeFilterCount = Object.keys(appliedFilters).length;
 
   return (
-    <div className="w-full bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <h3 className="text-lg font-semibold text-gray-900">Filters & Search</h3>
-          {activeFiltersCount > 0 && (
-            <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-600 rounded-full">
-              {activeFiltersCount}
+    <div className="space-y-4">
+      {/* Filter Toggle Button */}
+      <div className="flex items-center justify-between">
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          variant="outline"
+          className="border-primary/20 text-primary hover:bg-primary/5 rounded-lg flex items-center gap-2"
+        >
+          <Filter className="w-4 h-4" />
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-2 px-2 py-1 bg-secondary text-secondary-foreground rounded-full text-xs font-bold">
+              {activeFilterCount}
             </span>
           )}
-        </div>
-        <div className="flex gap-2">
-          {activeFiltersCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetFilters}
-              className="text-xs"
-            >
-              Clear All
-            </Button>
-          )}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        {/* Search Section */}
-        <FilterSection
-          title="Search"
-          isExpanded={expandedSections.search}
-          onToggle={() => toggleSection('search')}
-        >
-          <Input
-            placeholder="Search campaigns..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           />
-        </FilterSection>
+        </Button>
 
-        {/* Sort Section */}
-        <FilterSection
-          title="Sort By"
-          isExpanded={expandedSections.sort}
-          onToggle={() => toggleSection('sort')}
-        >
-          <div className="space-y-2">
-            {sortOptions.map((option) => (
-              <label key={option.value} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sort"
-                  value={option.value}
-                  checked={sortBy === option.value}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm text-gray-700">{option.label}</span>
-              </label>
-            ))}
-          </div>
-        </FilterSection>
-
-        {/* Status Section */}
-        <FilterSection
-          title="Status"
-          isExpanded={expandedSections.status}
-          onToggle={() => toggleSection('status')}
-        >
-          <div className="space-y-2">
-            {statusOptions.map((status) => (
-              <label key={status} className="flex items-center gap-3 cursor-pointer">
-                <Checkbox
-                  checked={statusFilter.includes(status)}
-                  onCheckedChange={() => handleStatusToggle(status)}
-                />
-                <span className="text-sm text-gray-700">{status}</span>
-              </label>
-            ))}
-          </div>
-        </FilterSection>
-
-        {/* Goal Range Section */}
-        <FilterSection
-          title="Fundraising Goal"
-          isExpanded={expandedSections.goal}
-          onToggle={() => toggleSection('goal')}
-        >
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="text-xs text-gray-600 block mb-2">Min Goal</label>
-                <Input
-                  type="number"
-                  value={minGoal}
-                  onChange={(e) => setGoalRange(Number(e.target.value), maxGoal)}
-                  placeholder="$0"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs text-gray-600 block mb-2">Max Goal</label>
-                <Input
-                  type="number"
-                  value={maxGoal}
-                  onChange={(e) => setGoalRange(minGoal, Number(e.target.value))}
-                  placeholder="$1,000,000"
-                />
-              </div>
-            </div>
-            <Slider
-              value={[minGoal, maxGoal]}
-              onValueChange={(values) => setGoalRange(values[0], values[1])}
-              min={0}
-              max={1000000}
-              step={10000}
-              className="w-full"
-            />
-            <div className="text-xs text-gray-600">
-              ${minGoal.toLocaleString()} - ${maxGoal.toLocaleString()}
-            </div>
-          </div>
-        </FilterSection>
-
-        {/* Date Range Section */}
-        <FilterSection
-          title="Date Range"
-          isExpanded={expandedSections.date}
-          onToggle={() => toggleSection('date')}
-        >
-          <div className="space-y-2">
-            {dateOptions.map((option) => (
-              <label key={option.value} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="dateRange"
-                  value={option.value}
-                  checked={dateRange === option.value}
-                  onChange={(e) => setDateRange(e.target.value as any)}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm text-gray-700">{option.label}</span>
-              </label>
-            ))}
-          </div>
-        </FilterSection>
-      </div>
-    </div>
-  );
-}
-
-interface FilterSectionProps {
-  title: string;
-  isExpanded: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}
-
-function FilterSection({ title, isExpanded, onToggle, children }: FilterSectionProps) {
-  return (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors"
-      >
-        <span className="font-medium text-gray-900">{title}</span>
-        <ChevronDown
-          className={`w-5 h-5 text-gray-500 transition-transform ${
-            isExpanded ? 'rotate-180' : ''
-          }`}
-        />
-      </button>
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+        {activeFilterCount > 0 && (
+          <Button
+            onClick={handleReset}
+            variant="ghost"
+            className="text-primary/60 hover:text-primary text-sm"
           >
-            <div className="pb-4 pl-0">{children}</div>
+            Clear All
+          </Button>
+        )}
+      </div>
+
+      {/* Active Filters Display */}
+      <AnimatePresence>
+        {activeFilterCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex flex-wrap gap-2"
+          >
+            {Object.entries(appliedFilters).map(([filterId, value]) => {
+              const filter = filters.find(f => f.id === filterId);
+              if (!filter) return null;
+
+              const displayValue = Array.isArray(value)
+                ? value.join(', ')
+                : value;
+
+              return (
+                <motion.div
+                  key={filterId}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/30 rounded-full"
+                >
+                  <span className="font-paragraph text-sm text-primary">
+                    {filter.label}: <span className="font-semibold">{displayValue}</span>
+                  </span>
+                  <button
+                    onClick={() => handleRemoveFilter(filterId)}
+                    className="text-secondary hover:text-secondary/70 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Filter Panel */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="border border-primary/10 rounded-lg overflow-hidden bg-white"
+          >
+            <div className="space-y-1 p-4">
+              {filters.map(filter => (
+                <div key={filter.id} className="border-b border-primary/10 last:border-b-0">
+                  {/* Filter Header */}
+                  <button
+                    onClick={() => toggleFilter(filter.id)}
+                    className="w-full flex items-center justify-between py-3 px-2 hover:bg-primary/5 rounded transition-colors"
+                  >
+                    <span className="font-paragraph font-semibold text-primary">
+                      {filter.label}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-primary/60 transition-transform ${
+                        expandedFilters.has(filter.id) ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {/* Filter Content */}
+                  <AnimatePresence>
+                    {expandedFilters.has(filter.id) && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="px-2 pb-3 space-y-2"
+                      >
+                        {filter.type === 'checkbox' && filter.options && (
+                          <div className="space-y-2">
+                            {filter.options.map(option => (
+                              <label
+                                key={option.id}
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  value={option.value}
+                                  checked={
+                                    Array.isArray(appliedFilters[filter.id])
+                                      ? (appliedFilters[filter.id] as string[]).includes(
+                                          option.value
+                                        )
+                                      : false
+                                  }
+                                  onChange={e => {
+                                    const current = Array.isArray(appliedFilters[filter.id])
+                                      ? (appliedFilters[filter.id] as string[])
+                                      : [];
+                                    const updated = e.target.checked
+                                      ? [...current, option.value]
+                                      : current.filter(v => v !== option.value);
+                                    handleFilterChange(filter.id, updated);
+                                  }}
+                                  className="rounded border-primary/20"
+                                />
+                                <span className="font-paragraph text-sm text-primary">
+                                  {option.label}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+
+                        {filter.type === 'radio' && filter.options && (
+                          <div className="space-y-2">
+                            {filter.options.map(option => (
+                              <label
+                                key={option.id}
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <input
+                                  type="radio"
+                                  name={filter.id}
+                                  value={option.value}
+                                  checked={appliedFilters[filter.id] === option.value}
+                                  onChange={e =>
+                                    handleFilterChange(filter.id, e.target.value)
+                                  }
+                                  className="rounded-full border-primary/20"
+                                />
+                                <span className="font-paragraph text-sm text-primary">
+                                  {option.label}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+
+                        {filter.type === 'range' && (
+                          <div className="space-y-3">
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                min={filter.min}
+                                max={filter.max}
+                                step={filter.step}
+                                placeholder="Min"
+                                value={
+                                  Array.isArray(appliedFilters[filter.id])
+                                    ? (appliedFilters[filter.id] as number[])[0] || ''
+                                    : ''
+                                }
+                                onChange={e => {
+                                  const current = Array.isArray(appliedFilters[filter.id])
+                                    ? (appliedFilters[filter.id] as number[])
+                                    : [filter.min || 0, filter.max || 100];
+                                  handleFilterChange(filter.id, [
+                                    parseInt(e.target.value) || current[0],
+                                    current[1],
+                                  ] as number[]);
+                                }}
+                                className="border-primary/20 text-sm"
+                              />
+                              <Input
+                                type="number"
+                                min={filter.min}
+                                max={filter.max}
+                                step={filter.step}
+                                placeholder="Max"
+                                value={
+                                  Array.isArray(appliedFilters[filter.id])
+                                    ? (appliedFilters[filter.id] as number[])[1] || ''
+                                    : ''
+                                }
+                                onChange={e => {
+                                  const current = Array.isArray(appliedFilters[filter.id])
+                                    ? (appliedFilters[filter.id] as number[])
+                                    : [filter.min || 0, filter.max || 100];
+                                  handleFilterChange(filter.id, [
+                                    current[0],
+                                    parseInt(e.target.value) || current[1],
+                                  ] as number[]);
+                                }}
+                                className="border-primary/20 text-sm"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {filter.type === 'select' && filter.options && (
+                          <select
+                            value={Array.isArray(appliedFilters[filter.id]) ? '' : (appliedFilters[filter.id] as string || '')}
+                            onChange={e => handleFilterChange(filter.id, e.target.value)}
+                            className="w-full px-3 py-2 border border-primary/20 rounded-lg font-paragraph text-sm focus:border-secondary focus:outline-none"
+                          >
+                            <option value="">Select...</option>
+                            {filter.options.map(option => (
+                              <option key={option.id} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -439,7 +439,33 @@ export default function CampaignsPage() {
                   exit={{ opacity: 0, height: 0 }}
                   className="mt-4"
                 >
-                  <AdvancedFilters onClose={() => setShowAdvancedFilters(false)} />
+                  <AdvancedFilters 
+                    filters={[
+                      {
+                        id: 'status',
+                        label: 'Campaign Status',
+                        type: 'checkbox',
+                        options: [
+                          { id: 'active', label: 'Active', value: 'Active' },
+                          { id: 'completed', label: 'Completed', value: 'Completed' },
+                          { id: 'draft', label: 'Draft', value: 'Draft' }
+                        ]
+                      },
+                      {
+                        id: 'goal',
+                        label: 'Fundraising Goal',
+                        type: 'range',
+                        min: 0,
+                        max: 100000,
+                        step: 1000
+                      }
+                    ]}
+                    onFiltersChange={(filters) => {
+                      // Handle filter changes here if needed
+                      console.log('Filters changed:', filters);
+                    }}
+                    onReset={() => setShowAdvancedFilters(false)}
+                  />
                 </motion.div>
               )}
             </motion.div>
