@@ -59,9 +59,9 @@ export interface Donations {
   /** @wixFieldType text */
   teamId?: string;
   /** @wixFieldType text */
-  teamIds?: string;
-  /** @wixFieldType text */
   campaignId?: string;
+  /** @wixFieldType text */
+  teamIds?: string;
   /** @wixFieldType text */
   replies?: string;
   /** @wixFieldType text */
@@ -165,9 +165,9 @@ export interface Matchers {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
-  campaignId?: string;
-  /** @wixFieldType text */
   matcherName?: string;
+  /** @wixFieldType text */
+  campaignId?: string;
   /** @wixFieldType number */
   matchingAmount?: number;
   /** @wixFieldType number */
@@ -190,9 +190,9 @@ export interface Teams {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
-  campaignId?: string;
-  /** @wixFieldType text */
   teamName?: string;
+  /** @wixFieldType text */
+  campaignId?: string;
   /** @wixFieldType text */
   teamPassword?: string;
   /** @wixFieldType number */

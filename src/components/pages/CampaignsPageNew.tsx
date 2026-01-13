@@ -52,42 +52,90 @@ export default function CampaignsPage() {
     try {
       setLoading(true);
       setError(null);
-      const [campaignRes, donationsRes, teamsRes, matchersRes] = await Promise.all([
-        BaseCrudService.getAll<CampaignDetails>('campaigndetails'),
-        BaseCrudService.getAll<Donations>('donations'),
-        BaseCrudService.getAll<Teams>('teams'),
-        BaseCrudService.getAll<Matchers>('matchers'),
-      ]);
+      
+      // Load campaigns with error handling
+      let campaignsData: CampaignDetails[] = [];
+      let donationsData: Donations[] = [];
+      let teamsData: Teams[] = [];
+      let matchersData: Matchers[] = [];
 
-      const campaignsData = campaignRes.items || [];
-      const donationsData = donationsRes.items || [];
-      const teamsData = teamsRes.items || [];
-      const matchersData = matchersRes.items?.filter(m => m.status === 'active') || [];
+      try {
+        const campaignRes = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
+        campaignsData = campaignRes?.items || [];
+      } catch (campaignErr) {
+        console.error('Error loading campaigns:', campaignErr);
+        // Continue with empty campaigns array
+        campaignsData = [];
+      }
+
+      try {
+        const donationsRes = await BaseCrudService.getAll<Donations>('donations');
+        donationsData = donationsRes?.items || [];
+      } catch (donationErr) {
+        console.error('Error loading donations:', donationErr);
+        donationsData = [];
+      }
+
+      try {
+        const teamsRes = await BaseCrudService.getAll<Teams>('teams');
+        teamsData = teamsRes?.items || [];
+      } catch (teamsErr) {
+        console.error('Error loading teams:', teamsErr);
+        teamsData = [];
+      }
+
+      try {
+        const matchersRes = await BaseCrudService.getAll<Matchers>('matchers');
+        matchersData = matchersRes?.items?.filter(m => m.status === 'active') || [];
+      } catch (matchersErr) {
+        console.error('Error loading matchers:', matchersErr);
+        matchersData = [];
+      }
 
       setCampaigns(campaignsData);
       setDonations(donationsData);
       setTeams(teamsData);
       setMatchers(matchersData);
 
-      // Generate AI insights for all campaigns
-      const insightsMap = new Map<string, CampaignInsight>();
-      campaignsData.forEach(campaign => {
-        const insight = aiService.analyzeCampaignPerformance(campaign, donationsData, teamsData);
-        insightsMap.set(campaign._id, insight);
-      });
-      setCampaignInsights(insightsMap);
+      // Generate AI insights for all campaigns (with error handling)
+      try {
+        const insightsMap = new Map<string, CampaignInsight>();
+        campaignsData.forEach(campaign => {
+          const insight = aiService.analyzeCampaignPerformance(campaign, donationsData, teamsData);
+          insightsMap.set(campaign._id, insight);
+        });
+        setCampaignInsights(insightsMap);
+      } catch (insightErr) {
+        console.error('Error generating insights:', insightErr);
+        // Continue without insights
+      }
 
-      // Generate recommendations
-      const recs = aiService.generateRecommendations(campaignsData, donationsData);
-      setRecommendations(recs);
+      // Generate recommendations (with error handling)
+      try {
+        const recs = aiService.generateRecommendations(campaignsData, donationsData);
+        setRecommendations(recs);
+      } catch (recErr) {
+        console.error('Error generating recommendations:', recErr);
+        setRecommendations([]);
+      }
 
-      // Generate alerts
-      const campaignAlerts = aiService.generateAlerts(campaignsData, donationsData);
-      setAlerts(campaignAlerts);
+      // Generate alerts (with error handling)
+      try {
+        const campaignAlerts = aiService.generateAlerts(campaignsData, donationsData);
+        setAlerts(campaignAlerts);
+      } catch (alertErr) {
+        console.error('Error generating alerts:', alertErr);
+        setAlerts([]);
+      }
 
-      // Get trending campaigns
-      const trending = aiService.getTrendingCampaigns(campaignsData, donationsData, 3);
-      setTrendingCampaigns(trending);
+      // Get trending campaigns (with error handling)
+      try {
+        const trending = aiService.getTrendingCampaigns(campaignsData, donationsData, 3);
+        setTrendingCampaigns(trending);
+      } catch (trendErr) {
+        console.error('Error getting trending campaigns:', trendErr);
+        setTrendingCampaigns([]);
+      }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to load campaigns';
       setError(`Failed to load campaigns: ${errorMsg}`);
@@ -271,23 +319,8 @@ export default function CampaignsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-8">
-        <div className="max-w-md text-center">
-          <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h1 className="font-heading text-3xl font-bold text-primary mb-4">Error Loading Campaigns</h1>
-          <p className="font-paragraph text-lg text-primary/70 mb-6">{error}</p>
-          <Button 
-            onClick={loadData}
-            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-3"
-          >
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Note: We don't block access on error - show campaigns if available, with error banner
+  // This allows users to see cached/partial data even if there's a loading issue
 
   return (
     <div className="min-h-screen bg-background">
@@ -317,6 +350,26 @@ export default function CampaignsPage() {
         </div>
       </header>
       <div className="max-w-[120rem] mx-auto px-8 py-16">
+        {/* Error Banner - Non-blocking */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-paragraph font-semibold text-amber-900">Loading Issue</p>
+              <p className="font-paragraph text-sm text-amber-800 mt-1">{error}</p>
+            </div>
+            <Button
+              onClick={loadData}
+              className="bg-amber-600 text-white hover:bg-amber-700 rounded-lg px-4 py-2 text-sm font-semibold flex-shrink-0"
+            >
+              Retry
+            </Button>
+          </motion.div>
+        )}
         {/* Tab Navigation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
