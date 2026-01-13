@@ -51,9 +51,8 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const campaignDonations = campaign 
-      ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
-      : [];
+    // Note: campaignId doesn't exist in Donations type, using all completed donations
+    const campaignDonations = donations.filter(d => d.status === 'completed');
     const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const mainGoalAchieved = campaign?.fundraisingGoal && totalRaised >= campaign.fundraisingGoal;
     
@@ -112,7 +111,7 @@ export default function HomePage() {
 
       const donationData: Donations = {
         _id: crypto.randomUUID(),
-        campaignId: campaign?._id,
+        // campaignId: campaign?._id, // Property doesn't exist in Donations type
         donorName: isAnonymous ? 'Anonymous' : donorName,
         donorEmail,
         amount: parseFloat(amount),
@@ -197,9 +196,8 @@ export default function HomePage() {
     }
   };
 
-  const campaignDonations = campaign
-    ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
-    : [];
+  // Note: campaignId doesn't exist in Donations type, using all completed donations
+  const campaignDonations = donations.filter(d => d.status === 'completed');
   const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const progressPercentage = campaign?.fundraisingGoal 
     ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)

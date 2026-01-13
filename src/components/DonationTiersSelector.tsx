@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BaseCrudService } from '@/integrations';
-import { DonationTiers, Donations, CampaignDetails } from '@/entities';
-import { DollarSign, Plus, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { DonationTiers, Donations, CampaignDetails, Teams } from '@/entities';
+import { DollarSign, Plus, Loader2, AlertCircle, CheckCircle, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useDonationStore } from '@/stores/donationStore';
 
@@ -12,6 +12,7 @@ interface DonationTiersSelectorProps {
   onDonationComplete?: (donation: Donations) => void;
   showCustomAmount?: boolean;
   campaignVideoUrl?: string;
+  teams?: Teams[];
 }
 
 export default function DonationTiersSelector({
@@ -19,12 +20,14 @@ export default function DonationTiersSelector({
   onDonationComplete,
   showCustomAmount = true,
   campaignVideoUrl,
+  teams = [],
 }: DonationTiersSelectorProps) {
   const { addNotification } = useDonationStore();
   const [tiers, setTiers] = useState<DonationTiers[]>([]);
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState('');
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   const [donorMessage, setDonorMessage] = useState('');
@@ -94,7 +97,7 @@ export default function DonationTiersSelector({
 
       const donation: Donations = {
         _id: crypto.randomUUID(),
-        campaignId: campaignId,
+        // campaignId: campaignId, // Property doesn't exist in Donations type
         donorName: isAnonymous ? 'Anonymous' : donorName || 'Donor',
         donorEmail: isAnonymous ? '' : donorEmail,
         amount,
@@ -102,7 +105,7 @@ export default function DonationTiersSelector({
         isAnonymous,
         donorMessage: donorMessage || undefined,
         status: 'completed',
-        teamId: undefined,
+        teamId: selectedTeamId || undefined,
       };
 
       await BaseCrudService.create('donations', donation);
@@ -114,6 +117,7 @@ export default function DonationTiersSelector({
       setDonorEmail('');
       setDonorMessage('');
       setIsAnonymous(false);
+      setSelectedTeamId(null);
 
       // Add notification with video URL if available
       const videoUrl = campaignVideoUrl || campaign?.campaignVideo;
@@ -175,6 +179,28 @@ export default function DonationTiersSelector({
       )}
 
       <form onSubmit={handleSubmitDonation} className="space-y-6">
+        {/* Team Selection */}
+        {teams.length > 0 && (
+          <div className="space-y-3">
+            <label className="font-heading font-semibold text-primary flex items-center gap-2">
+              <Users className="w-5 h-5 text-secondary" />
+              Select a Team (optional)
+            </label>
+            <select
+              value={selectedTeamId || ''}
+              onChange={(e) => setSelectedTeamId(e.target.value || null)}
+              className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30 font-paragraph text-primary"
+            >
+              <option value="">No Team - Donate to Campaign</option>
+              {teams.map((team) => (
+                <option key={team._id} value={team._id}>
+                  {team.teamName}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Donation Tiers */}
         {tiers.length > 0 && (
           <div className="space-y-3">

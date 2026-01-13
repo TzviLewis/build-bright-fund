@@ -148,9 +148,9 @@ export default function CampaignsPage() {
   const getCampaignStats = (campaign: CampaignDetails) => {
     // Include donations to the campaign directly or to any team in the campaign
     const campaignDonations = donations.filter(d => {
-      const isDirectCampaignDonation = d.campaignId === campaign._id && d.status === 'completed';
       const isTeamDonationInCampaign = d.teamId && teams.some(t => t._id === d.teamId) && d.status === 'completed';
-      return isDirectCampaignDonation || isTeamDonationInCampaign;
+      const isGeneralDonation = !d.teamId && d.status === 'completed';
+      return isTeamDonationInCampaign || isGeneralDonation;
     });
     const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const progress = campaign.fundraisingGoal 
@@ -779,7 +779,7 @@ export default function CampaignsPage() {
                           </div>
 
                           {/* CTA Button */}
-                          <Link to={campaign.campaignSlug ? `/c/${campaign.campaignSlug}` : `/campaign/${campaign._id}`}>
+                          <Link to={`/campaign/${campaign._id}`}>
                             <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition-all">
                               Support This Campaign
                               <ArrowRight className="w-4 h-4" />

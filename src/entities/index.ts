@@ -14,8 +14,6 @@ export interface CampaignDetails {
   /** @wixFieldType text */
   campaignTitle?: string;
   /** @wixFieldType text */
-  campaignSlug?: string;
-  /** @wixFieldType text */
   donationTiers?: string;
   /** @wixFieldType text */
   status?: string;
@@ -59,11 +57,7 @@ export interface Donations {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
-  campaignId?: string;
-  /** @wixFieldType text */
   teamId?: string;
-  /** @wixFieldType text */
-  teamIds?: string;
   /** @wixFieldType text */
   replies?: string;
   /** @wixFieldType text */
@@ -72,8 +66,6 @@ export interface Donations {
   donorEmail?: string;
   /** @wixFieldType number */
   amount?: number;
-  /** @wixFieldType number */
-  originalAmount?: number;
   /** @wixFieldType datetime */
   donationDate?: Date | string;
   /** @wixFieldType boolean */

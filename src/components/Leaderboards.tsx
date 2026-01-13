@@ -36,11 +36,10 @@ export default function Leaderboards({
   const topCampaigns = useMemo(() => {
     return [...campaigns]
       .map((campaign) => {
-        // Include donations to the campaign directly or to any team in the campaign
+        // Note: campaignId doesn't exist in Donations type, using team-based filtering
         const campaignDonations = donations.filter((d) => {
-          const isDirectCampaignDonation = d.campaignId === campaign._id;
           const isTeamDonationInCampaign = d.teamId && teams.some(t => t._id === d.teamId);
-          return isDirectCampaignDonation || isTeamDonationInCampaign;
+          return isTeamDonationInCampaign;
         });
         const totalFunded = campaignDonations.reduce(
           (sum, d) => sum + (d.amount || 0),

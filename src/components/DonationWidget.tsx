@@ -99,12 +99,10 @@ export default function DonationWidget({
           donorName: formData.donorName || 'Anonymous',
           donorEmail: formData.donorEmail,
           amount: doubledAmount,
-          originalAmount: originalAmount,
           donationDate: new Date().toISOString(),
           donorMessage: formData.donorMessage,
           status: formData.status,
           teamId: teamId || undefined,
-          teamIds: formData.selectedTeamIds.join(','),
         };
 
         if (editingId && teamsToProcess.length === 1) {
@@ -149,10 +147,10 @@ export default function DonationWidget({
     setFormData({
       donorName: donation.donorName || '',
       donorEmail: donation.donorEmail || '',
-      amount: donation.originalAmount?.toString() || donation.amount?.toString() || '',
+      amount: donation.amount?.toString() || '', // originalAmount doesn't exist in Donations type
       donorMessage: donation.donorMessage || '',
       status: donation.status || 'completed',
-      selectedTeamIds: donation.teamIds ? donation.teamIds.split(',').filter(id => id) : [],
+      selectedTeamIds: [], // teamIds doesn't exist in Donations type
     });
     setEditingId(donation._id);
     setShowForm(true);
@@ -516,11 +514,6 @@ export default function DonationWidget({
                   <p className="font-heading text-2xl font-bold text-secondary">
                     £{donation.amount?.toLocaleString()}
                   </p>
-                  {donation.originalAmount && donation.originalAmount !== donation.amount && (
-                    <p className="font-paragraph text-xs text-primary/60">
-                      (£{donation.originalAmount?.toLocaleString()} × 2)
-                    </p>
-                  )}
                 </div>
               </div>
 

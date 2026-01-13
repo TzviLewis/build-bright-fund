@@ -59,11 +59,14 @@ export default function CampaignDetailPage() {
         }
       }
 
-      // If not found by ID, try loading by slug
+      // If not found by ID, try loading by slug (slug matching by title)
       if (!campaignData && campaignSlug) {
         try {
           const allCampaigns = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
-          campaignData = (allCampaigns.items || []).find(c => c.campaignSlug === campaignSlug) || null;
+          // Match by slug-like title (convert title to slug format for comparison)
+          campaignData = (allCampaigns.items || []).find(c => 
+            c.campaignTitle?.toLowerCase().replace(/\s+/g, '-') === campaignSlug.toLowerCase()
+          ) || null;
         } catch (err) {
           console.error('Error loading campaign by slug:', err);
         }
@@ -167,7 +170,7 @@ export default function CampaignDetailPage() {
 
   // Filter donations for this specific campaign
   const campaignDonations = donations.filter(d => 
-    (!d.campaignId || d.campaignId === campaignId) && d.status === 'completed'
+    d.status === 'completed'
   );
   
   const totalDonations = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
@@ -820,6 +823,7 @@ export default function CampaignDetailPage() {
                   <DonationTiersSelector 
                     campaignId={campaignId}
                     campaignVideoUrl={campaign?.campaignVideo}
+                    teams={teams}
                     onDonationComplete={() => {
                       // Reload campaign data to show updated donation count
                       loadCampaign();

@@ -46,7 +46,7 @@ export default function AdminAnalyticsPage() {
 
   // Calculate statistics - only for the first campaign
   const campaignDonations = campaign 
-    ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
+    ? donations.filter(d => d.status === 'completed')
     : [];
   const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const completedDonations = campaignDonations;
@@ -77,7 +77,7 @@ export default function AdminAnalyticsPage() {
 
   const donationDistribution = [
     { name: 'Completed', value: completedDonations.length, color: '#3b82f6' },
-    { name: 'Pending', value: donations.filter(d => d.campaignId === campaign?._id && d.status !== 'completed').length, color: '#93c5fd' },
+    { name: 'Pending', value: donations.filter(d => d.status !== 'completed').length, color: '#93c5fd' },
   ];
 
   const dailyDonations = campaignDonations.reduce((acc, donation) => {

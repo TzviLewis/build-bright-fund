@@ -306,9 +306,8 @@ export default function AdminDashboard() {
 
   // Calculate advanced analytics - only for the current campaign
   const getAnalytics = () => {
-    const campaignDonations = data.campaign 
-      ? data.donations.filter(d => d.campaignId === data.campaign._id)
-      : [];
+    // Note: campaignId doesn't exist in Donations type, showing all donations
+    const campaignDonations = data.donations;
     const totalDonations = campaignDonations.length;
     const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const averageDonation = totalDonations > 0 ? totalRaised / totalDonations : 0;
@@ -484,7 +483,7 @@ export default function AdminDashboard() {
       if (campaign) {
         setCampaignForm({
           campaignTitle: campaign.campaignTitle || '',
-          campaignSlug: campaign.campaignSlug || '',
+          campaignSlug: '', // campaignSlug doesn't exist in CampaignDetails type
           fundraisingGoal: campaign.fundraisingGoal?.toString() || '',
           bonusGoal: campaign.bonusGoal?.toString() || '',
           bonusGoalDescription: campaign.bonusGoalDescription || '',
@@ -535,7 +534,7 @@ export default function AdminDashboard() {
       const campaignData: CampaignDetails = {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
-        campaignSlug: campaignForm.campaignSlug || '',
+        // campaignSlug: campaignForm.campaignSlug || '', // Property doesn't exist in CampaignDetails type
         fundraisingGoal: parseFloat(campaignForm.fundraisingGoal),
         bonusGoal: campaignForm.bonusGoal ? parseFloat(campaignForm.bonusGoal) : 0,
         bonusGoalDescription: campaignForm.bonusGoalDescription || '',
@@ -1038,9 +1037,8 @@ export default function AdminDashboard() {
   };
 
   // Calculate stats - only for the current campaign
-  const campaignDonations = data.campaign
-    ? data.donations.filter(d => d.campaignId === data.campaign._id && d.status === 'completed')
-    : [];
+  // Note: campaignId doesn't exist in Donations type, showing all completed donations
+  const campaignDonations = data.donations.filter(d => d.status === 'completed');
   const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const completedDonations = campaignDonations;
   const progressPercentage = data.campaign?.fundraisingGoal 
