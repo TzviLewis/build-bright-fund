@@ -211,6 +211,54 @@ export default function AdminDashboard() {
     });
   };
 
+  // Helper function to toggle campaign live status
+  const handleToggleCampaignLive = async () => {
+    if (!data.campaign?._id) {
+      setUI(prev => ({ 
+        ...prev, 
+        error: 'Campaign not found' 
+      }));
+      return;
+    }
+
+    const isCurrentlyLive = data.campaign.status === 'live';
+    const newStatus = isCurrentlyLive ? 'draft' : 'live';
+    const confirmMessage = isCurrentlyLive 
+      ? 'Are you sure you want to take this campaign offline? It will no longer accept donations.'
+      : 'Are you sure you want to go live with this campaign? It will start accepting donations immediately.';
+
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+
+      await BaseCrudService.update('campaigndetails', {
+        _id: data.campaign._id,
+        status: newStatus,
+      });
+
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `Campaign is now ${newStatus === 'live' ? 'LIVE' : 'OFFLINE'}!` 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 3000);
+
+      await loadAllData();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error updating campaign status';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to update campaign status: ${errorMsg}` 
+      }));
+      console.error('Error updating campaign status:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
   // Export data as CSV
   const handleExportData = (dataType: 'donations' | 'teams' | 'matchers') => {
     let csvContent = '';
@@ -1950,33 +1998,77 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    disabled={ui.saving}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg px-8 py-2 font-semibold w-full md:w-auto shadow-lg"
-                  >
-                    {ui.saving ? (
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold">Saving...</div>
-                          {ui.uploadProgress > 0 && ui.uploadProgress < 100 && (
-                            <div className="mt-1 w-32 h-2 bg-blue-400 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-white transition-all duration-300"
-                                style={{ width: `${ui.uploadProgress}%` }}
-                              />
-                            </div>
-                          )}
+                  <div className="flex gap-4 flex-wrap">
+                    <Button
+                      type="submit"
+                      disabled={ui.saving}
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg px-8 py-2 font-semibold shadow-lg"
+                    >
+                      {ui.saving ? (
+                        <div className="flex items-center gap-3">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <div className="flex-1">
+                            <div className="text-sm font-semibold">Saving...</div>
+                            {ui.uploadProgress > 0 && ui.uploadProgress < 100 && (
+                              <div className="mt-1 w-32 h-2 bg-blue-400 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-white transition-all duration-300"
+                                  style={{ width: `${ui.uploadProgress}%` }}
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Campaign
-                      </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Campaign
+                        </>
+                      )}
+                    </Button>
+
+                    {data.campaign && data.campaign.status !== 'live' && (
+                      <Button
+                        type="button"
+                        onClick={handleToggleCampaignLive}
+                        disabled={ui.saving}
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 rounded-lg px-8 py-2 font-semibold shadow-lg flex items-center gap-2"
+                      >
+                        {ui.saving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Going Live...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4" />
+                            Go Live & Accept Donations
+                          </>
+                        )}
+                      </Button>
                     )}
-                  </Button>
+
+                    {data.campaign && data.campaign.status === 'live' && (
+                      <Button
+                        type="button"
+                        onClick={handleToggleCampaignLive}
+                        disabled={ui.saving}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-lg px-8 py-2 font-semibold shadow-lg flex items-center gap-2"
+                      >
+                        {ui.saving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Taking Offline...
+                          </>
+                        ) : (
+                          <>
+                            <X className="w-4 h-4" />
+                            Take Offline
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </form>
               </CardContent>
             </Card>
