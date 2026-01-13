@@ -146,7 +146,12 @@ export default function CampaignsPage() {
   };
 
   const getCampaignStats = (campaign: CampaignDetails) => {
-    const campaignDonations = donations.filter(d => d.campaignId === campaign._id && d.status === 'completed');
+    // Include donations to the campaign directly or to any team in the campaign
+    const campaignDonations = donations.filter(d => {
+      const isDirectCampaignDonation = d.campaignId === campaign._id && d.status === 'completed';
+      const isTeamDonationInCampaign = d.teamId && teams.some(t => t._id === d.teamId) && d.status === 'completed';
+      return isDirectCampaignDonation || isTeamDonationInCampaign;
+    });
     const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const progress = campaign.fundraisingGoal 
       ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)

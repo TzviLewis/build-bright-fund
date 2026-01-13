@@ -28,17 +28,20 @@ export default function Leaderboards({
     });
     return Array.from(donorMap.entries())
       .map(([name, total]) => ({ name, total }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 10);
+      .sort((a, b) => b.total - a.total);
+    // Removed .slice(0, 10) to show all donors
   }, [donations]);
 
   // Calculate top campaigns by funding
   const topCampaigns = useMemo(() => {
     return [...campaigns]
       .map((campaign) => {
-        const campaignDonations = donations.filter(
-          (d) => d.teamId === campaign._id
-        );
+        // Include donations to the campaign directly or to any team in the campaign
+        const campaignDonations = donations.filter((d) => {
+          const isDirectCampaignDonation = d.campaignId === campaign._id;
+          const isTeamDonationInCampaign = d.teamId && teams.some(t => t._id === d.teamId);
+          return isDirectCampaignDonation || isTeamDonationInCampaign;
+        });
         const totalFunded = campaignDonations.reduce(
           (sum, d) => sum + (d.amount || 0),
           0
@@ -49,9 +52,9 @@ export default function Leaderboards({
           donationCount: campaignDonations.length,
         };
       })
-      .sort((a, b) => b.totalFunded - a.totalFunded)
-      .slice(0, 10);
-  }, [campaigns, donations]);
+      .sort((a, b) => b.totalFunded - a.totalFunded);
+      // Removed .slice(0, 10) to show all campaigns
+  }, [campaigns, donations, teams]);
 
   // Calculate top teams
   const topTeams = useMemo(() => {
@@ -68,8 +71,8 @@ export default function Leaderboards({
           donationCount: teamDonations.length,
         };
       })
-      .sort((a, b) => b.totalFunded - a.totalFunded)
-      .slice(0, 10);
+      .sort((a, b) => b.totalFunded - a.totalFunded);
+      // Removed .slice(0, 10) to show all teams
   }, [teams, donations]);
 
   return (
