@@ -186,8 +186,6 @@ export interface Teams {
   _createdDate?: Date;
   _updatedDate?: Date;
   /** @wixFieldType text */
-  campaignId?: string;
-  /** @wixFieldType text */
   teamName?: string;
   /** @wixFieldType text */
   teamPassword?: string;

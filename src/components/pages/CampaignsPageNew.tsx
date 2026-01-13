@@ -146,7 +146,7 @@ export default function CampaignsPage() {
   };
 
   const getCampaignStats = (campaign: CampaignDetails) => {
-    const campaignDonations = donations.filter(d => (!d.campaignId || d.campaignId === campaign._id) && d.status === 'completed');
+    const campaignDonations = donations.filter(d => d.campaignId === campaign._id && d.status === 'completed');
     const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const progress = campaign.fundraisingGoal 
       ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
@@ -190,9 +190,8 @@ export default function CampaignsPage() {
     if (!firstCampaign) return [];
     
     const teamsWithData = teams
-      .filter(t => !t.campaignId || t.campaignId === firstCampaign._id)
       .map((team) => {
-        const teamDonations = donations.filter(d => d.teamId === team._id && (!d.campaignId || d.campaignId === team.campaignId));
+        const teamDonations = donations.filter(d => d.teamId === team._id);
         const teamTotal = teamDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
         const teamProgress = team.fundraisingGoal 
           ? Math.min((teamTotal / team.fundraisingGoal) * 100, 100)

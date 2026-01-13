@@ -51,7 +51,10 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const campaignDonations = campaign 
+      ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
+      : [];
+    const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const mainGoalAchieved = campaign?.fundraisingGoal && totalRaised >= campaign.fundraisingGoal;
     
     if (mainGoalAchieved && !previousGoalAchieved) {
@@ -194,7 +197,10 @@ export default function HomePage() {
     }
   };
 
-  const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const campaignDonations = campaign
+    ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
+    : [];
+  const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const progressPercentage = campaign?.fundraisingGoal 
     ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
     : 0;

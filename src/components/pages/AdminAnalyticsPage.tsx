@@ -44,9 +44,12 @@ export default function AdminAnalyticsPage() {
     }
   };
 
-  // Calculate statistics
-  const totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
-  const completedDonations = donations.filter(d => d.status === 'completed');
+  // Calculate statistics - only for the first campaign
+  const campaignDonations = campaign 
+    ? donations.filter(d => d.campaignId === campaign._id && d.status === 'completed')
+    : [];
+  const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const completedDonations = campaignDonations;
   const averageDonation = completedDonations.length > 0 ? totalRaised / completedDonations.length : 0;
   const progressPercentage = campaign?.fundraisingGoal 
     ? Math.min((totalRaised / campaign.fundraisingGoal) * 100, 100)
@@ -56,7 +59,7 @@ export default function AdminAnalyticsPage() {
     .map(team => ({
       team,
       raised: donations
-        .filter(d => d.teamId === team._id)
+        .filter(d => d.teamId === team._id && d.status === 'completed')
         .reduce((sum, d) => sum + (d.amount || 0), 0),
     }))
     .sort((a, b) => b.raised - a.raised)
@@ -74,10 +77,10 @@ export default function AdminAnalyticsPage() {
 
   const donationDistribution = [
     { name: 'Completed', value: completedDonations.length, color: '#3b82f6' },
-    { name: 'Pending', value: donations.filter(d => d.status !== 'completed').length, color: '#93c5fd' },
+    { name: 'Pending', value: donations.filter(d => d.campaignId === campaign?._id && d.status !== 'completed').length, color: '#93c5fd' },
   ];
 
-  const dailyDonations = donations.reduce((acc, donation) => {
+  const dailyDonations = campaignDonations.reduce((acc, donation) => {
     if (!donation.donationDate) return acc;
     const date = new Date(donation.donationDate).toLocaleDateString();
     const existing = acc.find(d => d.date === date);

@@ -304,15 +304,18 @@ export default function AdminDashboard() {
     }, 3000);
   };
 
-  // Calculate advanced analytics
+  // Calculate advanced analytics - only for the current campaign
   const getAnalytics = () => {
-    const totalDonations = data.donations.length;
-    const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const campaignDonations = data.campaign 
+      ? data.donations.filter(d => d.campaignId === data.campaign._id)
+      : [];
+    const totalDonations = campaignDonations.length;
+    const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
     const averageDonation = totalDonations > 0 ? totalRaised / totalDonations : 0;
-    const completedDonations = data.donations.filter(d => d.status === 'completed').length;
+    const completedDonations = campaignDonations.filter(d => d.status === 'completed').length;
     const completionRate = totalDonations > 0 ? (completedDonations / totalDonations) * 100 : 0;
-    const topDonor = data.donations.length > 0 
-      ? data.donations.reduce((max, d) => (d.amount || 0) > (max.amount || 0) ? d : max)
+    const topDonor = campaignDonations.length > 0 
+      ? campaignDonations.reduce((max, d) => (d.amount || 0) > (max.amount || 0) ? d : max)
       : null;
     const totalTeams = data.teams.length;
     const totalMatchers = data.matchers.length;
@@ -1034,9 +1037,12 @@ export default function AdminDashboard() {
     }
   };
 
-  // Calculate stats
-  const totalRaised = data.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
-  const completedDonations = data.donations.filter(d => d.status === 'completed');
+  // Calculate stats - only for the current campaign
+  const campaignDonations = data.campaign
+    ? data.donations.filter(d => d.campaignId === data.campaign._id && d.status === 'completed')
+    : [];
+  const totalRaised = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
+  const completedDonations = campaignDonations;
   const progressPercentage = data.campaign?.fundraisingGoal 
     ? Math.min((totalRaised / data.campaign.fundraisingGoal) * 100, 100)
     : 0;

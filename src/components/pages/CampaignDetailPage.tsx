@@ -165,14 +165,19 @@ export default function CampaignDetailPage() {
     );
   }
 
+  // Filter donations for this specific campaign
+  const campaignDonations = donations.filter(d => 
+    (!d.campaignId || d.campaignId === campaignId) && d.status === 'completed'
+  );
+  
+  const totalDonations = campaignDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const progressPercentage = campaign.fundraisingGoal
-    ? Math.min((campaign.fundraisingGoal * 0.5) / campaign.fundraisingGoal * 100, 100)
+    ? Math.min((totalDonations / campaign.fundraisingGoal) * 100, 100)
     : 0;
 
-  const totalDonations = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
   const totalTeamMembers = teams.reduce((sum, t) => sum + (t.memberCount || 0), 0);
-  const avgDonation = donations.length > 0 ? totalDonations / donations.length : 0;
-  const topDonations = [...donations].sort((a, b) => (b.amount || 0) - (a.amount || 0)).slice(0, 5);
+  const avgDonation = campaignDonations.length > 0 ? totalDonations / campaignDonations.length : 0;
+  const topDonations = [...campaignDonations].sort((a, b) => (b.amount || 0) - (a.amount || 0)).slice(0, 5);
   const totalMatcherAmount = matchers.reduce((sum, m) => sum + (m.matchingAmount || 0), 0);
   const potentialMatched = totalDonations * 0.5; // Assuming 50% match rate for demo
 

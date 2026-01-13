@@ -94,7 +94,7 @@ export default function DonationTiersSelector({
 
       const donation: Donations = {
         _id: crypto.randomUUID(),
-        campaignId: campaignId || undefined,
+        campaignId: campaignId,
         donorName: isAnonymous ? 'Anonymous' : donorName || 'Donor',
         donorEmail: isAnonymous ? '' : donorEmail,
         amount,
@@ -102,7 +102,7 @@ export default function DonationTiersSelector({
         isAnonymous,
         donorMessage: donorMessage || undefined,
         status: 'completed',
-        teamId: campaignId || undefined,
+        teamId: undefined,
       };
 
       await BaseCrudService.create('donations', donation);
