@@ -14,6 +14,8 @@ export interface CampaignDetails {
   /** @wixFieldType text */
   campaignTitle?: string;
   /** @wixFieldType text */
+  campaignSlug?: string;
+  /** @wixFieldType text */
   donationTiers?: string;
   /** @wixFieldType text */
   status?: string;
@@ -80,10 +82,6 @@ export interface Donations {
   donorMessage?: string;
   /** @wixFieldType text */
   status?: string;
-  /** @wixFieldType text */
-  pageName?: string;
-  /** @wixFieldType url */
-  videoUrl?: string;
 }
 
 

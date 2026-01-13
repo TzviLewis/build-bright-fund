@@ -143,6 +143,10 @@ const router = createBrowserRouter([
         element: <CampaignDetailPage />,
       },
       {
+        path: "c/:campaignSlug",
+        element: <CampaignDetailPage />,
+      },
+      {
         path: "team-login",
         element: <TeamLoginPage />,
       },

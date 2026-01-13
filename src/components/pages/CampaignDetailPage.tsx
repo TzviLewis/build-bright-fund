@@ -14,7 +14,7 @@ import LiveChat from '@/components/LiveChat';
 import DonationTiersSelector from '@/components/DonationTiersSelector';
 
 export default function CampaignDetailPage() {
-  const { campaignId } = useParams<{ campaignId: string }>();
+  const { campaignId, campaignSlug } = useParams<{ campaignId?: string; campaignSlug?: string }>();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
   const [donations, setDonations] = useState<Donations[]>([]);
@@ -28,35 +28,49 @@ export default function CampaignDetailPage() {
 
   useEffect(() => {
     loadCampaign();
-  }, [campaignId]);
+  }, [campaignId, campaignSlug]);
 
   const loadCampaign = async () => {
     try {
       setLoading(true);
       setError('');
 
-      if (!campaignId) {
+      let campaignData: CampaignDetails | null = null;
+      const identifier = campaignId || campaignSlug;
+
+      if (!identifier) {
         setError('Campaign not found');
         return;
       }
 
-      // Load campaign data
-      let campaignData: CampaignDetails | null = null;
-      try {
-        campaignData = await BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId);
-      } catch (err) {
-        console.error('Error loading campaign by ID:', err);
-        // Try loading all campaigns and finding the one with matching ID
+      // Try loading by ID first (if campaignId is provided)
+      if (campaignId) {
+        try {
+          campaignData = await BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId);
+        } catch (err) {
+          console.error('Error loading campaign by ID:', err);
+          // Try loading all campaigns and finding the one with matching ID
+          try {
+            const allCampaigns = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
+            campaignData = (allCampaigns.items || []).find(c => c._id === campaignId) || null;
+          } catch (fallbackErr) {
+            console.error('Fallback campaign loading failed:', fallbackErr);
+          }
+        }
+      }
+
+      // If not found by ID, try loading by slug
+      if (!campaignData && campaignSlug) {
         try {
           const allCampaigns = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
-          campaignData = (allCampaigns.items || []).find(c => c._id === campaignId) || null;
-        } catch (fallbackErr) {
-          console.error('Fallback campaign loading failed:', fallbackErr);
+          campaignData = (allCampaigns.items || []).find(c => c.campaignSlug === campaignSlug) || null;
+        } catch (err) {
+          console.error('Error loading campaign by slug:', err);
         }
       }
 
       if (!campaignData) {
-        setError('Campaign not found. The campaign may have been deleted or the ID is invalid.');
+        setError('Campaign not found. The campaign may have been deleted or the URL is invalid.');
         return;
       }
 

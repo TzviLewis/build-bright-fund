@@ -24,6 +24,7 @@ import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileS
 
 interface FormState {
   campaignTitle: string;
+  campaignSlug: string;
   fundraisingGoal: string;
   bonusGoal: string;
   bonusGoalDescription: string;
@@ -131,6 +132,7 @@ export default function AdminDashboard() {
   // Campaign Form State
   const [campaignForm, setCampaignForm] = useState<FormState>({
     campaignTitle: '',
+    campaignSlug: '',
     fundraisingGoal: '',
     bonusGoal: '',
     bonusGoalDescription: '',
@@ -479,6 +481,7 @@ export default function AdminDashboard() {
       if (campaign) {
         setCampaignForm({
           campaignTitle: campaign.campaignTitle || '',
+          campaignSlug: campaign.campaignSlug || '',
           fundraisingGoal: campaign.fundraisingGoal?.toString() || '',
           bonusGoal: campaign.bonusGoal?.toString() || '',
           bonusGoalDescription: campaign.bonusGoalDescription || '',
@@ -529,6 +532,7 @@ export default function AdminDashboard() {
       const campaignData: CampaignDetails = {
         _id: data.campaign?._id || crypto.randomUUID(),
         campaignTitle: campaignForm.campaignTitle,
+        campaignSlug: campaignForm.campaignSlug || '',
         fundraisingGoal: parseFloat(campaignForm.fundraisingGoal),
         bonusGoal: campaignForm.bonusGoal ? parseFloat(campaignForm.bonusGoal) : 0,
         bonusGoalDescription: campaignForm.bonusGoalDescription || '',
@@ -1665,6 +1669,22 @@ export default function AdminDashboard() {
                         placeholder="e.g., Building Our Future"
                         className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
                       />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-paragraph text-sm font-semibold text-blue-900">
+                        URL Slug (Custom Path)
+                      </label>
+                      <Input
+                        type="text"
+                        value={campaignForm.campaignSlug}
+                        onChange={(e) => setCampaignForm(prev => ({ ...prev, campaignSlug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') }))}
+                        placeholder="e.g., building-our-future"
+                        className="border-blue-200 focus:border-blue-600 focus:ring-blue-500"
+                      />
+                      <p className="font-paragraph text-xs text-blue-600">
+                        {campaignForm.campaignSlug ? `URL: /c/${campaignForm.campaignSlug}` : 'Leave empty to use campaign ID'}
+                      </p>
                     </div>
 
                     <div className="space-y-2">

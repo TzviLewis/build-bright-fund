@@ -775,7 +775,7 @@ export default function CampaignsPage() {
                           </div>
 
                           {/* CTA Button */}
-                          <Link to={`/?campaign=${campaign._id}`}>
+                          <Link to={campaign.campaignSlug ? `/c/${campaign.campaignSlug}` : `/campaign/${campaign._id}`}>
                             <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition-all">
                               Support This Campaign
                               <ArrowRight className="w-4 h-4" />
