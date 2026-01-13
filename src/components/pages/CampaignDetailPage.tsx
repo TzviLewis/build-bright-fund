@@ -33,30 +33,53 @@ export default function CampaignDetailPage() {
   const loadCampaign = async () => {
     try {
       setLoading(true);
+      setError('');
+
       if (!campaignId) {
         setError('Campaign not found');
         return;
       }
 
-      const [campaignData, donationsRes, teamsRes, matchersRes] = await Promise.all([
-        BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId),
-        BaseCrudService.getAll<Donations>('donations'),
-        BaseCrudService.getAll<Teams>('teams'),
-        BaseCrudService.getAll<Matchers>('matchers'),
-      ]);
+      // Load campaign data
+      let campaignData: CampaignDetails | null = null;
+      try {
+        campaignData = await BaseCrudService.getById<CampaignDetails>('campaigndetails', campaignId);
+      } catch (err) {
+        console.error('Error loading campaign by ID:', err);
+        // Try loading all campaigns and finding the one with matching ID
+        try {
+          const allCampaigns = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
+          campaignData = (allCampaigns.items || []).find(c => c._id === campaignId) || null;
+        } catch (fallbackErr) {
+          console.error('Fallback campaign loading failed:', fallbackErr);
+        }
+      }
+
+      if (!campaignData) {
+        setError('Campaign not found. The campaign may have been deleted or the ID is invalid.');
+        return;
+      }
 
       setCampaign(campaignData);
-      // Filter donations and teams by campaignId if available, otherwise show all
+
+      // Load related data
+      const [donationsRes, teamsRes, matchersRes] = await Promise.all([
+        BaseCrudService.getAll<Donations>('donations').catch(() => ({ items: [] })),
+        BaseCrudService.getAll<Teams>('teams').catch(() => ({ items: [] })),
+        BaseCrudService.getAll<Matchers>('matchers').catch(() => ({ items: [] })),
+      ]);
+
       const allDonations = donationsRes.items || [];
       const allTeams = teamsRes.items || [];
       const allMatchers = matchersRes.items || [];
       
-      setDonations(allDonations.filter(d => !d.campaignId || d.campaignId === campaignId));
-      setTeams(allTeams.filter(t => !t.campaignId || t.campaignId === campaignId));
-      setMatchers(allMatchers.filter(m => (!m.campaignId || m.campaignId === campaignId) && m.status === 'active'));
+      setDonations(allDonations);
+      setTeams(allTeams);
+      setMatchers(allMatchers.filter(m => m.status === 'active'));
     } catch (err) {
-      setError('Failed to load campaign details');
-      console.error(err);
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load campaign details';
+      setError(errorMsg);
+      console.error('Campaign loading error:', err);
     } finally {
       setLoading(false);
     }
