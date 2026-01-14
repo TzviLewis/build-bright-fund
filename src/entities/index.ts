@@ -14,6 +14,8 @@ export interface CampaignDetails {
   /** @wixFieldType text */
   campaignTitle?: string;
   /** @wixFieldType text */
+  slug?: string;
+  /** @wixFieldType text */
   donationTiers?: string;
   /** @wixFieldType text */
   status?: string;
