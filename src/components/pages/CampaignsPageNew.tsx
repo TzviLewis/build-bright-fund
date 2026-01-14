@@ -347,14 +347,10 @@ export default function CampaignsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link to="/home">
-                <Button className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/70 rounded-xl px-6 py-2.5 font-semibold shadow-lg hover:shadow-xl transition-all">
-                  Featured Campaign
-                </Button>
+
               </Link>
               <Link to="/admin-login">
-                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5 rounded-xl px-6 py-2.5 font-semibold">
-                  Admin Portal
-                </Button>
+
               </Link>
             </div>
           </div>
