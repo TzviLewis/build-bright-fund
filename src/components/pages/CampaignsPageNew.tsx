@@ -327,26 +327,33 @@ export default function CampaignsPage() {
   // This allows users to see cached/partial data even if there's a loading issue
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-background border-b border-primary/10 shadow-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
+      {/* Modern Header with Glassmorphism */}
+      <header className="bg-white/80 backdrop-blur-lg border-b border-primary/10 shadow-lg sticky top-0 z-50">
         <div className="max-w-[120rem] mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="font-heading text-3xl font-bold text-primary">Active Campaigns</h1>
-              <p className="font-paragraph text-sm text-primary/60 mt-1">
-                Discover meaningful causes to support
-              </p>
-            </div>
             <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/70 rounded-xl flex items-center justify-center shadow-lg">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="font-heading text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Crowdfunding Hub
+                </h1>
+                <p className="font-paragraph text-sm text-primary/60 mt-1">
+                  Empowering change, one donation at a time
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
               <Link to="/home">
-                <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold">
-                  Main Campaign
+                <Button className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/70 rounded-xl px-6 py-2.5 font-semibold shadow-lg hover:shadow-xl transition-all">
+                  Featured Campaign
                 </Button>
               </Link>
               <Link to="/admin-login">
-                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5 rounded-full px-6 py-2 font-semibold">
-                  Admin
+                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5 rounded-xl px-6 py-2.5 font-semibold">
+                  Admin Portal
                 </Button>
               </Link>
             </div>
@@ -466,7 +473,7 @@ export default function CampaignsPage() {
                     {searchResults.map((campaign) => (
                       <Link
                         key={campaign._id}
-                        to={`/?campaign=${campaign._id}`}
+                        to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}
                         className="block px-4 py-3 hover:bg-secondary/5 border-b border-primary/10 last:border-b-0 transition-colors"
                       >
                         <p className="font-heading font-semibold text-primary">{campaign.campaignTitle}</p>
@@ -779,8 +786,8 @@ export default function CampaignsPage() {
                           </div>
 
                           {/* CTA Button */}
-                          <Link to={`/campaign/${campaign._id}`}>
-                            <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition-all">
+                          <Link to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}>
+                            <Button className="w-full bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/70 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all">
                               Support This Campaign
                               <ArrowRight className="w-4 h-4" />
                             </Button>
@@ -909,8 +916,8 @@ export default function CampaignsPage() {
                           </div>
 
                           {/* View Details Button */}
-                          <Link to={`/campaign/${campaign._id}`}>
-                            <Button className="w-full bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground hover:from-secondary/90 hover:to-secondary/70 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                          <Link to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}>
+                            <Button className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70 rounded-xl py-3 font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
                               View Campaign Details
                               <ArrowRight className="w-4 h-4" />
                             </Button>

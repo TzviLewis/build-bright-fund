@@ -59,14 +59,21 @@ export default function CampaignDetailPage() {
         }
       }
 
-      // If not found by ID, try loading by slug (slug matching by title)
+      // If not found by ID, try loading by slug
       if (!campaignData && campaignSlug) {
         try {
           const allCampaigns = await BaseCrudService.getAll<CampaignDetails>('campaigndetails');
-          // Match by slug-like title (convert title to slug format for comparison)
+          // First try to match by slug field (if it exists)
           campaignData = (allCampaigns.items || []).find(c => 
-            c.campaignTitle?.toLowerCase().replace(/\s+/g, '-') === campaignSlug.toLowerCase()
+            (c as any).slug?.toLowerCase() === campaignSlug.toLowerCase()
           ) || null;
+          
+          // Fallback: match by slug-like title (convert title to slug format for comparison)
+          if (!campaignData) {
+            campaignData = (allCampaigns.items || []).find(c => 
+              c.campaignTitle?.toLowerCase().replace(/\s+/g, '-') === campaignSlug.toLowerCase()
+            ) || null;
+          }
         } catch (err) {
           console.error('Error loading campaign by slug:', err);
         }
