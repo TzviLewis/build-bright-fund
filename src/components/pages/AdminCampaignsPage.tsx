@@ -87,6 +87,16 @@ export default function AdminCampaignsPage() {
     }
   };
 
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  };
+
   const handleGoLive = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -102,9 +112,13 @@ export default function AdminCampaignsPage() {
     try {
       setUI(prev => ({ ...prev, saving: true, error: null }));
 
+      // Generate slug from campaign title
+      const slug = generateSlug(goLiveForm.campaignTitle);
+
       const campaignData: CampaignDetails = {
         _id: ui.editingCampaignId || crypto.randomUUID(),
         campaignTitle: goLiveForm.campaignTitle,
+        slug: slug,
         fundraisingGoal: parseFloat(goLiveForm.fundraisingGoal),
         bonusGoal: goLiveForm.bonusGoal ? parseFloat(goLiveForm.bonusGoal) : 0,
         bonusGoalDescription: goLiveForm.bonusGoalDescription || '',
