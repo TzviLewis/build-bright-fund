@@ -180,7 +180,8 @@ export default function DonationTiersSelector({
 
       <form onSubmit={handleSubmitDonation} className="space-y-6">
         {/* Team Selection */}
-        {teams.length > 0 && (
+        {console.log('DonationTiersSelector - teams prop:', teams, 'length:', teams?.length)}
+        {teams && teams.length > 0 && (
           <div className="space-y-3">
             <label className="font-heading font-semibold text-primary flex items-center gap-2">
               <Users className="w-5 h-5 text-secondary" />
@@ -189,7 +190,7 @@ export default function DonationTiersSelector({
             <select
               value={selectedTeamId || ''}
               onChange={(e) => setSelectedTeamId(e.target.value || null)}
-              className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30 font-paragraph text-primary"
+              className="w-full px-4 py-2 border border-primary/20 rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30 font-paragraph text-primary bg-white"
             >
               <option value="">No Team - Donate to Campaign</option>
               {teams.map((team) => (

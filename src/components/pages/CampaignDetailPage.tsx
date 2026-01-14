@@ -81,14 +81,25 @@ export default function CampaignDetailPage() {
 
       // Load related data
       const [donationsRes, teamsRes, matchersRes] = await Promise.all([
-        BaseCrudService.getAll<Donations>('donations').catch(() => ({ items: [] })),
-        BaseCrudService.getAll<Teams>('teams').catch(() => ({ items: [] })),
-        BaseCrudService.getAll<Matchers>('matchers').catch(() => ({ items: [] })),
+        BaseCrudService.getAll<Donations>('donations').catch((err) => {
+          console.error('Error loading donations:', err);
+          return { items: [] };
+        }),
+        BaseCrudService.getAll<Teams>('teams').catch((err) => {
+          console.error('Error loading teams:', err);
+          return { items: [] };
+        }),
+        BaseCrudService.getAll<Matchers>('matchers').catch((err) => {
+          console.error('Error loading matchers:', err);
+          return { items: [] };
+        }),
       ]);
 
       const allDonations = donationsRes.items || [];
       const allTeams = teamsRes.items || [];
       const allMatchers = matchersRes.items || [];
+      
+      console.log('Loaded teams for dropdown:', allTeams.length, allTeams);
       
       setDonations(allDonations);
       setTeams(allTeams);

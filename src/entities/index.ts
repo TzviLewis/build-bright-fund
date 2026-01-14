@@ -33,7 +33,7 @@ export interface CampaignDetails {
   projectDescription?: string;
   /** @wixFieldType text */
   promotionalText?: string;
-  /** @wixFieldType image */
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   mainCampaignImage?: string;
   /** @wixFieldType date */
   campaignStartDate?: Date | string;
@@ -108,7 +108,7 @@ export interface GalleryImages {
   _updatedDate?: Date;
   /** @wixFieldType text */
   title?: string;
-  /** @wixFieldType image */
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   image?: string;
   /** @wixFieldType text */
   altText?: string;
@@ -187,7 +187,7 @@ export interface Teams {
   teamDescription?: string;
   /** @wixFieldType number */
   memberCount?: number;
-  /** @wixFieldType image */
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   teamLogo?: string;
   /** @wixFieldType number */
   teamId?: number;
