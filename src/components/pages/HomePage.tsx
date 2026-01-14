@@ -566,6 +566,15 @@ export default function HomePage() {
                   DONATE NOW
                 </Button>
               </a>
+              <Link to="/c/tvgs">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/5 rounded-full px-8 py-6 text-lg font-semibold"
+                >
+                  view the campaign
+                </Button>
+              </Link>
               <Link to="/campaigns">
                 <Button 
                   size="lg" 
