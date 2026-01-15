@@ -1059,47 +1059,65 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground border-b border-secondary/20 shadow-sm sticky top-0 z-50">
-        <div className="max-w-[120rem] mx-auto px-8 py-6">
+      {/* Enhanced Header with Gradient */}
+      <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-b-4 border-white/20 shadow-2xl sticky top-0 z-50">
+        <div className="max-w-[120rem] mx-auto px-8 py-8">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="font-heading text-4xl font-bold">Admin Dashboard</h1>
-              <p className="font-paragraph text-base text-primary-foreground/80 mt-2">
-                Campaign management, analytics & control center
-              </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <Settings className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="font-heading text-5xl font-bold tracking-tight">Admin Command Center</h1>
+                  <p className="font-paragraph text-lg text-white/90 mt-1">
+                    Complete campaign control & advanced analytics
+                  </p>
+                </div>
+              </div>
+              {data.campaign && (
+                <div className="flex items-center gap-4 mt-3 ml-16">
+                  <Badge className={`${data.campaign.status === 'live' ? 'bg-green-500' : 'bg-yellow-500'} text-white px-4 py-1.5 text-sm font-semibold`}>
+                    {data.campaign.status === 'live' ? '🟢 LIVE' : '🟡 DRAFT'}
+                  </Badge>
+                  <span className="text-white/80 text-sm">
+                    Campaign: {data.campaign.campaignTitle || 'Untitled'}
+                  </span>
+                </div>
+              )}
             </div>
-            <Link to="/">
-              <Button 
-                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 py-2 font-semibold"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Campaign
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link to="/">
+                <Button 
+                  className="bg-white text-blue-600 hover:bg-white/90 rounded-xl px-6 py-3 font-semibold shadow-lg"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  View Campaign
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-12">
-        {/* Quick Navigation Grid */}
-        <div className="mb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* ... keep existing code ... */}
+        {/* Enhanced Quick Navigation Grid */}
+        <div className="mb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/campaigns" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <Zap className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <Zap className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Manage Campaigns</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Edit campaign details</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Campaigns</h3>
+                  <p className="font-paragraph text-sm text-white/90">Manage campaign details</p>
                 </div>
               </div>
             </Link>
@@ -1109,17 +1127,17 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/campaign-dates" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <Calendar className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <Calendar className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Campaign Dates</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Set start & end dates</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Schedule</h3>
+                  <p className="font-paragraph text-sm text-white/90">Set campaign dates</p>
                 </div>
               </div>
             </Link>
@@ -1129,17 +1147,17 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/donations" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <DollarSign className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <DollarSign className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Donations</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">View all donations</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Donations</h3>
+                  <p className="font-paragraph text-sm text-white/90">Track all contributions</p>
                 </div>
               </div>
             </Link>
@@ -1149,17 +1167,17 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/matchers" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <Users className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <Users className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Matchers</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Manage matching funds</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Matchers</h3>
+                  <p className="font-paragraph text-sm text-white/90">Manage matching funds</p>
                 </div>
               </div>
             </Link>
@@ -1169,17 +1187,17 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.4 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/analytics" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <TrendingUp className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <TrendingUp className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Analytics</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Campaign insights</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Analytics</h3>
+                  <p className="font-paragraph text-sm text-white/90">Campaign insights</p>
                 </div>
               </div>
             </Link>
@@ -1189,17 +1207,17 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.5 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/video-editor" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <Film className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <Film className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">Video Editor</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Edit campaign video</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">Video Editor</h3>
+                  <p className="font-paragraph text-sm text-white/90">Edit campaign videos</p>
                 </div>
               </div>
             </Link>
@@ -1209,253 +1227,378 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.6 }}
+            whileHover={{ scale: 1.03, y: -5 }}
           >
             <Link to="/admin/ai-editor" className="block h-full">
-              <div className="bg-white rounded-lg p-6 border border-primary/10 hover:border-secondary/30 hover:shadow-lg transition-all cursor-pointer h-full">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-secondary/10 rounded-lg">
-                    <Sparkles className="w-6 h-6 text-secondary" />
+              <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                    <Sparkles className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-primary">AI Editor</h3>
-                    <p className="font-paragraph text-sm text-primary/60 mt-1">Ask AI to edit your site</p>
-                  </div>
+                  <h3 className="font-heading text-xl font-bold mb-2">AI Editor</h3>
+                  <p className="font-paragraph text-sm text-white/90">AI-powered editing</p>
                 </div>
               </div>
             </Link>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.7 }}
+            whileHover={{ scale: 1.03, y: -5 }}
+          >
+            <div 
+              onClick={() => setUI(prev => ({ ...prev, showAnalyticsModal: !prev.showAnalyticsModal }))}
+              className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer h-full text-white relative overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+              <div className="relative z-10">
+                <div className="p-3 bg-white/20 rounded-xl w-fit mb-4 backdrop-blur-sm">
+                  <Target className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="font-heading text-xl font-bold mb-2">Quick Stats</h3>
+                <p className="font-paragraph text-sm text-white/90">View key metrics</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Admin Tools Section */}
+        {/* Enhanced Admin Tools Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-12 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-8 border-2 border-purple-200"
+          className="mb-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-indigo-200 shadow-xl"
         >
-          <h2 className="font-heading text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-purple-600" />
-            Admin Tools & Features
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-heading text-3xl font-bold text-primary flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl">
+                <Sparkles className="w-7 h-7 text-white" />
+              </div>
+              Power Tools & Actions
+            </h2>
+            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 text-sm">
+              Admin Only
+            </Badge>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Export Data Tool */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-lg p-4 border border-purple-200 cursor-pointer hover:shadow-lg transition-all"
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-purple-200 cursor-pointer hover:shadow-xl transition-all"
               onClick={() => setUI(prev => ({ ...prev, showExportModal: !prev.showExportModal }))}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Download className="w-5 h-5 text-purple-600" />
+                <div className="p-2.5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                  <Download className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="font-heading font-bold text-primary">Export Data</h3>
               </div>
               <p className="font-paragraph text-sm text-primary/60">
-                Download donations, teams, or matchers as CSV
+                Download CSV reports for donations, teams & matchers
               </p>
             </motion.div>
 
             {/* Analytics Tool */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-lg p-4 border border-blue-200 cursor-pointer hover:shadow-lg transition-all"
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-blue-200 cursor-pointer hover:shadow-xl transition-all"
               onClick={() => setUI(prev => ({ ...prev, showAnalyticsModal: !prev.showAnalyticsModal }))}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
+                <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                  <BarChart3 className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="font-heading font-bold text-primary">Analytics</h3>
               </div>
               <p className="font-paragraph text-sm text-primary/60">
-                View detailed campaign statistics
+                View detailed campaign statistics & insights
               </p>
             </motion.div>
 
             {/* Bulk Actions Tool */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-lg p-4 border border-green-200 cursor-pointer hover:shadow-lg transition-all"
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-green-200 cursor-pointer hover:shadow-xl transition-all"
               onClick={() => setUI(prev => ({ ...prev, showBulkActions: !prev.showBulkActions }))}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Zap className="w-5 h-5 text-green-600" />
+                <div className="p-2.5 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                  <Zap className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="font-heading font-bold text-primary">Bulk Actions</h3>
               </div>
               <p className="font-paragraph text-sm text-primary/60">
-                Manage multiple items at once
+                Manage multiple items efficiently at once
               </p>
             </motion.div>
 
-            {/* Settings Tool */}
+            {/* Campaign Control */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-lg p-4 border border-orange-200 cursor-pointer hover:shadow-lg transition-all"
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-orange-200 cursor-pointer hover:shadow-xl transition-all"
+              onClick={handleToggleCampaignLive}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Settings className="w-5 h-5 text-orange-600" />
+                <div className={`p-2.5 rounded-lg ${data.campaign?.status === 'live' ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-green-500 to-green-600'}`}>
+                  {data.campaign?.status === 'live' ? (
+                    <X className="w-5 h-5 text-white" />
+                  ) : (
+                    <Zap className="w-5 h-5 text-white" />
+                  )}
                 </div>
-                <h3 className="font-heading font-bold text-primary">Settings</h3>
+                <h3 className="font-heading font-bold text-primary">
+                  {data.campaign?.status === 'live' ? 'Take Offline' : 'Go Live'}
+                </h3>
               </div>
               <p className="font-paragraph text-sm text-primary/60">
-                Configure dashboard preferences
+                {data.campaign?.status === 'live' ? 'Stop accepting donations' : 'Start accepting donations now'}
               </p>
             </motion.div>
           </div>
 
-          {/* Export Modal */}
+          {/* Enhanced Export Modal */}
           {ui.showExportModal && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-6 bg-white rounded-lg border-2 border-purple-300 space-y-4"
+              className="mt-6 p-6 bg-white rounded-xl border-2 border-purple-300 shadow-2xl space-y-4"
             >
-              <h3 className="font-heading text-lg font-bold text-primary">Export Data</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-xl font-bold text-primary">Export Data</h3>
+                <Button
+                  onClick={() => setUI(prev => ({ ...prev, showExportModal: false }))}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Button
                   onClick={() => handleExportData('donations')}
-                  className="bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800"
+                  className="bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 h-auto py-4 flex-col gap-2"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Donations ({data.donations.length})
+                  <Download className="w-5 h-5" />
+                  <span className="font-bold">Donations</span>
+                  <span className="text-xs opacity-90">{data.donations.length} records</span>
                 </Button>
                 <Button
                   onClick={() => handleExportData('teams')}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 h-auto py-4 flex-col gap-2"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Teams ({data.teams.length})
+                  <Download className="w-5 h-5" />
+                  <span className="font-bold">Teams</span>
+                  <span className="text-xs opacity-90">{data.teams.length} records</span>
                 </Button>
                 <Button
                   onClick={() => handleExportData('matchers')}
-                  className="bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800"
+                  className="bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 h-auto py-4 flex-col gap-2"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Matchers ({data.matchers.length})
+                  <Download className="w-5 h-5" />
+                  <span className="font-bold">Matchers</span>
+                  <span className="text-xs opacity-90">{data.matchers.length} records</span>
                 </Button>
               </div>
             </motion.div>
           )}
 
-          {/* Analytics Modal */}
+          {/* Enhanced Analytics Modal */}
           {ui.showAnalyticsModal && (() => {
             const analytics = getAnalytics();
             return (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-6 bg-white rounded-lg border-2 border-blue-300 space-y-6"
+                className="mt-6 p-6 bg-white rounded-xl border-2 border-blue-300 shadow-2xl space-y-6"
               >
-                <h3 className="font-heading text-lg font-bold text-primary">Campaign Analytics</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <p className="font-paragraph text-xs text-blue-600/60 mb-1">Total Donations</p>
-                    <p className="font-heading text-2xl font-bold text-blue-900">{analytics.totalDonations}</p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <p className="font-paragraph text-xs text-green-600/60 mb-1">Total Raised</p>
-                    <p className="font-heading text-2xl font-bold text-green-900">£{analytics.totalRaised.toLocaleString()}</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <p className="font-paragraph text-xs text-purple-600/60 mb-1">Average Donation</p>
-                    <p className="font-heading text-2xl font-bold text-purple-900">£{analytics.averageDonation.toFixed(2)}</p>
-                  </div>
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <p className="font-paragraph text-xs text-orange-600/60 mb-1">Completion Rate</p>
-                    <p className="font-heading text-2xl font-bold text-orange-900">{analytics.completionRate.toFixed(1)}%</p>
-                  </div>
-                  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-                    <p className="font-paragraph text-xs text-indigo-600/60 mb-1">Teams</p>
-                    <p className="font-heading text-2xl font-bold text-indigo-900">{analytics.totalTeams}</p>
-                  </div>
-                  <div className="bg-pink-50 rounded-lg p-4 border border-pink-200">
-                    <p className="font-paragraph text-xs text-pink-600/60 mb-1">Active Matchers</p>
-                    <p className="font-heading text-2xl font-bold text-pink-900">{analytics.activeMatchers}/{analytics.totalMatchers}</p>
-                  </div>
-                  <div className="bg-cyan-50 rounded-lg p-4 border border-cyan-200">
-                    <p className="font-paragraph text-xs text-cyan-600/60 mb-1">Completed</p>
-                    <p className="font-heading text-2xl font-bold text-cyan-900">{analytics.completedDonations}</p>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-heading text-xl font-bold text-primary flex items-center gap-2">
+                    <BarChart3 className="w-6 h-6 text-blue-600" />
+                    Campaign Analytics Dashboard
+                  </h3>
+                  <Button
+                    onClick={() => setUI(prev => ({ ...prev, showAnalyticsModal: false }))}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Total Donations</p>
+                    <p className="font-heading text-3xl font-bold">{analytics.totalDonations}</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Total Raised</p>
+                    <p className="font-heading text-3xl font-bold">£{analytics.totalRaised.toLocaleString()}</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Average Donation</p>
+                    <p className="font-heading text-3xl font-bold">£{analytics.averageDonation.toFixed(0)}</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Completion Rate</p>
+                    <p className="font-heading text-3xl font-bold">{analytics.completionRate.toFixed(1)}%</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Active Teams</p>
+                    <p className="font-heading text-3xl font-bold">{analytics.totalTeams}</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Active Matchers</p>
+                    <p className="font-heading text-3xl font-bold">{analytics.activeMatchers}/{analytics.totalMatchers}</p>
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl p-4 text-white shadow-lg"
+                  >
+                    <p className="font-paragraph text-xs opacity-80 mb-1">Completed</p>
+                    <p className="font-heading text-3xl font-bold">{analytics.completedDonations}</p>
+                  </motion.div>
                   {analytics.topDonor && (
-                    <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                      <p className="font-paragraph text-xs text-yellow-600/60 mb-1">Top Donor</p>
-                      <p className="font-heading text-sm font-bold text-yellow-900 truncate">{analytics.topDonor.donorName || 'Anonymous'}</p>
-                      <p className="font-paragraph text-xs text-yellow-700">£{analytics.topDonor.amount?.toLocaleString()}</p>
-                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 text-white shadow-lg"
+                    >
+                      <p className="font-paragraph text-xs opacity-80 mb-1">Top Donor</p>
+                      <p className="font-heading text-lg font-bold truncate">{analytics.topDonor.donorName || 'Anonymous'}</p>
+                      <p className="font-paragraph text-sm opacity-90">£{analytics.topDonor.amount?.toLocaleString()}</p>
+                    </motion.div>
                   )}
                 </div>
               </motion.div>
             );
           })()}
 
-          {/* Bulk Actions Modal */}
+          {/* Enhanced Bulk Actions Modal */}
           {ui.showBulkActions && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-6 bg-white rounded-lg border-2 border-green-300 space-y-4"
+              className="mt-6 p-6 bg-white rounded-xl border-2 border-green-300 shadow-2xl space-y-4"
             >
-              <h3 className="font-heading text-lg font-bold text-primary">Bulk Actions</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-xl font-bold text-primary flex items-center gap-2">
+                  <Zap className="w-6 h-6 text-green-600" />
+                  Bulk Actions
+                </h3>
+                <Button
+                  onClick={() => setUI(prev => ({ ...prev, showBulkActions: false }))}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
               <div className="space-y-3">
-                <Button
-                  onClick={handleMarkAllDonationsCompleted}
-                  disabled={ui.saving || data.donations.length === 0}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {ui.saving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Mark All Donations as Completed ({data.donations.length})
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleSendEmailToDonors}
-                  disabled={ui.saving || data.donations.length === 0}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {ui.saving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="w-4 h-4 mr-2" />
-                      Send Email to All Donors ({data.donations.length})
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleActivateAllTeams}
-                  disabled={ui.saving || data.teams.length === 0}
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {ui.saving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Users className="w-4 h-4 mr-2" />
-                      Activate All Teams ({data.teams.length})
-                    </>
-                  )}
-                </Button>
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-2">
-                  <p className="font-paragraph text-sm font-semibold text-green-900">✨ Bulk Actions Enabled</p>
+                <motion.div whileHover={{ scale: 1.02 }}>
+                  <Button
+                    onClick={handleMarkAllDonationsCompleted}
+                    disabled={ui.saving || data.donations.length === 0}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed h-auto py-4 rounded-xl shadow-lg"
+                  >
+                    {ui.saving ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                        <div className="text-left">
+                          <div className="font-bold">Processing...</div>
+                          <div className="text-xs opacity-90">Please wait</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-3" />
+                        <div className="text-left">
+                          <div className="font-bold">Mark All Donations as Completed</div>
+                          <div className="text-xs opacity-90">{data.donations.length} donations will be updated</div>
+                        </div>
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }}>
+                  <Button
+                    onClick={handleSendEmailToDonors}
+                    disabled={ui.saving || data.donations.length === 0}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed h-auto py-4 rounded-xl shadow-lg"
+                  >
+                    {ui.saving ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                        <div className="text-left">
+                          <div className="font-bold">Processing...</div>
+                          <div className="text-xs opacity-90">Please wait</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-5 h-5 mr-3" />
+                        <div className="text-left">
+                          <div className="font-bold">Send Email to All Donors</div>
+                          <div className="text-xs opacity-90">{data.donations.length} donor emails will be copied</div>
+                        </div>
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }}>
+                  <Button
+                    onClick={handleActivateAllTeams}
+                    disabled={ui.saving || data.teams.length === 0}
+                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 justify-start disabled:opacity-50 disabled:cursor-not-allowed h-auto py-4 rounded-xl shadow-lg"
+                  >
+                    {ui.saving ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                        <div className="text-left">
+                          <div className="font-bold">Processing...</div>
+                          <div className="text-xs opacity-90">Please wait</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Users className="w-5 h-5 mr-3" />
+                        <div className="text-left">
+                          <div className="font-bold">Activate All Teams</div>
+                          <div className="text-xs opacity-90">{data.teams.length} teams will be activated</div>
+                        </div>
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-4 border-2 border-green-200 space-y-2">
+                  <p className="font-paragraph text-sm font-semibold text-green-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Bulk Actions Enabled
+                  </p>
                   <p className="font-paragraph text-xs text-green-800">
-                    These actions allow you to efficiently manage multiple items at once. Confirmations are required before execution.
+                    These actions allow you to efficiently manage multiple items at once. Confirmations are required before execution to prevent accidental changes.
                   </p>
                 </div>
               </div>
@@ -1548,105 +1691,179 @@ export default function AdminDashboard() {
           </motion.div>
         )}
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-blue-600" />
-                  Total Raised
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-heading text-3xl font-bold text-blue-900">
-                  £{totalRaised.toLocaleString()}
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+        {/* Enhanced Stats Overview with Progress Bar */}
+        <div className="mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -5 }}
+            >
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <DollarSign className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                      Total Raised
+                    </span>
+                  </div>
+                  <p className="font-heading text-4xl font-bold mb-1">
+                    £{totalRaised.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-white/80">
+                    of £{data.campaign?.fundraisingGoal?.toLocaleString() || '0'} goal
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  Total Donors
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-heading text-3xl font-bold text-blue-900">
-                  {completedDonations.length}
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              whileHover={{ y: -5 }}
+            >
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                      Donors
+                    </span>
+                  </div>
+                  <p className="font-heading text-4xl font-bold mb-1">
+                    {completedDonations.length}
+                  </p>
+                  <p className="text-sm text-white/80">
+                    Total contributors
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-          >
-            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-blue-600" />
-                  Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-heading text-3xl font-bold text-blue-900">
-                  {progressPercentage.toFixed(1)}%
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              whileHover={{ y: -5 }}
+            >
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                      Progress
+                    </span>
+                  </div>
+                  <p className="font-heading text-4xl font-bold mb-1">
+                    {progressPercentage.toFixed(1)}%
+                  </p>
+                  <p className="text-sm text-white/80">
+                    Campaign completion
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              whileHover={{ y: -5 }}
+            >
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                      Teams
+                    </span>
+                  </div>
+                  <p className="font-heading text-4xl font-bold mb-1">
+                    {data.teams.length}
+                  </p>
+                  <p className="text-sm text-white/80">
+                    Active fundraising teams
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Progress Bar */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="bg-white rounded-2xl p-6 shadow-xl"
           >
-            <Card className="border-blue-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold text-blue-700 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-blue-600" />
-                  Goal
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-heading text-3xl font-bold text-blue-900">
-                  £{data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
-                </p>
-              </CardContent>
-            </Card>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-lg font-bold text-primary">Campaign Progress</h3>
+              <span className="text-sm font-semibold text-primary/60">
+                £{(data.campaign?.fundraisingGoal ? data.campaign.fundraisingGoal - totalRaised : 0).toLocaleString()} remaining
+              </span>
+            </div>
+            <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-end pr-4"
+              >
+                {progressPercentage > 10 && (
+                  <span className="text-white font-bold text-sm">
+                    {progressPercentage.toFixed(1)}%
+                  </span>
+                )}
+              </motion.div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Tabs */}
+        {/* Enhanced Tabs */}
         <Tabs defaultValue="campaign" className="space-y-8">
-          <TabsList className="bg-blue-100 border border-blue-300">
-            <TabsTrigger value="campaign" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+          <TabsList className="bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 p-1.5 rounded-xl">
+            <TabsTrigger 
+              value="campaign" 
+              className="font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white rounded-lg px-6 py-2.5 transition-all"
+            >
               Campaign
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="gallery" 
+              className="font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-purple-700 data-[state=active]:text-white rounded-lg px-6 py-2.5 transition-all"
+            >
               Gallery
             </TabsTrigger>
-            <TabsTrigger value="matchers" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="matchers" 
+              className="font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-green-700 data-[state=active]:text-white rounded-lg px-6 py-2.5 transition-all"
+            >
               Matchers
             </TabsTrigger>
-            <TabsTrigger value="teams" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="teams" 
+              className="font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-orange-700 data-[state=active]:text-white rounded-lg px-6 py-2.5 transition-all"
+            >
               Teams
             </TabsTrigger>
-            <TabsTrigger value="donations" className="font-paragraph data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="donations" 
+              className="font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-600 data-[state=active]:to-pink-700 data-[state=active]:text-white rounded-lg px-6 py-2.5 transition-all"
+            >
               Donations
             </TabsTrigger>
           </TabsList>
