@@ -557,7 +557,7 @@ export default function HomePage() {
               {campaign?.projectDescription || 'Join us in supporting a meaningful cause. Your contribution makes a real difference.'}
             </p>
 
-            <div className="flex items-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center gap-4 pt-4">
               <a href="#donate">
                 <Button 
                   size="lg" 
@@ -570,7 +570,7 @@ export default function HomePage() {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="border-primary text-primary hover:bg-primary/5 rounded-full px-8 py-6 text-lg font-semibold"
+                  className="border-2 border-primary text-primary hover:bg-primary/5 rounded-full px-8 py-6 text-lg font-semibold"
                 >
                   view the campaign
                 </Button>
