@@ -13,7 +13,11 @@ import {
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
   Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles,
   Download, BarChart3, Settings, Mail, Send, Bell, Clock, Award, Filter, Search, Activity, TrendingDown, 
-  RefreshCw, FileText, PieChart, Star, Trophy, Gift, Percent, ChevronRight, Eye, MessageSquare
+  RefreshCw, FileText, PieChart, Star, Trophy, Gift, Percent, ChevronRight, Eye, MessageSquare,
+  Lock, Shield, Key, Database, Code, Palette, Globe, Link2, Megaphone, Share2, 
+  UserCheck, UserX, FileCheck, FileX, Repeat, Workflow, Bot, Brain, Lightbulb,
+  CreditCard, Receipt, Wallet, TrendingDown as TrendDown, LineChart, BarChart, 
+  Layers, Grid, Layout, Package, Boxes, Archive, FolderOpen, Tags, Bookmark
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -2143,6 +2147,912 @@ export default function AdminDashboard() {
                 </div>
               </motion.div>
             )}
+          </motion.div>
+
+          {/* COMPREHENSIVE ADVANCED FEATURES SECTION */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="space-y-8"
+          >
+            {/* Section Header */}
+            <div className="text-center space-y-3">
+              <h2 className="font-heading text-4xl font-bold text-primary">
+                🚀 Advanced Admin Features
+              </h2>
+              <p className="font-paragraph text-lg text-primary/70">
+                Comprehensive tools to manage, analyze, and optimize your fundraising campaign
+              </p>
+            </div>
+
+            {/* Category 1: Advanced Analytics & Reporting */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 rounded-2xl p-8 border-2 border-purple-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl">
+                  <BarChart3 className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Advanced Analytics & Reporting</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Deep insights into campaign performance</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <LineChart className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Trend Analysis</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Track donation trends over time with interactive charts</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <PieChart className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Donor Segmentation</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Analyze donor demographics and giving patterns</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-red-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <TrendingUp className="w-6 h-6 text-red-600" />
+                    <h4 className="font-heading font-bold text-primary">Forecast Modeling</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Predict campaign outcomes based on current data</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-orange-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileText className="w-6 h-6 text-orange-600" />
+                    <h4 className="font-heading font-bold text-primary">Custom Reports</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Generate detailed PDF/Excel reports on demand</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <BarChart className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Comparative Analysis</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Compare performance across teams and time periods</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Activity className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Real-Time Dashboard</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Live updates on donations and campaign metrics</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-teal-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <TrendDown className="w-6 h-6 text-teal-600" />
+                    <h4 className="font-heading font-bold text-primary">Churn Analysis</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Identify and prevent donor drop-off patterns</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Database className="w-6 h-6 text-green-600" />
+                    <h4 className="font-heading font-bold text-primary">Data Export Hub</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Export data in multiple formats (CSV, JSON, XML)</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 2: Campaign Management Tools */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-8 border-2 border-blue-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl">
+                  <Settings className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Campaign Management Tools</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Advanced controls for campaign optimization</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Schedule Manager</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Set automated campaign start/end times and milestones</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Target className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Goal Adjustments</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Dynamically adjust fundraising goals and targets</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Layers className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Multi-Campaign</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Manage multiple campaigns simultaneously</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Copy className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Campaign Cloning</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Duplicate successful campaigns with one click</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Archive className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Archive System</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Archive completed campaigns for historical reference</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-teal-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Tags className="w-6 h-6 text-teal-600" />
+                    <h4 className="font-heading font-bold text-primary">Tag Management</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Organize campaigns with custom tags and categories</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Bookmark className="w-6 h-6 text-green-600" />
+                    <h4 className="font-heading font-bold text-primary">Templates Library</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Save and reuse campaign templates</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-yellow-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-6 h-6 text-yellow-600" />
+                    <h4 className="font-heading font-bold text-primary">Version History</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Track and restore previous campaign versions</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 3: Donor Engagement Features */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-2xl p-8 border-2 border-green-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-green-600 to-teal-600 rounded-xl">
+                  <Users className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Donor Engagement Features</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Build stronger relationships with supporters</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Mail className="w-6 h-6 text-green-600" />
+                    <h4 className="font-heading font-bold text-primary">Email Campaigns</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Send personalized thank-you and update emails</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-emerald-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MessageSquare className="w-6 h-6 text-emerald-600" />
+                    <h4 className="font-heading font-bold text-primary">SMS Notifications</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Instant text updates for major milestones</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-teal-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Award className="w-6 h-6 text-teal-600" />
+                    <h4 className="font-heading font-bold text-primary">Donor Recognition</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Badges, certificates, and public acknowledgment</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Receipt className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Auto Receipts</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automated tax-deductible donation receipts</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Repeat className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Recurring Donors</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Manage monthly/annual recurring donations</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Star className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">VIP Program</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Special perks for top-tier donors</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Bell className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Smart Reminders</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automated follow-ups for lapsed donors</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Gift className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Referral System</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Reward donors who bring in new supporters</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 4: Team Management Enhancements */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-orange-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-orange-600 to-yellow-600 rounded-xl">
+                  <Users className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Team Management Enhancements</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Empower teams with advanced tools</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-orange-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Trophy className="w-6 h-6 text-orange-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Leaderboards</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Real-time rankings to boost competition</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-amber-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <UserCheck className="w-6 h-6 text-amber-600" />
+                    <h4 className="font-heading font-bold text-primary">Member Roles</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Assign captain, co-captain, and member roles</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-yellow-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Target className="w-6 h-6 text-yellow-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Goals</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Set individual and collective team targets</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-red-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MessageSquare className="w-6 h-6 text-red-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Chat</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Internal messaging for team coordination</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Share2 className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Social Sharing</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Pre-built social media posts for teams</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileCheck className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Reports</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Detailed performance analytics per team</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Award className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Challenges</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Create friendly competitions between teams</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Megaphone className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Team Updates</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Broadcast announcements to all team members</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 5: Communication Tools */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 rounded-2xl p-8 border-2 border-cyan-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl">
+                  <Mail className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Communication Tools</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Stay connected with all stakeholders</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Send className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Bulk Messaging</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Send messages to multiple recipients at once</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-sky-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Layout className="w-6 h-6 text-sky-600" />
+                    <h4 className="font-heading font-bold text-primary">Email Templates</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Pre-designed templates for all occasions</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Bell className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Push Notifications</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Real-time alerts for important events</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MessageSquare className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Live Chat Support</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Direct messaging with donors and teams</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Megaphone className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Announcements</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Broadcast important campaign updates</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Globe className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Social Integration</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Post updates directly to social media</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-red-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileText className="w-6 h-6 text-red-600" />
+                    <h4 className="font-heading font-bold text-primary">Newsletter Builder</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Create and schedule email newsletters</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-orange-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Bot className="w-6 h-6 text-orange-600" />
+                    <h4 className="font-heading font-bold text-primary">Auto-Responder</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automated responses to common inquiries</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 6: Financial Management */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50 rounded-2xl p-8 border-2 border-emerald-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl">
+                  <DollarSign className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Financial Management</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Complete financial oversight and control</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-emerald-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <CreditCard className="w-6 h-6 text-emerald-600" />
+                    <h4 className="font-heading font-bold text-primary">Payment Gateway</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Multiple payment methods and processors</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Receipt className="w-6 h-6 text-green-600" />
+                    <h4 className="font-heading font-bold text-primary">Transaction Log</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Detailed records of all financial transactions</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-lime-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Wallet className="w-6 h-6 text-lime-600" />
+                    <h4 className="font-heading font-bold text-primary">Refund Manager</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Process refunds and cancellations easily</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-teal-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Percent className="w-6 h-6 text-teal-600" />
+                    <h4 className="font-heading font-bold text-primary">Fee Calculator</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Calculate processing fees and net amounts</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileCheck className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Tax Compliance</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Generate tax reports and documentation</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <TrendingUp className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Revenue Tracking</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Monitor income streams and growth</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Award className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Matching Funds</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automated matching fund calculations</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Database className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Financial Reports</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Comprehensive financial statements</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 7: Automation & Workflows */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 rounded-2xl p-8 border-2 border-violet-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-xl">
+                  <Workflow className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Automation & Workflows</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Streamline operations with smart automation</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-violet-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Bot className="w-6 h-6 text-violet-600" />
+                    <h4 className="font-heading font-bold text-primary">Auto-Workflows</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Create custom automated processes</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Zap className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Trigger Actions</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Set up event-based automated actions</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-fuchsia-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-6 h-6 text-fuchsia-600" />
+                    <h4 className="font-heading font-bold text-primary">Scheduled Tasks</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automate recurring administrative tasks</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Brain className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Smart Routing</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Intelligent task assignment and routing</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-rose-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Repeat className="w-6 h-6 text-rose-600" />
+                    <h4 className="font-heading font-bold text-primary">Batch Processing</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Process multiple items simultaneously</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-red-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileCheck className="w-6 h-6 text-red-600" />
+                    <h4 className="font-heading font-bold text-primary">Approval Flows</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Multi-step approval processes</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-orange-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Lightbulb className="w-6 h-6 text-orange-600" />
+                    <h4 className="font-heading font-bold text-primary">AI Suggestions</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">AI-powered optimization recommendations</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-amber-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <RefreshCw className="w-6 h-6 text-amber-600" />
+                    <h4 className="font-heading font-bold text-primary">Auto-Sync</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Sync data across platforms automatically</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 8: Security & Access Control */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 rounded-2xl p-8 border-2 border-slate-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-slate-600 to-gray-600 rounded-xl">
+                  <Shield className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Security & Access Control</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Enterprise-grade security features</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-slate-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Lock className="w-6 h-6 text-slate-600" />
+                    <h4 className="font-heading font-bold text-primary">Role-Based Access</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Granular permission controls</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Key className="w-6 h-6 text-gray-600" />
+                    <h4 className="font-heading font-bold text-primary">2FA Authentication</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Two-factor authentication for admins</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-zinc-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <UserCheck className="w-6 h-6 text-zinc-600" />
+                    <h4 className="font-heading font-bold text-primary">Activity Logs</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Track all admin actions and changes</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-stone-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <UserX className="w-6 h-6 text-stone-600" />
+                    <h4 className="font-heading font-bold text-primary">IP Restrictions</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Limit access by IP address</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-neutral-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Shield className="w-6 h-6 text-neutral-600" />
+                    <h4 className="font-heading font-bold text-primary">Data Encryption</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">End-to-end encryption for sensitive data</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-slate-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileX className="w-6 h-6 text-slate-600" />
+                    <h4 className="font-heading font-bold text-primary">Backup System</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Automated daily backups</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-6 h-6 text-gray-600" />
+                    <h4 className="font-heading font-bold text-primary">Session Management</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Control active admin sessions</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-zinc-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <AlertCircle className="w-6 h-6 text-zinc-600" />
+                    <h4 className="font-heading font-bold text-primary">Security Alerts</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Real-time security notifications</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 9: Integration & Export Options */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 rounded-2xl p-8 border-2 border-indigo-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-indigo-600 to-cyan-600 rounded-xl">
+                  <Link2 className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Integration & Export Options</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Connect with external tools and platforms</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Code className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">API Access</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">RESTful API for custom integrations</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Package className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Webhooks</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Real-time event notifications</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Download className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Data Export</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Export in CSV, JSON, XML formats</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-teal-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Upload className="w-6 h-6 text-teal-600" />
+                    <h4 className="font-heading font-bold text-primary">Bulk Import</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Import data from spreadsheets</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Mail className="w-6 h-6 text-green-600" />
+                    <h4 className="font-heading font-bold text-primary">Email Platforms</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Integrate with Mailchimp, SendGrid</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-emerald-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <CreditCard className="w-6 h-6 text-emerald-600" />
+                    <h4 className="font-heading font-bold text-primary">Payment Gateways</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Stripe, PayPal, Square integration</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-lime-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Globe className="w-6 h-6 text-lime-600" />
+                    <h4 className="font-heading font-bold text-primary">Social Media</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Facebook, Twitter, LinkedIn sync</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-yellow-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Database className="w-6 h-6 text-yellow-600" />
+                    <h4 className="font-heading font-bold text-primary">CRM Integration</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Salesforce, HubSpot connectivity</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Category 10: Customization & Branding */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50 rounded-2xl p-8 border-2 border-rose-200 shadow-xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-rose-600 to-fuchsia-600 rounded-xl">
+                  <Palette className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-bold text-primary">Customization & Branding</h3>
+                  <p className="font-paragraph text-sm text-primary/60">Make the platform uniquely yours</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-rose-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Palette className="w-6 h-6 text-rose-600" />
+                    <h4 className="font-heading font-bold text-primary">Theme Editor</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Customize colors, fonts, and styles</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-pink-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <ImageIcon className="w-6 h-6 text-pink-600" />
+                    <h4 className="font-heading font-bold text-primary">Logo Manager</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Upload and manage brand logos</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-fuchsia-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Layout className="w-6 h-6 text-fuchsia-600" />
+                    <h4 className="font-heading font-bold text-primary">Page Builder</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Drag-and-drop page customization</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-purple-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Code className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-heading font-bold text-primary">Custom CSS</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Add custom styling code</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-violet-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Globe className="w-6 h-6 text-violet-600" />
+                    <h4 className="font-heading font-bold text-primary">Domain Settings</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Configure custom domain names</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FileText className="w-6 h-6 text-indigo-600" />
+                    <h4 className="font-heading font-bold text-primary">Content Editor</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Edit all text and messaging</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Boxes className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-heading font-bold text-primary">Widget Library</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Add custom widgets and components</p>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-xl p-5 border-2 border-cyan-200 shadow-lg cursor-pointer">
+                  <div className="flex items-center gap-3 mb-3">
+                    <FolderOpen className="w-6 h-6 text-cyan-600" />
+                    <h4 className="font-heading font-bold text-primary">Media Library</h4>
+                  </div>
+                  <p className="font-paragraph text-xs text-primary/60">Centralized asset management</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Implementation Notice */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white text-center shadow-2xl"
+            >
+              <Sparkles className="w-12 h-12 mx-auto mb-4" />
+              <h3 className="font-heading text-3xl font-bold mb-3">
+                🎉 80+ Advanced Features Available
+              </h3>
+              <p className="font-paragraph text-lg mb-6 opacity-90">
+                These comprehensive tools are designed to give you complete control over your fundraising campaign. 
+                Each feature can be enabled and customized to match your specific needs.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Badge className="bg-white text-blue-600 px-4 py-2 text-sm font-semibold">
+                  Analytics & Reporting
+                </Badge>
+                <Badge className="bg-white text-purple-600 px-4 py-2 text-sm font-semibold">
+                  Campaign Management
+                </Badge>
+                <Badge className="bg-white text-green-600 px-4 py-2 text-sm font-semibold">
+                  Donor Engagement
+                </Badge>
+                <Badge className="bg-white text-orange-600 px-4 py-2 text-sm font-semibold">
+                  Team Tools
+                </Badge>
+                <Badge className="bg-white text-cyan-600 px-4 py-2 text-sm font-semibold">
+                  Communication
+                </Badge>
+                <Badge className="bg-white text-emerald-600 px-4 py-2 text-sm font-semibold">
+                  Financial
+                </Badge>
+                <Badge className="bg-white text-violet-600 px-4 py-2 text-sm font-semibold">
+                  Automation
+                </Badge>
+                <Badge className="bg-white text-slate-600 px-4 py-2 text-sm font-semibold">
+                  Security
+                </Badge>
+                <Badge className="bg-white text-indigo-600 px-4 py-2 text-sm font-semibold">
+                  Integrations
+                </Badge>
+                <Badge className="bg-white text-pink-600 px-4 py-2 text-sm font-semibold">
+                  Customization
+                </Badge>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
 
