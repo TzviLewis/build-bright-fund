@@ -203,6 +203,11 @@ export default function AdminDashboard() {
   // Team donations filter state
   const [selectedTeamForDonations, setSelectedTeamForDonations] = useState<string>('');
 
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [amountFilter, setAmountFilter] = useState<string>('');
+
   // Helper function to generate team ID
   const generateTeamId = () => {
     const id = Math.floor(Math.random() * 1000000).toString();
@@ -2092,6 +2097,8 @@ export default function AdminDashboard() {
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
                       <Input
                         type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by donor name or email..."
                         className="pl-10 border-blue-200 focus:border-blue-600"
                       />
@@ -2102,7 +2109,11 @@ export default function AdminDashboard() {
                     <label className="font-paragraph text-sm font-semibold text-primary">
                       Filter by Status
                     </label>
-                    <select className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph">
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph"
+                    >
                       <option value="">All Statuses</option>
                       <option value="completed">Completed</option>
                       <option value="pending">Pending</option>
@@ -2114,7 +2125,11 @@ export default function AdminDashboard() {
                     <label className="font-paragraph text-sm font-semibold text-primary">
                       Filter by Amount
                     </label>
-                    <select className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph">
+                    <select 
+                      value={amountFilter}
+                      onChange={(e) => setAmountFilter(e.target.value)}
+                      className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph"
+                    >
                       <option value="">All Amounts</option>
                       <option value="0-50">£0 - £50</option>
                       <option value="50-100">£50 - £100</option>
@@ -2125,11 +2140,38 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg">
+                  <Button 
+                    onClick={() => {
+                      // Filters are applied automatically via state
+                      setUI(prev => ({ 
+                        ...prev, 
+                        successMessage: 'Filters applied successfully!' 
+                      }));
+                      setTimeout(() => {
+                        setUI(prev => ({ ...prev, successMessage: null }));
+                      }, 2000);
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg"
+                  >
                     <Filter className="w-4 h-4 mr-2" />
                     Apply Filters
                   </Button>
-                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg">
+                  <Button 
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('');
+                      setAmountFilter('');
+                      setUI(prev => ({ 
+                        ...prev, 
+                        successMessage: 'Filters reset!' 
+                      }));
+                      setTimeout(() => {
+                        setUI(prev => ({ ...prev, successMessage: null }));
+                      }, 2000);
+                    }}
+                    variant="outline" 
+                    className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg"
+                  >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Reset
                   </Button>
@@ -2143,6 +2185,7 @@ export default function AdminDashboard() {
                     <li>• Search by donor name, email, or team name</li>
                     <li>• Use filters to narrow down results by status or amount</li>
                     <li>• Export filtered results to CSV for further analysis</li>
+                    <li>• Filters apply automatically as you type</li>
                   </ul>
                 </div>
               </motion.div>
@@ -4530,9 +4573,39 @@ export default function AdminDashboard() {
 
                 {/* Donations List */}
                 {(() => {
-                  const filteredDonations = selectedTeamForDonations 
-                    ? data.donations.filter(d => d.teamId === selectedTeamForDonations)
-                    : data.donations;
+                  // Apply all filters
+                  let filteredDonations = data.donations;
+
+                  // Team filter
+                  if (selectedTeamForDonations) {
+                    filteredDonations = filteredDonations.filter(d => d.teamId === selectedTeamForDonations);
+                  }
+
+                  // Search filter
+                  if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    filteredDonations = filteredDonations.filter(d => 
+                      (d.donorName?.toLowerCase().includes(query)) ||
+                      (d.donorEmail?.toLowerCase().includes(query))
+                    );
+                  }
+
+                  // Status filter
+                  if (statusFilter) {
+                    filteredDonations = filteredDonations.filter(d => d.status === statusFilter);
+                  }
+
+                  // Amount filter
+                  if (amountFilter) {
+                    filteredDonations = filteredDonations.filter(d => {
+                      const amount = d.amount || 0;
+                      if (amountFilter === '0-50') return amount >= 0 && amount <= 50;
+                      if (amountFilter === '50-100') return amount > 50 && amount <= 100;
+                      if (amountFilter === '100-500') return amount > 100 && amount <= 500;
+                      if (amountFilter === '500+') return amount > 500;
+                      return true;
+                    });
+                  }
                   
                   const teamTotal = filteredDonations.reduce((sum, d) => sum + (d.amount || 0), 0);
 
