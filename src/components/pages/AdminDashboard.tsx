@@ -12,7 +12,8 @@ import { CampaignDetails, Donations, Matchers, Teams, GalleryImages } from '@/en
 import { 
   ArrowLeft, Save, DollarSign, Users, TrendingUp, Calendar, 
   Trash2, Plus, Edit, AlertCircle, CheckCircle, X, Loader2, Image as ImageIcon, Upload, Zap, Film, Copy, Target, Sparkles,
-  Download, BarChart3, Settings, Mail, Send
+  Download, BarChart3, Settings, Mail, Send, Bell, Clock, Award, Filter, Search, Activity, TrendingDown, 
+  RefreshCw, FileText, PieChart, Star, Trophy, Gift, Percent, ChevronRight, Eye, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
@@ -88,6 +89,14 @@ interface UIState {
   showBulkActions: boolean;
   showEmailSender: boolean;
   selectedTeamForEmail: Teams | null;
+  showNotifications: boolean;
+  showActivityLog: boolean;
+  showQuickStats: boolean;
+  showSearchPanel: boolean;
+  showRecentActivity: boolean;
+  showTopDonors: boolean;
+  showGoalTracker: boolean;
+  showPerformanceMetrics: boolean;
 }
 
 interface DataState {
@@ -118,6 +127,14 @@ export default function AdminDashboard() {
     showBulkActions: false,
     showEmailSender: false,
     selectedTeamForEmail: null,
+    showNotifications: false,
+    showActivityLog: false,
+    showQuickStats: false,
+    showSearchPanel: false,
+    showRecentActivity: false,
+    showTopDonors: false,
+    showGoalTracker: false,
+    showPerformanceMetrics: false,
   });
 
   // Data State
@@ -1653,6 +1670,481 @@ export default function AdminDashboard() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* NEW ADMIN FEATURES SECTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 space-y-6"
+        >
+          {/* Quick Actions & Insights Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Notifications Panel */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-2xl p-6 shadow-xl border-2 border-yellow-200"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-lg font-bold text-primary flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-yellow-600" />
+                  Notifications
+                </h3>
+                <Button
+                  onClick={() => setUI(prev => ({ ...prev, showNotifications: !prev.showNotifications }))}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
+                  {ui.showNotifications ? <X className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+              </div>
+              {ui.showNotifications ? (
+                <div className="space-y-3">
+                  <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                    <p className="font-paragraph text-xs text-yellow-900 font-semibold">New Donation Alert</p>
+                    <p className="font-paragraph text-xs text-yellow-700 mt-1">
+                      {data.donations.length > 0 ? `Latest: £${data.donations[0]?.amount} from ${data.donations[0]?.donorName || 'Anonymous'}` : 'No donations yet'}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <p className="font-paragraph text-xs text-blue-900 font-semibold">Campaign Status</p>
+                    <p className="font-paragraph text-xs text-blue-700 mt-1">
+                      {data.campaign?.status === 'live' ? '✅ Campaign is LIVE' : '⚠️ Campaign is in DRAFT mode'}
+                    </p>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                    <p className="font-paragraph text-xs text-green-900 font-semibold">Active Teams</p>
+                    <p className="font-paragraph text-xs text-green-700 mt-1">
+                      {data.teams.length} teams are fundraising
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Bell className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                  <p className="font-paragraph text-sm text-primary/60">Click to view notifications</p>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Recent Activity Panel */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-2xl p-6 shadow-xl border-2 border-purple-200"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-lg font-bold text-primary flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-purple-600" />
+                  Recent Activity
+                </h3>
+                <Button
+                  onClick={() => setUI(prev => ({ ...prev, showRecentActivity: !prev.showRecentActivity }))}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
+                  {ui.showRecentActivity ? <X className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+              </div>
+              {ui.showRecentActivity ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {data.donations.slice(0, 5).map((donation, idx) => (
+                    <div key={donation._id} className="bg-purple-50 rounded-lg p-2 border border-purple-200">
+                      <p className="font-paragraph text-xs text-purple-900 font-semibold">
+                        💰 Donation #{idx + 1}
+                      </p>
+                      <p className="font-paragraph text-xs text-purple-700">
+                        £{donation.amount} from {donation.donorName || 'Anonymous'}
+                      </p>
+                    </div>
+                  ))}
+                  {data.donations.length === 0 && (
+                    <p className="font-paragraph text-xs text-purple-600 text-center py-4">No activity yet</p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Activity className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                  <p className="font-paragraph text-sm text-primary/60">Click to view activity</p>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Top Donors Panel */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-2xl p-6 shadow-xl border-2 border-pink-200"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-lg font-bold text-primary flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-pink-600" />
+                  Top Donors
+                </h3>
+                <Button
+                  onClick={() => setUI(prev => ({ ...prev, showTopDonors: !prev.showTopDonors }))}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
+                  {ui.showTopDonors ? <X className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+              </div>
+              {ui.showTopDonors ? (
+                <div className="space-y-2">
+                  {data.donations
+                    .sort((a, b) => (b.amount || 0) - (a.amount || 0))
+                    .slice(0, 5)
+                    .map((donation, idx) => (
+                      <div key={donation._id} className="bg-pink-50 rounded-lg p-2 border border-pink-200 flex items-center gap-2">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                          idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                          idx === 1 ? 'bg-gray-300 text-gray-700' :
+                          idx === 2 ? 'bg-orange-400 text-orange-900' :
+                          'bg-pink-200 text-pink-700'
+                        }`}>
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-paragraph text-xs text-pink-900 font-semibold">
+                            {donation.donorName || 'Anonymous'}
+                          </p>
+                          <p className="font-paragraph text-xs text-pink-700">£{donation.amount?.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  {data.donations.length === 0 && (
+                    <p className="font-paragraph text-xs text-pink-600 text-center py-4">No donors yet</p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Trophy className="w-8 h-8 text-pink-400 mx-auto mb-2" />
+                  <p className="font-paragraph text-sm text-primary/60">Click to view top donors</p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
+          {/* Performance Metrics Dashboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 rounded-2xl p-8 border-2 border-indigo-200 shadow-xl"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl font-bold text-primary flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl">
+                  <PieChart className="w-6 h-6 text-white" />
+                </div>
+                Performance Metrics
+              </h2>
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showPerformanceMetrics: !prev.showPerformanceMetrics }))}
+                className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white hover:from-indigo-700 hover:to-blue-800 rounded-lg"
+              >
+                {ui.showPerformanceMetrics ? 'Hide' : 'Show'} Metrics
+              </Button>
+            </div>
+
+            {ui.showPerformanceMetrics && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              >
+                <div className="bg-white rounded-xl p-4 border-2 border-indigo-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="w-5 h-5 text-green-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Conversion Rate</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.donations.length > 0 ? ((data.donations.filter(d => d.status === 'completed').length / data.donations.length) * 100).toFixed(1) : 0}%
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-blue-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <DollarSign className="w-5 h-5 text-blue-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Avg Donation</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    £{data.donations.length > 0 ? (data.donations.reduce((sum, d) => sum + (d.amount || 0), 0) / data.donations.length).toFixed(0) : 0}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-purple-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-5 h-5 text-purple-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Team Participation</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.teams.length > 0 ? ((data.donations.filter(d => d.teamId).length / data.donations.length) * 100).toFixed(0) : 0}%
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-pink-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="w-5 h-5 text-pink-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Days Remaining</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.campaign?.campaignEndDate 
+                      ? Math.max(0, Math.ceil((new Date(data.campaign.campaignEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+                      : '-'}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-green-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="w-5 h-5 text-green-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Goal Progress</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {progressPercentage.toFixed(1)}%
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-orange-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Award className="w-5 h-5 text-orange-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Active Matchers</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.matchers.filter(m => m.status === 'active').length}/{data.matchers.length}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-cyan-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MessageSquare className="w-5 h-5 text-cyan-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Messages</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.donations.filter(d => d.donorMessage).length}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border-2 border-yellow-200 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star className="w-5 h-5 text-yellow-600" />
+                    <p className="font-paragraph text-xs text-primary/60">Completion Rate</p>
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-primary">
+                    {data.donations.length > 0 ? ((data.donations.filter(d => d.status === 'completed').length / data.donations.length) * 100).toFixed(0) : 0}%
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Goal Tracker & Milestones */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="bg-white rounded-2xl p-8 shadow-xl border-2 border-green-200"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl font-bold text-primary flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                Goal Tracker & Milestones
+              </h2>
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showGoalTracker: !prev.showGoalTracker }))}
+                className="bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 rounded-lg"
+              >
+                {ui.showGoalTracker ? 'Hide' : 'Show'} Tracker
+              </Button>
+            </div>
+
+            {ui.showGoalTracker && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-6"
+              >
+                {/* Main Goal */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-heading text-lg font-bold text-primary">Main Fundraising Goal</h3>
+                    <span className="text-sm font-semibold text-green-600">
+                      £{totalRaised.toLocaleString()} / £{data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
+                    </span>
+                  </div>
+                  <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                      transition={{ duration: 1 }}
+                      className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full"
+                    />
+                  </div>
+                  <p className="font-paragraph text-sm text-primary/60">
+                    {progressPercentage >= 100 ? '🎉 Goal achieved!' : `£${((data.campaign?.fundraisingGoal || 0) - totalRaised).toLocaleString()} remaining`}
+                  </p>
+                </div>
+
+                {/* Bonus Goal */}
+                {data.campaign?.bonusGoal && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-heading text-lg font-bold text-primary flex items-center gap-2">
+                        <Gift className="w-5 h-5 text-purple-600" />
+                        Bonus Goal
+                      </h3>
+                      <span className="text-sm font-semibold text-purple-600">
+                        £{totalRaised.toLocaleString()} / £{data.campaign.bonusGoal.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min((totalRaised / data.campaign.bonusGoal) * 100, 100)}%` }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
+                      />
+                    </div>
+                    {data.campaign.bonusGoalDescription && (
+                      <p className="font-paragraph text-sm text-primary/60">
+                        {data.campaign.bonusGoalDescription}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Milestones */}
+                <div className="space-y-3">
+                  <h3 className="font-heading text-lg font-bold text-primary">Milestones</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[25, 50, 75, 100].map((milestone) => {
+                      const milestoneAmount = ((data.campaign?.fundraisingGoal || 0) * milestone) / 100;
+                      const achieved = totalRaised >= milestoneAmount;
+                      return (
+                        <div
+                          key={milestone}
+                          className={`rounded-xl p-4 border-2 ${
+                            achieved
+                              ? 'bg-green-50 border-green-300'
+                              : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-heading text-lg font-bold text-primary">{milestone}%</span>
+                            {achieved && <CheckCircle className="w-5 h-5 text-green-600" />}
+                          </div>
+                          <p className="font-paragraph text-sm text-primary/60">
+                            £{milestoneAmount.toLocaleString()}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Advanced Search & Filter Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white rounded-2xl p-8 shadow-xl border-2 border-blue-200"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl font-bold text-primary flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                  <Search className="w-6 h-6 text-white" />
+                </div>
+                Advanced Search & Filters
+              </h2>
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showSearchPanel: !prev.showSearchPanel }))}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg"
+              >
+                {ui.showSearchPanel ? 'Hide' : 'Show'} Search
+              </Button>
+            </div>
+
+            {ui.showSearchPanel && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
+                      Search Donations
+                    </label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <Input
+                        type="text"
+                        placeholder="Search by donor name or email..."
+                        className="pl-10 border-blue-200 focus:border-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
+                      Filter by Status
+                    </label>
+                    <select className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph">
+                      <option value="">All Statuses</option>
+                      <option value="completed">Completed</option>
+                      <option value="pending">Pending</option>
+                      <option value="failed">Failed</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-paragraph text-sm font-semibold text-primary">
+                      Filter by Amount
+                    </label>
+                    <select className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-blue-500 font-paragraph">
+                      <option value="">All Amounts</option>
+                      <option value="0-50">£0 - £50</option>
+                      <option value="50-100">£50 - £100</option>
+                      <option value="100-500">£100 - £500</option>
+                      <option value="500+">£500+</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Apply Filters
+                  </Button>
+                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <p className="font-paragraph text-sm text-blue-900 font-semibold mb-2">
+                    💡 Quick Search Tips
+                  </p>
+                  <ul className="space-y-1 text-xs text-blue-700">
+                    <li>• Search by donor name, email, or team name</li>
+                    <li>• Use filters to narrow down results by status or amount</li>
+                    <li>• Export filtered results to CSV for further analysis</li>
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </motion.div>
 
         {/* Video Editor Section */}
         {ui.showVideoEditor && campaignForm.videos && (
