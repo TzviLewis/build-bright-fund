@@ -437,12 +437,46 @@ export default function CampaignsPage() {
         {/* Campaigns Tab */}
         {activeTab === 'campaigns' && (
           <>
+            {/* AI Alerts Section */}
+            {alerts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-8"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Bell className="w-5 h-5 text-secondary" />
+                  <h3 className="font-heading text-lg font-bold text-primary">Campaign Alerts</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {alerts.slice(0, 4).map((alert, index) => (
+                    <motion.div
+                      key={`${alert.campaignId}-${index}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`p-4 rounded-lg border-l-4 ${
+                        alert.priority === 'high'
+                          ? 'bg-red-50 border-red-500'
+                          : alert.priority === 'medium'
+                          ? 'bg-yellow-50 border-yellow-500'
+                          : 'bg-blue-50 border-blue-500'
+                      }`}
+                    >
+                      <p className="font-paragraph text-sm font-semibold text-primary">{alert.message}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             {/* Simple Search Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="mb-12"
+              className="mb-8"
             >
               <div className="relative max-w-2xl mx-auto">
                 <div className="flex items-center gap-3 bg-gray-50 rounded-lg border border-gray-300 px-4 py-3">
@@ -485,6 +519,145 @@ export default function CampaignsPage() {
                 )}
               </div>
             </motion.div>
+
+            {/* Advanced Filters */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-8"
+            >
+              <AdvancedFilters
+                filters={[
+                  {
+                    id: 'status',
+                    label: 'Campaign Status',
+                    type: 'checkbox',
+                    options: [
+                      { id: 'active', label: 'Active', value: 'Active' },
+                      { id: 'completed', label: 'Completed', value: 'Completed' },
+                      { id: 'draft', label: 'Draft', value: 'Draft' },
+                    ],
+                  },
+                  {
+                    id: 'goalRange',
+                    label: 'Fundraising Goal',
+                    type: 'range',
+                    min: 0,
+                    max: 100000,
+                    step: 1000,
+                  },
+                  {
+                    id: 'sortBy',
+                    label: 'Sort By',
+                    type: 'select',
+                    options: [
+                      { id: 'newest', label: 'Newest First', value: 'newest' },
+                      { id: 'oldest', label: 'Oldest First', value: 'oldest' },
+                      { id: 'mostFunded', label: 'Highest Goal', value: 'mostFunded' },
+                      { id: 'leastFunded', label: 'Lowest Goal', value: 'leastFunded' },
+                      { id: 'endingSoon', label: 'Ending Soon', value: 'endingSoon' },
+                    ],
+                  },
+                ]}
+                onFiltersChange={(filters) => {
+                  if (filters.status) {
+                    filterStore.setStatusFilter(filters.status as string[]);
+                  }
+                  if (filters.goalRange && Array.isArray(filters.goalRange)) {
+                    filterStore.setGoalRange(filters.goalRange[0] as number, filters.goalRange[1] as number);
+                  }
+                  if (filters.sortBy) {
+                    filterStore.setSortBy(filters.sortBy as any);
+                  }
+                }}
+                onReset={() => filterStore.resetFilters()}
+              />
+            </motion.div>
+
+            {/* AI Recommendations */}
+            {recommendations.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-12"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Brain className="w-5 h-5 text-secondary" />
+                  <h3 className="font-heading text-lg font-bold text-primary">Recommended For You</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {recommendations.slice(0, 3).map((rec, index) => {
+                    const campaign = campaigns.find(c => c._id === rec.campaignId);
+                    if (!campaign) return null;
+                    return (
+                      <motion.div
+                        key={rec.campaignId}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-heading font-semibold text-primary text-sm">{campaign.campaignTitle}</h4>
+                          <span className="text-xs font-bold text-secondary">{rec.matchPercentage}% match</span>
+                        </div>
+                        <p className="font-paragraph text-xs text-gray-600 mb-3">{rec.reason}</p>
+                        <Link to={`/campaign/${campaign._id}`}>
+                          <Button className="w-full bg-secondary text-white hover:bg-secondary/90 rounded-lg py-2 text-sm">
+                            View Campaign
+                          </Button>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Trending Campaigns */}
+            {trendingCampaigns.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-12"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUpIcon className="w-5 h-5 text-secondary" />
+                  <h3 className="font-heading text-lg font-bold text-primary">Trending This Week</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {trendingCampaigns.map((campaign, index) => {
+                    const stats = getCampaignStats(campaign);
+                    return (
+                      <motion.div
+                        key={campaign._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">🔥</span>
+                          <h4 className="font-heading font-semibold text-primary text-sm">{campaign.campaignTitle}</h4>
+                        </div>
+                        <p className="font-paragraph text-xs text-gray-600 mb-3 line-clamp-2">{campaign.projectDescription}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="font-heading text-sm font-bold text-secondary">£{stats.totalRaised.toLocaleString()}</span>
+                          <Link to={`/campaign/${campaign._id}`}>
+                            <Button className="bg-secondary text-white hover:bg-secondary/90 rounded-lg px-3 py-1 text-xs">
+                              View
+                            </Button>
+                          </Link>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
             {/* Stats Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
