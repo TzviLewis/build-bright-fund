@@ -69,7 +69,7 @@ export default function CampaignsPage() {
       }
 
       try {
-        const donationsRes = await BaseCrudService.getAll<Donations>('donations');
+        const donationsRes = await BaseCrudService.getAll<Donations>('donations', [], { limit: 1000 });
         donationsData = donationsRes?.items || [];
       } catch (donationErr) {
         console.error('Error loading donations:', donationErr);
