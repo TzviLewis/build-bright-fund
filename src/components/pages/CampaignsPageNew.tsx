@@ -39,6 +39,7 @@ export default function CampaignsPage() {
   const [trendingCampaigns, setTrendingCampaigns] = useState<CampaignDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<CampaignDetails[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Store hooks
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavoritesStore();
@@ -162,6 +163,7 @@ export default function CampaignsPage() {
   // Handle search
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setIsSearching(true);
     if (query.trim()) {
       const results = aiService.searchCampaigns(campaigns, query);
       const matchedCampaigns = results.map(result => 
@@ -171,6 +173,7 @@ export default function CampaignsPage() {
     } else {
       setSearchResults([]);
     }
+    setIsSearching(false);
   };
 
   const isCampaignLive = (campaign: CampaignDetails) => {
@@ -498,23 +501,47 @@ export default function CampaignsPage() {
                   )}
                 </div>
             
-                {/* Search Results */}
-                {searchQuery && searchResults.length > 0 && (
+                {/* Search Results Dropdown */}
+                {searchQuery && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg border border-gray-200 shadow-lg z-20 max-h-96 overflow-y-auto"
                   >
-                    {searchResults.map((campaign) => (
-                      <Link
-                        key={campaign._id}
-                        to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}
-                        className="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                      >
-                        <p className="font-heading font-semibold text-primary">{campaign.campaignTitle}</p>
-                        <p className="font-paragraph text-sm text-gray-600 line-clamp-1">{campaign.projectDescription}</p>
-                      </Link>
-                    ))}
+                    {searchResults.length > 0 ? (
+                      <div>
+                        <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 sticky top-0">
+                          <p className="font-paragraph text-xs text-blue-700 font-semibold">
+                            ✓ Found {searchResults.length} campaign{searchResults.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        {searchResults.map((campaign, index) => (
+                          <motion.div
+                            key={campaign._id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                          >
+                            <Link
+                              to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}
+                              className="block px-4 py-3 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                            >
+                              <p className="font-heading font-semibold text-primary">{campaign.campaignTitle}</p>
+                              <p className="font-paragraph text-sm text-gray-600 line-clamp-1">{campaign.projectDescription}</p>
+                            </Link>
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-8 text-center">
+                        <div className="mb-2">
+                          <p className="font-paragraph text-sm text-gray-600 font-semibold">No campaigns found</p>
+                        </div>
+                        <p className="font-paragraph text-xs text-gray-500">
+                          Try searching with different keywords like campaign name or description
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </div>
