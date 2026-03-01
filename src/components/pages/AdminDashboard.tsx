@@ -25,6 +25,7 @@ import DonationWidget from '@/components/DonationWidget';
 import VideoPlayer from '@/components/VideoPlayer';
 import VideoEditor from '@/components/VideoEditor';
 import TeamEmailSender from '@/components/TeamEmailSender';
+import CodeExportButton from '@/components/CodeExportButton';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
 interface FormState {
@@ -1523,6 +1524,23 @@ ${codePackage.documentation}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Export Source Code Tool */}
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-cyan-200 cursor-pointer hover:shadow-xl transition-all"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg">
+                  <Code className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">Export Code</h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60 mb-3">
+                Download full website source code as ZIP
+              </p>
+              <CodeExportButton variant="compact" showLabel={false} />
+            </motion.div>
+
             {/* Export Data Tool */}
             <motion.div
               whileHover={{ scale: 1.05, y: -5 }}
