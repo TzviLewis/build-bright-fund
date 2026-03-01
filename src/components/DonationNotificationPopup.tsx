@@ -74,7 +74,7 @@ export default function DonationNotificationPopup() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
-          className="fixed right-6 top-1/2 -translate-y-1/2 z-40 w-96 max-w-[calc(100vw-2rem)]"
+          className="fixed bottom-6 right-6 z-40 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl px-4 sm:px-0"
         >
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
             {/* Header */}
