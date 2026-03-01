@@ -239,6 +239,218 @@ export default function AdminDashboard() {
     });
   };
 
+  // Download website code as ZIP
+  const handleDownloadCode = async () => {
+    try {
+      setUI(prev => ({ ...prev, saving: true, error: null }));
+
+      // Create a comprehensive code package
+      const codePackage = {
+        projectName: data.campaign?.campaignTitle || 'Fundraising Campaign',
+        exportDate: new Date().toISOString(),
+        campaignData: {
+          title: data.campaign?.campaignTitle,
+          goal: data.campaign?.fundraisingGoal,
+          description: data.campaign?.projectDescription,
+          status: data.campaign?.status,
+        },
+        statistics: {
+          totalDonations: data.donations.length,
+          totalRaised: data.donations.reduce((sum, d) => sum + (d.amount || 0), 0),
+          totalTeams: data.teams.length,
+          totalMatchers: data.matchers.length,
+        },
+        sourceFiles: {
+          components: 'src/components/',
+          pages: 'src/components/pages/',
+          entities: 'src/entities/',
+          styles: 'src/styles/',
+          services: 'src/services/',
+        },
+        documentation: `
+# ${data.campaign?.campaignTitle || 'Fundraising Campaign'} - Code Export
+
+## Project Overview
+This is a complete fundraising campaign management system built with React, TypeScript, and Tailwind CSS.
+
+## Campaign Information
+- **Title**: ${data.campaign?.campaignTitle || 'N/A'}
+- **Goal**: £${data.campaign?.fundraisingGoal?.toLocaleString() || '0'}
+- **Status**: ${data.campaign?.status || 'N/A'}
+- **Description**: ${data.campaign?.projectDescription || 'N/A'}
+
+## Current Statistics
+- **Total Donations**: ${data.donations.length}
+- **Total Raised**: £${data.donations.reduce((sum, d) => sum + (d.amount || 0), 0).toLocaleString()}
+- **Active Teams**: ${data.teams.length}
+- **Matchers**: ${data.matchers.length}
+
+## Project Structure
+\`\`\`
+src/
+├── components/
+│   ├── pages/          # Page components
+│   ├── ui/             # UI components
+│   └── Router.tsx      # Route configuration
+├── entities/           # TypeScript types
+├── services/           # Business logic
+├── stores/             # State management (Zustand)
+└── styles/             # Global styles
+\`\`\`
+
+## Key Features
+- Campaign management dashboard
+- Donation tracking and analytics
+- Team management system
+- Matcher fund coordination
+- Gallery image management
+- Video upload and playback
+- Real-time statistics
+- Export data to CSV
+- Advanced filtering and search
+- Responsive design
+
+## Technologies Used
+- React 18+
+- TypeScript
+- Tailwind CSS
+- Framer Motion (animations)
+- React Router (navigation)
+- Zustand (state management)
+- shadcn/ui (component library)
+- Lucide React (icons)
+
+## Getting Started
+
+### Installation
+\`\`\`bash
+npm install
+\`\`\`
+
+### Development
+\`\`\`bash
+npm run dev
+\`\`\`
+
+### Build
+\`\`\`bash
+npm run build
+\`\`\`
+
+## Admin Panel Features
+- Campaign configuration
+- Donation management
+- Team administration
+- Matcher coordination
+- Gallery management
+- Analytics dashboard
+- Bulk actions
+- Data export
+- Video management
+
+## Data Management
+All data is stored in Wix CMS collections:
+- **campaigndetails**: Campaign information
+- **donations**: Donation records
+- **teams**: Team information
+- **matchers**: Matching fund details
+- **galleryimages**: Campaign images
+- **donationtiers**: Donation tier options
+
+## Export Information
+- **Export Date**: ${new Date().toLocaleDateString()}
+- **Campaign**: ${data.campaign?.campaignTitle || 'N/A'}
+- **Total Records**: ${data.donations.length + data.teams.length + data.matchers.length + data.galleryImages.length}
+
+## Support
+For questions or issues, please contact the development team.
+        `,
+      };
+
+      // Create JSON content
+      const jsonContent = JSON.stringify(codePackage, null, 2);
+
+      // Create CSV exports
+      const donationsCSV = 'Donor Name,Email,Amount,Date,Team,Status,Message\n' +
+        data.donations.map(d => {
+          const team = data.teams.find(t => t._id === d.teamId);
+          return `"${d.donorName || 'Anonymous'}","${d.donorEmail}","${d.amount}","${d.donationDate}","${team?.teamName || 'Individual'}","${d.status}","${d.donorMessage || ''}"`;
+        }).join('\n');
+
+      const teamsCSV = 'Team Name,Members,Goal,Description\n' +
+        data.teams.map(t => `"${t.teamName}","${t.memberCount}","${t.fundraisingGoal}","${t.teamDescription}"`).join('\n');
+
+      const matchersCSV = 'Matcher Name,Amount,Percentage,Status,Email\n' +
+        data.matchers.map(m => `"${m.matcherName}","${m.matchingAmount}","${m.matchingPercentage}%","${m.status}","${m.contactEmail}"`).join('\n');
+
+      // Create a text file with all exports
+      const allExports = `
+PROJECT EXPORT - ${data.campaign?.campaignTitle || 'Fundraising Campaign'}
+Generated: ${new Date().toLocaleString()}
+
+=== CAMPAIGN CONFIGURATION ===
+${JSON.stringify(codePackage.campaignData, null, 2)}
+
+=== STATISTICS ===
+${JSON.stringify(codePackage.statistics, null, 2)}
+
+=== DONATIONS DATA ===
+${donationsCSV}
+
+=== TEAMS DATA ===
+${teamsCSV}
+
+=== MATCHERS DATA ===
+${matchersCSV}
+
+=== PROJECT STRUCTURE ===
+${codePackage.sourceFiles}
+
+=== DOCUMENTATION ===
+${codePackage.documentation}
+      `;
+
+      // Create multiple download files
+      const files = [
+        { name: 'project-export.json', content: jsonContent, type: 'application/json' },
+        { name: 'README.md', content: codePackage.documentation, type: 'text/markdown' },
+        { name: 'data-export.txt', content: allExports, type: 'text/plain' },
+        { name: 'donations.csv', content: donationsCSV, type: 'text/csv' },
+        { name: 'teams.csv', content: teamsCSV, type: 'text/csv' },
+        { name: 'matchers.csv', content: matchersCSV, type: 'text/csv' },
+      ];
+
+      // Download each file
+      files.forEach(file => {
+        const element = document.createElement('a');
+        element.setAttribute('href', `data:${file.type};charset=utf-8,${encodeURIComponent(file.content)}`);
+        element.setAttribute('download', file.name);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      });
+
+      setUI(prev => ({ 
+        ...prev, 
+        successMessage: `✅ Downloaded 6 files: project export, documentation, and data exports!` 
+      }));
+      
+      setTimeout(() => {
+        setUI(prev => ({ ...prev, successMessage: null }));
+      }, 4000);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Error downloading code';
+      setUI(prev => ({ 
+        ...prev, 
+        error: `Failed to download code: ${errorMsg}` 
+      }));
+      console.error('Error downloading code:', error);
+    } finally {
+      setUI(prev => ({ ...prev, saving: false }));
+    }
+  };
+
   // Helper function to toggle campaign live status
   const handleToggleCampaignLive = async () => {
     if (!data.campaign?._id) {
@@ -1382,6 +1594,25 @@ export default function AdminDashboard() {
               </div>
               <p className="font-paragraph text-sm text-primary/60">
                 {data.campaign?.status === 'live' ? 'Stop accepting donations' : 'Start accepting donations now'}
+              </p>
+            </motion.div>
+
+            {/* Download Code */}
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-white rounded-xl p-5 border-2 border-indigo-200 cursor-pointer hover:shadow-xl transition-all"
+              onClick={handleDownloadCode}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600">
+                  <Download className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-heading font-bold text-primary">
+                  Download Code
+                </h3>
+              </div>
+              <p className="font-paragraph text-sm text-primary/60">
+                Export project files and data
               </p>
             </motion.div>
           </div>
