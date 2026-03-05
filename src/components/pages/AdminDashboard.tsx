@@ -421,34 +421,44 @@ ${codePackage.documentation}
         { name: 'matchers.csv', content: matchersCSV, type: 'text/csv' },
       ];
 
-      // Download each file
-      files.forEach(file => {
-        const element = document.createElement('a');
-        element.setAttribute('href', `data:${file.type};charset=utf-8,${encodeURIComponent(file.content)}`);
-        element.setAttribute('download', file.name);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-      });
+      // Download files sequentially with delays to ensure proper handling
+      let fileIndex = 0;
+      const downloadNextFile = () => {
+        if (fileIndex < files.length) {
+          const file = files[fileIndex];
+          const element = document.createElement('a');
+          element.setAttribute('href', `data:${file.type};charset=utf-8,${encodeURIComponent(file.content)}`);
+          element.setAttribute('download', file.name);
+          element.style.display = 'none';
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+          fileIndex++;
+          // Small delay between downloads to ensure proper handling
+          setTimeout(downloadNextFile, 300);
+        } else {
+          // All files downloaded
+          setUI(prev => ({ 
+            ...prev, 
+            successMessage: `✅ Successfully downloaded ${files.length} files! Check your downloads folder for: project-export.json, README.md, data-export.txt, donations.csv, teams.csv, and matchers.csv` 
+          }));
+          
+          setTimeout(() => {
+            setUI(prev => ({ ...prev, successMessage: null }));
+          }, 5000);
+          setUI(prev => ({ ...prev, saving: false }));
+        }
+      };
 
-      setUI(prev => ({ 
-        ...prev, 
-        successMessage: `✅ Downloaded 6 files: project export, documentation, and data exports!` 
-      }));
-      
-      setTimeout(() => {
-        setUI(prev => ({ ...prev, successMessage: null }));
-      }, 4000);
+      downloadNextFile();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Error downloading code';
       setUI(prev => ({ 
         ...prev, 
-        error: `Failed to download code: ${errorMsg}` 
+        error: `Failed to download code: ${errorMsg}`,
+        saving: false 
       }));
       console.error('Error downloading code:', error);
-    } finally {
-      setUI(prev => ({ ...prev, saving: false }));
     }
   };
 
