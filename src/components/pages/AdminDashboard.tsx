@@ -28,6 +28,74 @@ import TeamEmailSender from '@/components/TeamEmailSender';
 import CodeExportButton from '@/components/CodeExportButton';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
 
+// Theme configuration
+const themeConfig = {
+  blue: {
+    name: 'Ocean Blue',
+    header: 'from-blue-600 via-blue-600 to-blue-700',
+    primary: 'blue',
+    accent: 'blue-600',
+    light: 'blue-50',
+    border: 'blue-200',
+  },
+  purple: {
+    name: 'Royal Purple',
+    header: 'from-purple-600 via-purple-600 to-purple-700',
+    primary: 'purple',
+    accent: 'purple-600',
+    light: 'purple-50',
+    border: 'purple-200',
+  },
+  green: {
+    name: 'Forest Green',
+    header: 'from-green-600 via-green-600 to-green-700',
+    primary: 'green',
+    accent: 'green-600',
+    light: 'green-50',
+    border: 'green-200',
+  },
+  orange: {
+    name: 'Sunset Orange',
+    header: 'from-orange-600 via-orange-600 to-orange-700',
+    primary: 'orange',
+    accent: 'orange-600',
+    light: 'orange-50',
+    border: 'orange-200',
+  },
+  pink: {
+    name: 'Flamingo Pink',
+    header: 'from-pink-600 via-pink-600 to-pink-700',
+    primary: 'pink',
+    accent: 'pink-600',
+    light: 'pink-50',
+    border: 'pink-200',
+  },
+  indigo: {
+    name: 'Deep Indigo',
+    header: 'from-indigo-600 via-indigo-600 to-indigo-700',
+    primary: 'indigo',
+    accent: 'indigo-600',
+    light: 'indigo-50',
+    border: 'indigo-200',
+  },
+  teal: {
+    name: 'Teal Tide',
+    header: 'from-teal-600 via-teal-600 to-teal-700',
+    primary: 'teal',
+    accent: 'teal-600',
+    light: 'teal-50',
+    border: 'teal-200',
+  },
+  rose: {
+    name: 'Rose Gold',
+    header: 'from-rose-600 via-rose-600 to-rose-700',
+    primary: 'rose',
+    accent: 'rose-600',
+    light: 'rose-50',
+    border: 'rose-200',
+  },
+};
+
 interface FormState {
   campaignTitle: string;
   campaignSlug: string;
@@ -102,6 +170,8 @@ interface UIState {
   showTopDonors: boolean;
   showGoalTracker: boolean;
   showPerformanceMetrics: boolean;
+  showThemeSelector: boolean;
+  currentTheme: 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'indigo' | 'teal' | 'rose';
 }
 
 interface DataState {
@@ -140,6 +210,8 @@ export default function AdminDashboard() {
     showTopDonors: false,
     showGoalTracker: false,
     showPerformanceMetrics: false,
+    showThemeSelector: false,
+    currentTheme: 'blue',
   });
 
   // Data State
@@ -1309,7 +1381,7 @@ ${codePackage.documentation}
   return (
     <div className="min-h-screen bg-background">
       {/* Enhanced Header with Gradient */}
-      <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white border-b-4 border-white/20 shadow-2xl sticky top-0 z-50">
+      <header className={`bg-gradient-to-r ${themeConfig[ui.currentTheme].header} text-white border-b-4 border-white/20 shadow-2xl sticky top-0 z-50`}>
         <div className="max-w-[120rem] mx-auto px-8 py-8">
           <div className="flex justify-between items-center">
             <div className="space-y-2">
@@ -1336,6 +1408,13 @@ ${codePackage.documentation}
               )}
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showThemeSelector: !prev.showThemeSelector }))}
+                className="bg-white text-blue-600 hover:bg-white/90 rounded-xl px-6 py-3 font-semibold shadow-lg"
+              >
+                <Palette className="w-4 h-4 mr-2" />
+                Theme
+              </Button>
               <Link to="/">
                 <Button 
                   className="bg-white text-blue-600 hover:bg-white/90 rounded-xl px-6 py-3 font-semibold shadow-lg"
@@ -1350,6 +1429,60 @@ ${codePackage.documentation}
       </header>
 
       <div className="max-w-[120rem] mx-auto px-8 py-12">
+        {/* Theme Selector Modal */}
+        {ui.showThemeSelector && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-white rounded-xl border-2 border-gray-200 shadow-xl"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-heading text-xl font-bold text-primary flex items-center gap-2">
+                <Palette className="w-6 h-6 text-blue-600" />
+                Choose Dashboard Theme
+              </h3>
+              <Button
+                onClick={() => setUI(prev => ({ ...prev, showThemeSelector: false }))}
+                variant="outline"
+                size="sm"
+                className="rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(Object.entries(themeConfig) as [keyof typeof themeConfig, typeof themeConfig[keyof typeof themeConfig]][]).map(([themeKey, theme]) => (
+                <motion.button
+                  key={themeKey}
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => {
+                    setUI(prev => ({ ...prev, currentTheme: themeKey, showThemeSelector: false }));
+                    setUI(prev => ({ 
+                      ...prev, 
+                      successMessage: `Theme changed to ${theme.name}!` 
+                    }));
+                    setTimeout(() => {
+                      setUI(prev => ({ ...prev, successMessage: null }));
+                    }, 2000);
+                  }}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    ui.currentTheme === themeKey
+                      ? `border-${theme.primary}-600 bg-${theme.light} shadow-lg`
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`w-full h-12 rounded-lg bg-gradient-to-r from-${theme.primary}-500 to-${theme.primary}-600 mb-2`} />
+                  <p className="font-paragraph text-sm font-semibold text-primary text-center">
+                    {theme.name}
+                  </p>
+                  {ui.currentTheme === themeKey && (
+                    <p className="font-paragraph text-xs text-green-600 text-center mt-1">✓ Active</p>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
         {/* Enhanced Quick Navigation Grid */}
         <div className="mb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <motion.div
