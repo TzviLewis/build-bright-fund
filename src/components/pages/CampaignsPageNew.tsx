@@ -746,7 +746,7 @@ export default function CampaignsPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="space-y-8">
                   {liveCampaigns.map((campaign, index) => {
                     const stats = getCampaignStats(campaign);
                     return (
@@ -755,75 +755,93 @@ export default function CampaignsPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: index * 0.05 }}
-                        className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 group"
+                        className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-200 group"
                       >
-                        {/* Campaign Image */}
-                        {campaign.mainCampaignImage && (
-                          <div className="relative h-48 overflow-hidden bg-gray-100">
-                            <Image
-                              src={campaign.mainCampaignImage}
-                              alt={campaign.campaignTitle || 'Campaign'}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              width={400}
-                            />
-                            <div className="absolute top-3 right-3 bg-secondary text-white px-3 py-1 rounded-full font-semibold text-xs">
-                              LIVE
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Campaign Content */}
-                        <div className="p-6 space-y-4">
-                          <div>
-                            <h3 className="font-heading text-xl font-bold text-primary mb-2">
-                              {campaign.campaignTitle}
-                            </h3>
-                            <p className="font-paragraph text-sm text-gray-600 line-clamp-2">
-                              {campaign.projectDescription}
-                            </p>
-                          </div>
-
-                          {/* Progress Bar */}
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <span className="font-paragraph text-xs text-gray-500">Progress</span>
-                              <span className="font-heading text-sm font-bold text-secondary">
-                                {stats.progress.toFixed(0)}%
-                              </span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${stats.progress}%` }}
-                                transition={{ duration: 1, ease: 'easeOut' }}
-                                className="bg-secondary h-full rounded-full"
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                          {/* Left: Large Campaign Image */}
+                          {campaign.mainCampaignImage && (
+                            <div className="lg:col-span-2 relative h-64 lg:h-80 overflow-hidden bg-gray-100">
+                              <Image
+                                src={campaign.mainCampaignImage}
+                                alt={campaign.campaignTitle || 'Campaign'}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                width={600}
                               />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                              <div className="absolute top-4 right-4 bg-secondary text-white px-4 py-2 rounded-full font-semibold text-xs flex items-center gap-2">
+                                <Zap className="w-3 h-3" />
+                                LIVE
+                              </div>
                             </div>
-                          </div>
+                          )}
 
-                          {/* Stats */}
-                          <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                            <div>
-                              <p className="font-paragraph text-xs text-gray-500">Raised</p>
-                              <p className="font-heading text-lg font-bold text-primary">
-                                £{stats.totalRaised.toLocaleString()}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-paragraph text-xs text-gray-500">Goal</p>
-                              <p className="font-heading text-lg font-bold text-gray-700">
-                                £{campaign.fundraisingGoal?.toLocaleString() || '0'}
-                              </p>
-                            </div>
-                          </div>
+                          {/* Right: Campaign Info & Stats */}
+                          <div className="lg:col-span-1 p-6 lg:p-8 flex flex-col justify-between bg-gradient-to-br from-white to-gray-50">
+                            {/* Header */}
+                            <div className="space-y-4">
+                              <div>
+                                <h3 className="font-heading text-2xl font-bold text-primary mb-2">
+                                  {campaign.campaignTitle}
+                                </h3>
+                                <p className="font-paragraph text-sm text-gray-600 line-clamp-2">
+                                  {campaign.projectDescription}
+                                </p>
+                              </div>
 
-                          {/* CTA Button */}
-                          <Link to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`}>
-                            <Button className="w-full bg-secondary text-white hover:bg-secondary/90 rounded-lg py-2.5 font-semibold flex items-center justify-center gap-2">
-                              View Campaign
-                              <ArrowRight className="w-4 h-4" />
-                            </Button>
-                          </Link>
+                              {/* Main Amount Display */}
+                              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                <p className="font-paragraph text-xs text-gray-500 uppercase tracking-wider mb-1">Raised so far</p>
+                                <p className="font-heading text-4xl font-bold text-secondary">
+                                  £{stats.totalRaised.toLocaleString()}
+                                </p>
+                                <p className="font-paragraph text-xs text-gray-500 mt-2">
+                                  of £{campaign.fundraisingGoal?.toLocaleString() || '0'} goal
+                                </p>
+                              </div>
+
+                              {/* Progress Bar */}
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                  <span className="font-paragraph text-xs text-gray-500">Progress</span>
+                                  <span className="font-heading text-sm font-bold text-secondary">
+                                    {stats.progress.toFixed(0)}%
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${stats.progress}%` }}
+                                    transition={{ duration: 1, ease: 'easeOut' }}
+                                    className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Stats Grid */}
+                              <div className="grid grid-cols-2 gap-3 pt-2">
+                                <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                  <p className="font-paragraph text-xs text-gray-500 mb-1">Donors</p>
+                                  <p className="font-heading text-lg font-bold text-primary">{stats.donorCount}</p>
+                                </div>
+                                <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                  <p className="font-paragraph text-xs text-gray-500 mb-1">Days Left</p>
+                                  <p className="font-heading text-lg font-bold text-primary">
+                                    {campaign.campaignEndDate 
+                                      ? Math.max(0, Math.ceil((new Date(campaign.campaignEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+                                      : 'N/A'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* CTA Button */}
+                            <Link to={(campaign as any).slug ? `/c/${(campaign as any).slug}` : `/campaign/${campaign._id}`} className="mt-6">
+                              <Button className="w-full bg-secondary text-white hover:bg-secondary/90 rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition-all">
+                                View Campaign
+                                <ArrowRight className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          </div>
                         </div>
                       </motion.div>
                     );
