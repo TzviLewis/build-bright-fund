@@ -12,10 +12,12 @@ import VideoPlayer from '@/components/VideoPlayer';
 import CircularCountdownTimer from '@/components/CircularCountdownTimer';
 import LiveChat from '@/components/LiveChat';
 import DonationTiersSelector from '@/components/DonationTiersSelector';
+import { useThemeSettings } from '@/hooks/useThemeSettings';
 
 export default function CampaignDetailPage() {
   const { campaignId, campaignSlug } = useParams<{ campaignId?: string; campaignSlug?: string }>();
   const navigate = useNavigate();
+  const { theme } = useThemeSettings();
   const [campaign, setCampaign] = useState<CampaignDetails | null>(null);
   const [donations, setDonations] = useState<Donations[]>([]);
   const [teams, setTeams] = useState<Teams[]>([]);
@@ -203,24 +205,47 @@ export default function CampaignDetailPage() {
   const potentialMatched = totalDonations * 0.5; // Assuming 50% match rate for demo
 
   return (
-    <div className="min-h-screen bg-white">
+    <div 
+      className="min-h-screen"
+      style={{
+        backgroundColor: theme.backgroundColorHex || '#fafafa',
+      }}
+    >
       {/* Modern Header */}
-      <header className="bg-white border-b border-primary/10 sticky top-0 z-40 shadow-sm backdrop-blur-sm bg-white/95">
+      <header 
+        className="sticky top-0 z-40 shadow-sm backdrop-blur-sm border-b"
+        style={{
+          backgroundColor: `${theme.backgroundColorHex || '#fafafa'}f5`,
+          borderColor: `${theme.primaryColorHex || '#1a1a1a'}15`,
+        }}
+      >
         <div className="max-w-[120rem] mx-auto px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Button
               onClick={() => navigate('/')}
               variant="ghost"
-              className="text-primary hover:bg-primary/5 rounded-lg px-4 py-2 font-semibold text-sm"
+              className="rounded-lg px-4 py-2 font-semibold text-sm"
+              style={{
+                color: theme.primaryColorHex || '#1a1a1a',
+              }}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               All Campaigns
             </Button>
-            <h1 className="font-heading text-xl lg:text-2xl font-bold text-center flex-1 px-4 truncate text-primary">{campaign?.campaignTitle}</h1>
+            <h1 
+              className="font-heading text-xl lg:text-2xl font-bold text-center flex-1 px-4 truncate"
+              style={{ color: theme.primaryColorHex || '#1a1a1a' }}
+            >
+              {campaign?.campaignTitle}
+            </h1>
             <Button
               onClick={() => setShowShareMenu(!showShareMenu)}
               variant="outline"
-              className="border-primary/20 text-primary hover:bg-primary/5 rounded-lg px-4 py-2 font-semibold text-sm"
+              className="border rounded-lg px-4 py-2 font-semibold text-sm"
+              style={{
+                color: theme.primaryColorHex || '#1a1a1a',
+                borderColor: `${theme.primaryColorHex || '#1a1a1a'}30`,
+              }}
             >
               <Share2 className="w-4 h-4 mr-2" />
               Share
@@ -236,7 +261,12 @@ export default function CampaignDetailPage() {
         className="space-y-0"
       >
         {/* Modern Hero Section */}
-        <section className="w-full bg-gradient-to-br from-secondary/5 via-white to-primary/5 relative overflow-hidden">
+        <section 
+          className="w-full relative overflow-hidden"
+          style={{
+            background: `linear-gradient(to bottom right, ${theme.secondaryColorHex || '#0066ff'}10, ${theme.backgroundColorHex || '#fafafa'})`,
+          }}
+        >
           {campaign?.mainCampaignImage ? (
             <div className="relative h-[500px] lg:h-[600px] overflow-hidden">
               <Image
@@ -277,11 +307,17 @@ export default function CampaignDetailPage() {
                 className="space-y-4 lg:space-y-6"
               >
                 <div className="space-y-3">
-                  <h2 className="font-heading text-4xl lg:text-6xl font-bold text-primary leading-tight max-w-4xl">
+                  <h2 
+                    className="font-heading text-4xl lg:text-6xl font-bold leading-tight max-w-4xl"
+                    style={{ color: theme.primaryColorHex || '#1a1a1a' }}
+                  >
                     {campaign.campaignTitle}
                   </h2>
                   {campaign.projectDescription && (
-                    <p className="font-paragraph text-base lg:text-lg text-primary/80 max-w-2xl">
+                    <p 
+                      className="font-paragraph text-base lg:text-lg max-w-2xl"
+                      style={{ color: `${theme.primaryColorHex || '#1a1a1a'}cc` }}
+                    >
                       {campaign.projectDescription}
                     </p>
                   )}
@@ -292,7 +328,13 @@ export default function CampaignDetailPage() {
         </section>
 
         {/* Clean Stats Section */}
-        <section className="w-full bg-white border-b border-primary/5">
+        <section 
+          className="w-full border-b"
+          style={{
+            backgroundColor: theme.backgroundColorHex || '#fafafa',
+            borderColor: `${theme.primaryColorHex || '#1a1a1a'}10`,
+          }}
+        >
           <div className="max-w-[120rem] mx-auto px-6 lg:px-8 py-12 lg:py-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -307,15 +349,30 @@ export default function CampaignDetailPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border border-primary/10 hover:border-primary/20 transition-all duration-300"
+                className="rounded-xl p-6 border hover:border-opacity-50 transition-all duration-300"
+                style={{
+                  backgroundColor: `${theme.primaryColorHex || '#1a1a1a'}08`,
+                  borderColor: `${theme.primaryColorHex || '#1a1a1a'}20`,
+                }}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-primary/10 p-2.5 rounded-lg">
-                    <Target className="w-5 h-5 text-primary" />
+                  <div 
+                    className="p-2.5 rounded-lg"
+                    style={{ backgroundColor: `${theme.primaryColorHex || '#1a1a1a'}15` }}
+                  >
+                    <Target className="w-5 h-5" style={{ color: theme.primaryColorHex || '#1a1a1a' }} />
                   </div>
-                  <p className="font-paragraph text-xs text-primary/60">Goal</p>
+                  <p 
+                    className="font-paragraph text-xs"
+                    style={{ color: `${theme.primaryColorHex || '#1a1a1a'}70` }}
+                  >
+                    Goal
+                  </p>
                 </div>
-                <p className="font-heading text-3xl font-bold text-primary">
+                <p 
+                  className="font-heading text-3xl font-bold"
+                  style={{ color: theme.primaryColorHex || '#1a1a1a' }}
+                >
                   ${campaign?.fundraisingGoal?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || '0'}
                 </p>
               </motion.div>
@@ -326,18 +383,36 @@ export default function CampaignDetailPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.15 }}
-                className="bg-gradient-to-br from-secondary/10 to-transparent rounded-xl p-6 border border-secondary/20 hover:border-secondary/30 transition-all duration-300"
+                className="rounded-xl p-6 border hover:border-opacity-50 transition-all duration-300"
+                style={{
+                  backgroundColor: `${theme.secondaryColorHex || '#0066ff'}12`,
+                  borderColor: `${theme.secondaryColorHex || '#0066ff'}30`,
+                }}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-secondary/20 p-2.5 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-secondary" />
+                  <div 
+                    className="p-2.5 rounded-lg"
+                    style={{ backgroundColor: `${theme.secondaryColorHex || '#0066ff'}25` }}
+                  >
+                    <DollarSign className="w-5 h-5" style={{ color: theme.secondaryColorHex || '#0066ff' }} />
                   </div>
-                  <p className="font-paragraph text-xs text-secondary/70">Raised</p>
+                  <p 
+                    className="font-paragraph text-xs"
+                    style={{ color: `${theme.secondaryColorHex || '#0066ff'}80` }}
+                  >
+                    Raised
+                  </p>
                 </div>
-                <p className="font-heading text-3xl font-bold text-secondary">
+                <p 
+                  className="font-heading text-3xl font-bold"
+                  style={{ color: theme.secondaryColorHex || '#0066ff' }}
+                >
                   ${totalDonations.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </p>
-                <p className="font-paragraph text-xs text-secondary/60 mt-1">
+                <p 
+                  className="font-paragraph text-xs mt-1"
+                  style={{ color: `${theme.secondaryColorHex || '#0066ff'}70` }}
+                >
                   {donations.length} {donations.length === 1 ? 'donation' : 'donations'}
                 </p>
               </motion.div>
@@ -348,18 +423,36 @@ export default function CampaignDetailPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border border-primary/10 hover:border-primary/20 transition-all duration-300"
+                className="rounded-xl p-6 border hover:border-opacity-50 transition-all duration-300"
+                style={{
+                  backgroundColor: `${theme.primaryColorHex || '#1a1a1a'}08`,
+                  borderColor: `${theme.primaryColorHex || '#1a1a1a'}20`,
+                }}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-primary/10 p-2.5 rounded-lg">
-                    <Users className="w-5 h-5 text-primary" />
+                  <div 
+                    className="p-2.5 rounded-lg"
+                    style={{ backgroundColor: `${theme.primaryColorHex || '#1a1a1a'}15` }}
+                  >
+                    <Users className="w-5 h-5" style={{ color: theme.primaryColorHex || '#1a1a1a' }} />
                   </div>
-                  <p className="font-paragraph text-xs text-primary/60">Teams</p>
+                  <p 
+                    className="font-paragraph text-xs"
+                    style={{ color: `${theme.primaryColorHex || '#1a1a1a'}70` }}
+                  >
+                    Teams
+                  </p>
                 </div>
-                <p className="font-heading text-3xl font-bold text-primary">
+                <p 
+                  className="font-heading text-3xl font-bold"
+                  style={{ color: theme.primaryColorHex || '#1a1a1a' }}
+                >
                   {teams.length}
                 </p>
-                <p className="font-paragraph text-xs text-primary/60 mt-1">
+                <p 
+                  className="font-paragraph text-xs mt-1"
+                  style={{ color: `${theme.primaryColorHex || '#1a1a1a'}70` }}
+                >
                   {totalTeamMembers} members
                 </p>
               </motion.div>
@@ -370,15 +463,30 @@ export default function CampaignDetailPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.25 }}
-                className="bg-gradient-to-br from-secondary/10 to-transparent rounded-xl p-6 border border-secondary/20 hover:border-secondary/30 transition-all duration-300"
+                className="rounded-xl p-6 border hover:border-opacity-50 transition-all duration-300"
+                style={{
+                  backgroundColor: `${theme.secondaryColorHex || '#0066ff'}12`,
+                  borderColor: `${theme.secondaryColorHex || '#0066ff'}30`,
+                }}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-secondary/20 p-2.5 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-secondary" />
+                  <div 
+                    className="p-2.5 rounded-lg"
+                    style={{ backgroundColor: `${theme.secondaryColorHex || '#0066ff'}25` }}
+                  >
+                    <TrendingUp className="w-5 h-5" style={{ color: theme.secondaryColorHex || '#0066ff' }} />
                   </div>
-                  <p className="font-paragraph text-xs text-secondary/70">Progress</p>
+                  <p 
+                    className="font-paragraph text-xs"
+                    style={{ color: `${theme.secondaryColorHex || '#0066ff'}80` }}
+                  >
+                    Progress
+                  </p>
                 </div>
-                <p className="font-heading text-3xl font-bold text-secondary">
+                <p 
+                  className="font-heading text-3xl font-bold"
+                  style={{ color: theme.secondaryColorHex || '#0066ff' }}
+                >
                   {progressPercentage.toFixed(0)}%
                 </p>
               </motion.div>
@@ -397,27 +505,53 @@ export default function CampaignDetailPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="bg-white rounded-xl border border-primary/10 shadow-sm overflow-hidden"
+                className="rounded-xl border shadow-sm overflow-hidden"
+                style={{
+                  backgroundColor: theme.backgroundColorHex || '#fafafa',
+                  borderColor: `${theme.primaryColorHex || '#1a1a1a'}15`,
+                }}
               >
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-center">
-                    <p className="font-paragraph text-sm font-semibold text-primary">Campaign Progress</p>
-                    <p className="font-heading text-lg font-bold text-secondary">{progressPercentage.toFixed(0)}%</p>
+                    <p 
+                      className="font-paragraph text-sm font-semibold"
+                      style={{ color: theme.primaryColorHex || '#1a1a1a' }}
+                    >
+                      Campaign Progress
+                    </p>
+                    <p 
+                      className="font-heading text-lg font-bold"
+                      style={{ color: theme.secondaryColorHex || '#0066ff' }}
+                    >
+                      {progressPercentage.toFixed(0)}%
+                    </p>
                   </div>
-                  <div className="w-full bg-primary/5 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="w-full rounded-full h-3 overflow-hidden"
+                    style={{ backgroundColor: `${theme.primaryColorHex || '#1a1a1a'}10` }}
+                  >
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: `${progressPercentage}%` }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.5, ease: 'easeOut' }}
-                      className="bg-gradient-to-r from-secondary to-secondary/80 h-full rounded-full"
+                      className="h-full rounded-full"
+                      style={{
+                        background: `linear-gradient(to right, ${theme.secondaryColorHex || '#0066ff'}, ${theme.accentColorHex || '#0066ff'}cc)`,
+                      }}
                     />
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="font-paragraph text-primary/60">
+                    <span 
+                      className="font-paragraph"
+                      style={{ color: `${theme.primaryColorHex || '#1a1a1a'}70` }}
+                    >
                       ${totalDonations.toLocaleString()} raised
                     </span>
-                    <span className="font-paragraph text-primary/60">
+                    <span 
+                      className="font-paragraph"
+                      style={{ color: `${theme.primaryColorHex || '#1a1a1a'}70` }}
+                    >
                       ${campaign?.fundraisingGoal?.toLocaleString()} goal
                     </span>
                   </div>

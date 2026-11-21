@@ -27,6 +27,7 @@ import VideoEditor from '@/components/VideoEditor';
 import TeamEmailSender from '@/components/TeamEmailSender';
 import CodeExportButton from '@/components/CodeExportButton';
 import { FILE_SIZE_LIMITS, uploadVideoFile, isValidVideoFile, validateVideoFileSize } from '@/lib/media-upload';
+import { useThemeSettings } from '@/hooks/useThemeSettings';
 
 // Theme configuration
 const themeConfig = {
@@ -183,6 +184,9 @@ interface DataState {
 }
 
 export default function AdminDashboard() {
+  // Theme Settings Hook
+  const { theme, updateTheme } = useThemeSettings();
+  
   // UI State
   const [ui, setUI] = useState<UIState>({
     loading: true,
@@ -213,6 +217,8 @@ export default function AdminDashboard() {
     showThemeSelector: false,
     currentTheme: 'blue',
   });
+
+  // ... keep existing code (Data State, Campaign Form State, etc.)
 
   // Data State
   const [data, setData] = useState<DataState>({
@@ -1439,7 +1445,7 @@ ${codePackage.documentation}
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-heading text-xl font-bold text-primary flex items-center gap-2">
                 <Palette className="w-6 h-6 text-blue-600" />
-                Choose Dashboard Theme
+                Campaign Page Theme Colors
               </h3>
               <Button
                 onClick={() => setUI(prev => ({ ...prev, showThemeSelector: false }))}
@@ -1450,36 +1456,91 @@ ${codePackage.documentation}
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(Object.entries(themeConfig) as [keyof typeof themeConfig, typeof themeConfig[keyof typeof themeConfig]][]).map(([themeKey, theme]) => (
-                <motion.button
-                  key={themeKey}
-                  whileHover={{ scale: 1.05 }}
-                  onClick={() => {
-                    setUI(prev => ({ ...prev, currentTheme: themeKey, showThemeSelector: false }));
-                    setUI(prev => ({ 
-                      ...prev, 
-                      successMessage: `Theme changed to ${theme.name}!` 
-                    }));
-                    setTimeout(() => {
-                      setUI(prev => ({ ...prev, successMessage: null }));
-                    }, 2000);
-                  }}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    ui.currentTheme === themeKey
-                      ? `border-${theme.primary}-600 bg-${theme.light} shadow-lg`
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className={`w-full h-12 rounded-lg bg-gradient-to-r from-${theme.primary}-500 to-${theme.primary}-600 mb-2`} />
-                  <p className="font-paragraph text-sm font-semibold text-primary text-center">
-                    {theme.name}
-                  </p>
-                  {ui.currentTheme === themeKey && (
-                    <p className="font-paragraph text-xs text-green-600 text-center mt-1">✓ Active</p>
-                  )}
-                </motion.button>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Primary Color */}
+              <div className="space-y-2">
+                <label className="font-paragraph text-sm font-semibold text-primary">Primary Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={theme.primaryColorHex || '#1a1a1a'}
+                    onChange={(e) => updateTheme({ primaryColorHex: e.target.value })}
+                    className="w-12 h-10 rounded-lg cursor-pointer border border-gray-300"
+                  />
+                  <Input
+                    type="text"
+                    value={theme.primaryColorHex || '#1a1a1a'}
+                    onChange={(e) => updateTheme({ primaryColorHex: e.target.value })}
+                    placeholder="#1a1a1a"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              {/* Secondary Color */}
+              <div className="space-y-2">
+                <label className="font-paragraph text-sm font-semibold text-primary">Secondary Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={theme.secondaryColorHex || '#0066ff'}
+                    onChange={(e) => updateTheme({ secondaryColorHex: e.target.value })}
+                    className="w-12 h-10 rounded-lg cursor-pointer border border-gray-300"
+                  />
+                  <Input
+                    type="text"
+                    value={theme.secondaryColorHex || '#0066ff'}
+                    onChange={(e) => updateTheme({ secondaryColorHex: e.target.value })}
+                    placeholder="#0066ff"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              {/* Accent Color */}
+              <div className="space-y-2">
+                <label className="font-paragraph text-sm font-semibold text-primary">Accent Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={theme.accentColorHex || '#0066ff'}
+                    onChange={(e) => updateTheme({ accentColorHex: e.target.value })}
+                    className="w-12 h-10 rounded-lg cursor-pointer border border-gray-300"
+                  />
+                  <Input
+                    type="text"
+                    value={theme.accentColorHex || '#0066ff'}
+                    onChange={(e) => updateTheme({ accentColorHex: e.target.value })}
+                    placeholder="#0066ff"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              {/* Background Color */}
+              <div className="space-y-2">
+                <label className="font-paragraph text-sm font-semibold text-primary">Background Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={theme.backgroundColorHex || '#fafafa'}
+                    onChange={(e) => updateTheme({ backgroundColorHex: e.target.value })}
+                    className="w-12 h-10 rounded-lg cursor-pointer border border-gray-300"
+                  />
+                  <Input
+                    type="text"
+                    value={theme.backgroundColorHex || '#fafafa'}
+                    onChange={(e) => updateTheme({ backgroundColorHex: e.target.value })}
+                    placeholder="#fafafa"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="font-paragraph text-sm text-blue-800">
+                ✓ Colors are automatically saved and will be applied to the campaign detail page in real-time.
+              </p>
             </div>
           </motion.div>
         )}

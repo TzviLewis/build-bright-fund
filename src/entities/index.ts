@@ -194,3 +194,24 @@ export interface Teams {
   /** @wixFieldType number */
   teamId?: number;
 }
+
+
+/**
+ * Collection ID: themesettings
+ * Interface for ThemeSettings
+ */
+export interface ThemeSettings {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  themeName?: string;
+  /** @wixFieldType text */
+  primaryColorHex?: string;
+  /** @wixFieldType text */
+  secondaryColorHex?: string;
+  /** @wixFieldType text */
+  accentColorHex?: string;
+  /** @wixFieldType text */
+  backgroundColorHex?: string;
+}
