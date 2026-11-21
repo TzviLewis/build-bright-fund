@@ -13,7 +13,6 @@ import CampaignsPage from '@/components/pages/CampaignsPageNew';
 import AdminCampaignsPage from '@/components/pages/AdminCampaignsPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import { TeamProtectedRoute } from '@/components/ui/team-protected-route';
-import DonationNotificationPopup from '@/components/DonationNotificationPopup';
 import TeamLoginPage from '@/components/pages/TeamLoginPage';
 import TeamDashboardPage from '@/components/pages/TeamDashboardPage';
 import CampaignDetailPage from '@/components/pages/CampaignDetailPage';
@@ -24,17 +23,12 @@ import VideoEditorPage from '@/components/pages/VideoEditorPage';
 import AIWebsiteEditorPage from '@/components/pages/AIWebsiteEditorPage';
 import DonorProfilePage from '@/components/pages/DonorProfilePage';
 import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
-import DiagnosticPanel from '@/components/DiagnosticPanel';
-import BreadcrumbNav from '@/components/BreadcrumbNav';
 
-// Layout component that includes ScrollToTop and Breadcrumbs
+// Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
-      <DonationNotificationPopup />
-      <DiagnosticPanel />
-      <BreadcrumbNav />
       <Outlet />
     </>
   );
