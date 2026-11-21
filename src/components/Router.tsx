@@ -1,35 +1,50 @@
 import { MemberProvider } from '@/integrations';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
-import HomePage from '@/components/pages/HomePage';
-import AdminDashboard from '@/components/pages/AdminDashboard';
-import AdminLoginPage from '@/components/pages/AdminLoginPage';
-import TeamPage from '@/components/pages/TeamPage';
-import GalleryPage from '@/components/pages/GalleryPage';
-import UpdateCampaignVideo from '@/components/pages/UpdateCampaignVideo';
-import AdminCampaignDatesPage from '@/components/pages/AdminCampaignDatesPage';
-import CampaignsPage from '@/components/pages/CampaignsPageNew';
-import AdminCampaignsPage from '@/components/pages/AdminCampaignsPage';
 import { AdminProtectedRoute } from '@/components/ui/admin-protected-route';
 import { TeamProtectedRoute } from '@/components/ui/team-protected-route';
-import TeamLoginPage from '@/components/pages/TeamLoginPage';
-import TeamDashboardPage from '@/components/pages/TeamDashboardPage';
-import CampaignDetailPage from '@/components/pages/CampaignDetailPage';
-import AdminDonationsPage from '@/components/pages/AdminDonationsPage';
-import AdminMatchersPage from '@/components/pages/AdminMatchersPage';
-import AdminAnalyticsPage from '@/components/pages/AdminAnalyticsPage';
-import VideoEditorPage from '@/components/pages/VideoEditorPage';
-import AIWebsiteEditorPage from '@/components/pages/AIWebsiteEditorPage';
-import DonorProfilePage from '@/components/pages/DonorProfilePage';
 import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+
+// Lazy load all page components
+const HomePage = lazy(() => import('@/components/pages/HomePage'));
+const AdminDashboard = lazy(() => import('@/components/pages/AdminDashboard'));
+const AdminLoginPage = lazy(() => import('@/components/pages/AdminLoginPage'));
+const TeamPage = lazy(() => import('@/components/pages/TeamPage'));
+const GalleryPage = lazy(() => import('@/components/pages/GalleryPage'));
+const UpdateCampaignVideo = lazy(() => import('@/components/pages/UpdateCampaignVideo'));
+const AdminCampaignDatesPage = lazy(() => import('@/components/pages/AdminCampaignDatesPage'));
+const CampaignsPage = lazy(() => import('@/components/pages/CampaignsPageNew'));
+const AdminCampaignsPage = lazy(() => import('@/components/pages/AdminCampaignsPage'));
+const TeamLoginPage = lazy(() => import('@/components/pages/TeamLoginPage'));
+const TeamDashboardPage = lazy(() => import('@/components/pages/TeamDashboardPage'));
+const CampaignDetailPage = lazy(() => import('@/components/pages/CampaignDetailPage'));
+const AdminDonationsPage = lazy(() => import('@/components/pages/AdminDonationsPage'));
+const AdminMatchersPage = lazy(() => import('@/components/pages/AdminMatchersPage'));
+const AdminAnalyticsPage = lazy(() => import('@/components/pages/AdminAnalyticsPage'));
+const VideoEditorPage = lazy(() => import('@/components/pages/VideoEditorPage'));
+const AIWebsiteEditorPage = lazy(() => import('@/components/pages/AIWebsiteEditorPage'));
+const DonorProfilePage = lazy(() => import('@/components/pages/DonorProfilePage'));
+
+// Fallback component for lazy loading
+function PageFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <LoadingSpinner />
+    </div>
+  );
+}
 
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
-      <Outlet />
+      <Suspense fallback={<PageFallback />}>
+        <Outlet />
+      </Suspense>
     </>
   );
 }
@@ -42,122 +57,182 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <CampaignsPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <CampaignsPage />
+          </Suspense>
+        ),
       },
       {
         path: "home",
-        element: <HomePage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <HomePage />
+          </Suspense>
+        ),
       },
       {
         path: "admin-login",
-        element: <AdminLoginPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <AdminLoginPage />
+          </Suspense>
+        ),
       },
       {
         path: "admin",
         element: (
-          <AdminProtectedRoute>
-            <AdminDashboard />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "team/:teamId",
-        element: <TeamPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <TeamPage />
+          </Suspense>
+        ),
       },
       {
         path: "campaigns",
-        element: <CampaignsPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <CampaignsPage />
+          </Suspense>
+        ),
       },
       {
         path: "gallery",
-        element: <GalleryPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <GalleryPage />
+          </Suspense>
+        ),
       },
       {
         path: "update-video",
-        element: <UpdateCampaignVideo />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <UpdateCampaignVideo />
+          </Suspense>
+        ),
       },
       {
         path: "admin/campaigns",
         element: (
-          <AdminProtectedRoute>
-            <AdminCampaignsPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminCampaignsPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/campaign-dates",
         element: (
-          <AdminProtectedRoute>
-            <AdminCampaignDatesPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminCampaignDatesPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/donations",
         element: (
-          <AdminProtectedRoute>
-            <AdminDonationsPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminDonationsPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/matchers",
         element: (
-          <AdminProtectedRoute>
-            <AdminMatchersPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminMatchersPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/analytics",
         element: (
-          <AdminProtectedRoute>
-            <AdminAnalyticsPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AdminAnalyticsPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/video-editor",
         element: (
-          <AdminProtectedRoute>
-            <VideoEditorPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <VideoEditorPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "admin/ai-editor",
         element: (
-          <AdminProtectedRoute>
-            <AIWebsiteEditorPage />
-          </AdminProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <AdminProtectedRoute>
+              <AIWebsiteEditorPage />
+            </AdminProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "campaign/:campaignId",
-        element: <CampaignDetailPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <CampaignDetailPage />
+          </Suspense>
+        ),
       },
       {
         path: "c/:campaignSlug",
-        element: <CampaignDetailPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <CampaignDetailPage />
+          </Suspense>
+        ),
       },
       {
         path: "team-login",
-        element: <TeamLoginPage />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <TeamLoginPage />
+          </Suspense>
+        ),
       },
       {
         path: "team-dashboard",
         element: (
-          <TeamProtectedRoute>
-            <TeamDashboardPage />
-          </TeamProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <TeamProtectedRoute>
+              <TeamDashboardPage />
+            </TeamProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "donor-profile",
         element: (
-          <MemberProtectedRoute>
-            <DonorProfilePage />
-          </MemberProtectedRoute>
+          <Suspense fallback={<PageFallback />}>
+            <MemberProtectedRoute>
+              <DonorProfilePage />
+            </MemberProtectedRoute>
+          </Suspense>
         ),
       },
       {
